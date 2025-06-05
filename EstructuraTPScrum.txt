@@ -1,0 +1,52 @@
+
+Planificación 
+
+    Historias Refinadas
+
+    Estimación de Esfuerzo y Prioridad (describir la interacción con el cliente) y cómo se realizó la estimación
+
+    Definición de Velocidad y Alcance y tamaño del Sprint
+
+    Product Backlog
+
+    Definir Fecha de Inicio del desarrollo para siguiente paso
+
+Planificación Sprint 1
+
+     División en Tareas 
+
+     Estimación de Esfuerzo - Planificación - Sprint Backlog
+
+     Ejecución - Código fuente por tarea
+	
+     Conclusiones de lo estimado vs real
+     
+     Gráfico Burn Down y Descripción de cada Daily Meeting
+
+     Revisión del Sprint
+
+
+Planificación Sprint 2
+
+    División en Tareas 
+
+    Estimación de Esfuerzo - Planificación - Sprint Backlog
+
+     Ejecución - Código fuente por tarea
+	
+     Conclusiones de lo estimado vs real
+     
+     Gráfico Burn Down y Descripción de cada Daily Meeting
+
+     Revisión del Sprint
+
+
+Código Fuente (debe estar ordenado por iteración y por tarea - debe estar comentado)
+
+Pruebas de Unidad (deben especificarse a que tarea corresponden y deben estar incluidas en los sprints)
+
+Refactorización (deben especificarse a que tarea corresponden)
+
+INTEGRACIÖN CONTINUA - ESTANDARES
+
+Conclusiones (deben ser exahustivas respecto al trabajo realizado y la metodología, criticando a favor y en contra de la misma en base a la experiencia adquirida)
