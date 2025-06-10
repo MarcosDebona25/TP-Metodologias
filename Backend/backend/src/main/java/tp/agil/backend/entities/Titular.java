@@ -43,4 +43,14 @@ public class Titular {
     private String obtenerSangre(){
         return this.getGrupoSanguineo() + (this.isFactorRh()? "+":"-");
     }
+
+    public int calcularEdad() {
+        LocalDate hoy = LocalDate.now();
+        int edad = hoy.getYear() - this.fechaNacimiento.getYear();
+        if (hoy.getMonthValue() < this.fechaNacimiento.getMonthValue() ||
+                (hoy.getMonthValue() == this.fechaNacimiento.getMonthValue() && hoy.getDayOfMonth() < this.fechaNacimiento.getDayOfMonth())) {
+            edad--;
+        }
+        return edad;
+    }
 }
