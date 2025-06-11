@@ -8,8 +8,11 @@ import tp.agil.backend.repositories.TitularRepository;
 @Service
 public class TitularServiceImpl implements TitularService {
 
-    @Autowired
-    private TitularRepository titularRepository;
+    private final TitularRepository titularRepository;
+
+    public TitularServiceImpl(TitularRepository titularRepository) {
+        this.titularRepository = titularRepository;
+    }
 
     @Override
     public boolean validarDatosTitular(Titular titular) {
