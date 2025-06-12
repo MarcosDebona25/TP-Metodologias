@@ -1,8 +1,11 @@
 package tp.agil.backend.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tp.agil.backend.dtos.LicenciaDTO;
+import tp.agil.backend.dtos.TitularDTO;
 import tp.agil.backend.entities.*;
+import tp.agil.backend.mappers.LicenciaMapper;
+import tp.agil.backend.mappers.TitularMapper;
 import tp.agil.backend.repositories.LicenciaRepository;
 import tp.agil.backend.repositories.TitularRepository;
 
@@ -12,18 +15,26 @@ import java.util.List;
 @Service
 public class LicenciaServiceImpl implements LicenciaService {
 
-    @Autowired
-    private LicenciaRepository licenciaRepository;
+    private final LicenciaRepository licenciaRepository;
+    private final TitularRepository titularRepository;
+    private final TitularMapper titularMapper;
+    private final LicenciaMapper licenciaMapper;
 
-    @Autowired
-    private TitularRepository titularRepository;
+    public LicenciaServiceImpl(LicenciaRepository licenciaRepository, TitularRepository titularRepository, TitularMapper titularMapper, LicenciaMapper licenciaMapper) {
+        this.licenciaRepository = licenciaRepository;
+        this.titularRepository = titularRepository;
+        this.titularMapper = titularMapper;
+        this.licenciaMapper = licenciaMapper;
+    }
 
     @Override
-    public Licencia crearLicencia(Titular titular, TipoClase tipoClase) {
-        if (!validarDatosTitular(titular)) {
+    public LicenciaDTO crearLicencia(TitularDTO titular, String tipoClase1) {
+        TipoClase tipoClase = TipoClase.valueOf(tipoClase1);
+
+        if (!validarDatosTitular(titularMapper.dtoToEntity(titular))) {
             throw new IllegalArgumentException("Datos del titular inválidos.");
         }
-        if (!verificarRequisitosPorClase(titular, tipoClase)) {
+        if (!verificarRequisitosPorClase(titularMapper.dtoToEntity(titular), tipoClase)) {
             throw new IllegalArgumentException("El titular no cumple los requisitos para la clase de licencia.");
         }
 
@@ -33,12 +44,12 @@ public class LicenciaServiceImpl implements LicenciaService {
         nuevaLicencia.setFechaEmision(LocalDate.now());
         nuevaLicencia.setFechaVencimiento(LocalDate.now().plusYears(5));
         nuevaLicencia.setEstadoLicencia(EstadoLicencia.VIGENTE);
-        nuevaLicencia.setTitular(titular);
+        nuevaLicencia.setTitular(titularMapper.dtoToEntity(titular));
 
-        titularRepository.save(titular);
+        titularRepository.save(titularMapper.dtoToEntity(titular));
         licenciaRepository.save(nuevaLicencia);
 
-        return nuevaLicencia;
+        return licenciaMapper.entityToDto(nuevaLicencia);
     }
 
     @Override
