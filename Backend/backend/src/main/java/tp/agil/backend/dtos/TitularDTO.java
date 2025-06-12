@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 public class TitularDTO {
     private TipoDocumento tipoDocumento;
+    private Long numeroDocumento;
     private String nombre;
     private String apellido;
     private LocalDate fechaNacimiento;

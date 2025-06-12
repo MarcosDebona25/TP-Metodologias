@@ -79,7 +79,7 @@ public class LicenciaServiceImpl implements LicenciaService {
                 .orElse(0L) + 1;
     }
 
-    private boolean validarDatosTitular(Titular titular) {
+    private boolean     validarDatosTitular(Titular titular) {
         return titular.getNumeroDocumento() != null &&
                 titular.getTipoDocumento() != null &&
                 titular.getNombre() != null &&
