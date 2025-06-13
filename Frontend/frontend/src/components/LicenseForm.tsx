@@ -1,79 +1,121 @@
 "use client";
 
 import { useState } from "react";
-import IDNumberSelect from "./DocumentComboBox";
+import PersonSearchField from "../components/PersonSearchField";
+import { Person } from "../types/Person";
 
 export default function LicenseForm() {
-  const [lastName, setLastName] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
-  const [address, setAddress] = useState("");
-  const [bloodType, setBloodType] = useState("");
+  const emptyPerson: Person = {
+    id: "",
+    idNumber: "",
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    address: "",
+    bloodType: "",
+    donor: false,
+  };
+
+  const [formData, setFormData] = useState<Person>(emptyPerson);
+
+  const handlePersonFound = (person: Person) => {
+    setFormData(person);
+  };
+
+  const handleReset = () => {
+    setFormData(emptyPerson);
+  };
 
   return (
-    <form className="space-y-6 max-w-2xl">
-      <h1 className="text-2xl font-bold mb-2">Create New License</h1>
+    <div className="max-w-lg mx-auto p-6 bg-gray-100 rounded shadow">
+      <h1 className="text-2xl font-semibold mb-6 text-gray-800">New License Form</h1>
 
-      {/* ID Type + ID Number */}
-      <div>
-        <label className="block font-medium mb-1">Identification</label>
-        <div className="flex gap-4">
-          {/* ID Type Dropdown */}
-          <div className="w-32">
-            <select
-              className="w-full border rounded px-3 py-2"
-            >
-              <option value="">Seleccione</option>
-              <option value="DNI">DNI</option>
-              <option value="LE/LI">LE/LC</option>
-              <option value="CI">CI</option>
-            </select>
-          </div>
-
-          {/* ID Number Combobox */}
-          <div className="flex-1">
-            <IDNumberSelect
-              onPersonSelected={(person) => {
-                setLastName(person.lastName);
-                setFirstName(person.firstName);
-                setDateOfBirth(person.dateOfBirth);
-                setAddress(person.address);
-                setBloodType(person.bloodType);
-                // You can also fill other fields here
-              }}
-            />
-          </div>
-        </div>
+      <div className="mb-4">
+        <PersonSearchField onPersonFound={handlePersonFound} />
       </div>
 
+      <div className="space-y-4">
+
         <div>
-          <label className="block font-medium">Apellido</label>
-          <input type="text" value={lastName} onChange={(t) => setLastName(t.target.value)} className="w-full border rounded px-3 py-2" />
+          <label className="block text-sm font-medium text-gray-700">ID Number</label>
+          <input
+            type="text"
+            value={formData.idNumber}
+            readOnly
+            className="w-full rounded border-gray-300 bg-gray-200 text-gray-700"
+          />
         </div>
+
         <div>
-          <label className="block font-medium">Nombre</label>
-          <input type="text" value={firstName} onChange={(t) => setFirstName(t.target.value)} className="w-full border rounded px-3 py-2" />
+          <label className="block text-sm font-medium text-gray-700">First Name</label>
+          <input
+            type="text"
+            value={formData.firstName}
+            readOnly
+            className="w-full rounded border-gray-300 bg-gray-200 text-gray-700"
+          />
         </div>
+
         <div>
-          <label className="block font-medium">Fecha de Nacimiento</label>
-          <input type="date" value={dateOfBirth} onChange={(t) => setDateOfBirth(t.target.value)} className="w-full border rounded px-3 py-2" />
+          <label className="block text-sm font-medium text-gray-700">Last Name</label>
+          <input
+            type="text"
+            value={formData.lastName}
+            readOnly
+            className="w-full rounded border-gray-300 bg-gray-200 text-gray-700"
+          />
         </div>
+
         <div>
-          <label className="block font-medium">Dirección</label>
-          <input type="text" value={address} onChange={(t) => setAddress(t.target.value)} className="w-full border rounded px-3 py-2" />
+          <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+          <input
+            type="text"
+            value={formData.dateOfBirth}
+            readOnly
+            className="w-full rounded border-gray-300 bg-gray-200 text-gray-700"
+          />
         </div>
+
         <div>
-          <label className="block font-medium">
-            Grupo Sanguíneo y Factor RH
-          </label>
-          <input type="text" value={bloodType} onChange={(t) => setBloodType(t.target.value)} className="w-full border rounded px-3 py-2" />
+          <label className="block text-sm font-medium text-gray-700">Address</label>
+          <input
+            type="text"
+            value={formData.address}
+            readOnly
+            className="w-full rounded border-gray-300 bg-gray-200 text-gray-700"
+          />
         </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Blood Type</label>
+          <input
+            type="text"
+            value={formData.bloodType}
+            readOnly
+            className="w-full rounded border-gray-300 bg-gray-200 text-gray-700"
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={formData.donor}
+            readOnly
+            className="rounded border-gray-300"
+          />
+          <label className="text-sm font-medium text-gray-700">Donor</label>
+        </div>
+
+      </div>
+
+      <div className="mt-6 flex justify-end">
         <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          onClick={handleReset}
+          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
         >
-          Submit
+          Reset
         </button>
-    </form>
+      </div>
+    </div>
   );
 }
