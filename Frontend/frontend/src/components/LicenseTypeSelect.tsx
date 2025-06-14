@@ -20,20 +20,20 @@ export default function LicenseTypeSelect({ value, onChange, allowedTypes }: Pro
 
   return (
     <div className="space-y-2">
-      <label className="block font-medium text-gray-700">License Types</label>
+      <label className="block font-medium text-gray-700">Clase/s Solicitada/s</label>
       <Select
         options={options}
         isMulti
         value={options.filter(opt => value.includes(opt.value))}
         onChange={handleChange}
-        placeholder="Select license types"
+        placeholder="Seleccione las clases a solicitar"
         className="text-black"
       />
 
       {value.map(type => (
         allowedTypes && !allowedTypes.includes(type) ? (
           <div key={type} className="text-sm text-red-600">
-            ⚠ License type "{type}" is not allowed for this person
+            ⚠ El titular no satisface los requisitos para solicitar una licencia clase {type}
           </div>
         ) : null
       ))}

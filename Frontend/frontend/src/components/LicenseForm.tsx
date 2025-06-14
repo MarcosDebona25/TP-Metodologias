@@ -26,7 +26,7 @@ export default function LicenseForm() {
 
   const handleSubmit = async () => {
     if (!formData.person) {
-      alert("Please search for a person first.");
+      alert("Primero busque un titular.");
       return;
     }
 
@@ -37,17 +37,17 @@ export default function LicenseForm() {
 
     try {
       await submitLicense(payload);
-      alert("License submitted successfully!");
+      alert("Alta de licencia exitoso!");
       handleReset();
     } catch (err: any) {
       console.error(err);
-      alert("Error submitting license");
+      alert("Error al crear la licencia");
     }
   };
 
   return (
     <div className="max-w-xl mx-auto p-4 border rounded shadow">
-      <h2 className="text-2xl text-gray-800 font-bold mb-4">Create New License</h2>
+      <h2 className="text-2xl text-gray-800 font-bold mb-4">Alta Nueva Licencia</h2>
 
       <PersonSearchField onPersonFound={handlePersonFound} />
 
@@ -55,28 +55,28 @@ export default function LicenseForm() {
         <>
           <div className="space-y-2 mt-4">
             <div>
-              <label className="block font-medium text-gray-700">First Name</label>
+              <label className="block font-medium text-gray-700">Nombre</label>
               <input className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300" disabled value={formData.person.firstName} />
             </div>
             <div>
-              <label className="block font-medium text-gray-700">Last Name</label>
+              <label className="block font-medium text-gray-700">Apellido</label>
               <input className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300" disabled value={formData.person.lastName} />
             </div>
             <div>
-              <label className="block font-medium text-gray-700">Date of Birth</label>
+              <label className="block font-medium text-gray-700">Fecha de Nacimiento</label>
               <input className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300" disabled value={formData.person.dateOfBirth} />
             </div>
             <div>
-              <label className="block font-medium text-gray-700">Address</label>
+              <label className="block font-medium text-gray-700">Dirección</label>
               <input className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300" disabled value={formData.person.address} />
             </div>
             <div>
-              <label className="block font-medium text-gray-700">Blood Type</label>
+              <label className="block font-medium text-gray-700">Grupo Sanguíneo y Factor RH</label>
               <input className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300" disabled value={formData.person.bloodType} />
             </div>
             <div>
-              <label className="block font-medium text-gray-700">Donor</label>
-              <input className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300" disabled value={formData.person.donor ? "Yes" : "No"} />
+              <label className="block font-medium text-gray-700">Donante de Órganos</label>
+              <input className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300" disabled value={formData.person.donor ? "Sí" : "No"} />
             </div>
           </div>
 
@@ -89,8 +89,8 @@ export default function LicenseForm() {
           </div>
 
           <div className="mt-6 flex justify-end gap-4">
-            <button onClick={handleReset} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Reset</button>
-            <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Submit</button>
+            <button onClick={handleReset} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Borrar</button>
+            <button onClick={handleSubmit} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Crear</button>
           </div>
         </>
       )}

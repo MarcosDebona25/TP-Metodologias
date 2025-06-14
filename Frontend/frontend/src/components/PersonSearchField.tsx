@@ -21,10 +21,10 @@ export default function PersonSearchField({ onPersonFound }: Props) {
     setError(null);
 
     try {
-      const data = await getPersonByIdNumber("1");
+      const data = await getPersonByIdNumber(idNumber);
       onPersonFound(data);
     } catch (err: any) {
-      setError(err.message || "Error searching person");
+      setError(err.message || "Error al buscar persona");
     } finally {
       setLoading(false);
     }
@@ -38,7 +38,7 @@ export default function PersonSearchField({ onPersonFound }: Props) {
           type="text"
           value={idNumber}
           onChange={(e) => setIdNumber(e.target.value)}
-          placeholder="Enter ID"
+          placeholder="Ingrese DNI"
           className="w-full text-black rounded border-grey-800 border-1 focus:ring-blue-500"
         />
         <button
@@ -63,7 +63,7 @@ export default function PersonSearchField({ onPersonFound }: Props) {
               ></path>
             </svg>
           ) : (
-            "Search"
+            "Buscar"
           )}
         </button>
       </div>
