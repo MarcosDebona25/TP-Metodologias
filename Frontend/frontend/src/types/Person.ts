@@ -7,4 +7,5 @@ export type Person = {
   address: string;
   bloodType: string;
   donor: boolean;
+  allowedLicenseTypes: string[];
 };
