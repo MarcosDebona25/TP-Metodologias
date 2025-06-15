@@ -4,11 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tp.agil.backend.dtos.LicenciaDTO;
+import tp.agil.backend.dtos.LicenciaFormDTO;
 import tp.agil.backend.services.LicenciaService;
-
-/**
- * @author Marcos Debona
- */
 
 @RestController
 @RequestMapping("/api")
@@ -20,8 +17,8 @@ public class LicenciaController {
     }
 
     @PostMapping("/licencias")
-    public ResponseEntity<LicenciaDTO> emitirLicencia (@RequestBody LicenciaDTO licenciaDTO){
-        LicenciaDTO licenciaCreada = licenciaService.crearLicencia(licenciaDTO);
+    public ResponseEntity<LicenciaDTO> emitirLicencia(@RequestBody LicenciaFormDTO licenciaform) {
+        LicenciaDTO licenciaCreada = licenciaService.emitirLicencia(licenciaform);
         return new ResponseEntity<>(licenciaCreada, HttpStatus.OK);
     }
 }

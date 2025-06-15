@@ -1,12 +1,10 @@
 package tp.agil.backend.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tp.agil.backend.entities.Usuario;
 import tp.agil.backend.repositories.UsuarioRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {

@@ -5,10 +5,6 @@ import org.springframework.stereotype.Component;
 import tp.agil.backend.dtos.TitularDTO;
 import tp.agil.backend.entities.Titular;
 
-/**
- * @author Marcos Debona
- */
-
 @Mapper(componentModel = "spring")
 public interface TitularMapper {
     TitularDTO entityToDto(Titular titular);

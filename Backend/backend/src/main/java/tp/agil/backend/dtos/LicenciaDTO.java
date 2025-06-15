@@ -2,22 +2,14 @@ package tp.agil.backend.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
-import tp.agil.backend.entities.EstadoLicencia;
 
-import java.time.LocalDate;
-
-/**
- * @author Marcos Debona
- */
+import java.util.List;
 
 @Getter
 @Setter
 public class LicenciaDTO {
-    private String tipoClase;
-    private LocalDate fechaEmision;
-    private LocalDate fechaVencimiento;
-    private EstadoLicencia estadoLicencia;
-    private String observaciones;
+    private Long numero;
     private Long titularId;
-    private Long usuarioId;
+    private List<String> clases;
+    private String observaciones;
 }

@@ -2,12 +2,7 @@ package tp.agil.backend.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
-import java.time.LocalDate;
-
-/**
- * @author Marcos Debona
- */
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,30 +11,21 @@ import java.time.LocalDate;
 @ToString
 @Entity
 public class Licencia {
-
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long numero;
-
-    @Enumerated(EnumType.STRING)
-    private TipoClase tipoClase;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate fechaEmision;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate fechaVencimiento;
-
-    @Enumerated(EnumType.STRING)
-    private EstadoLicencia estadoLicencia;
 
     private String observaciones;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "titular_numeroDocumento")
     private Titular titular;
 
     @ManyToOne
     @JoinColumn(name = "usuario_numeroDocumento")
     private Usuario usuario;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "licencia_numero")
+    private List<Clase> clases;
 }

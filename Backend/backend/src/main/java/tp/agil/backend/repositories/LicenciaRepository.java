@@ -7,11 +7,8 @@ import tp.agil.backend.entities.Titular;
 
 import java.util.List;
 
-/**
- * @author Marcos Debona
- */
-
 public interface LicenciaRepository extends JpaRepository<Licencia, Long> {
     List<Licencia> findByTitular(Titular titular);
-    List<Licencia> findByEstadoLicencia(EstadoLicencia estadoLicencia); // VENCIDA = EXPIRADA
+    List<Licencia> findByClases_Estado(EstadoLicencia clasesEstado);
+    boolean existsByTitularAndClases_Estado(Titular titular, EstadoLicencia estado);
 }

@@ -2,23 +2,20 @@ package tp.agil.backend.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
-import tp.agil.backend.entities.TipoDocumento;
-import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
-/**
- * @author Marcos Debona
- */
+import java.time.LocalDate;
 
 @Getter
 @Setter
 public class TitularDTO {
-    private TipoDocumento tipoDocumento;
     private Long numeroDocumento;
     private String nombre;
     private String apellido;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaNacimiento;
     private String direccion;
-    private String grupoSanguineo;  // A, B, AB, O
-    private boolean factorRh;       // true = positivo, false = negativo
+    private String grupoSanguineo;
+    private boolean factorRh;
     private boolean donanteOrganos;
 }

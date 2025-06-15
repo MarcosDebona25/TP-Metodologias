@@ -18,19 +18,8 @@ public class TitularServiceImpl implements TitularService {
     }
 
     @Override
-    public boolean validarDatosTitular(Titular titular) {
-        if (titular.getNumeroDocumento() == null || titular.getTipoDocumento() == null) {
-            return false;
-        }
-        if (titular.getNombre() == null || titular.getApellido() == null || titular.getFechaNacimiento() == null) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public TitularDTO getTitularId(Long numeroDocumento) {
-        TitularDTO titularObtenido = titularMapper.entityToDto(titularRepository.findByNumeroDocumento(numeroDocumento));
-        return titularObtenido;
+    public TitularDTO getTitularById(Long numeroDocumento) {
+        Titular titular = titularRepository.findByNumeroDocumento(numeroDocumento);
+        return titularMapper.entityToDto(titular);
     }
 }

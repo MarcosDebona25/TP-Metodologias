@@ -4,18 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
 
-/**
- * @author Marcos Debona
- */
-
-@Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
 @EqualsAndHashCode
+@RequiredArgsConstructor
 @ToString
+@Entity
 public class Usuario {
-
     @Id
     private Long numeroDocumento;
 
@@ -24,5 +19,5 @@ public class Usuario {
     private String email;
 
     @OneToMany(mappedBy = "usuario")
-    private List<Licencia> listaLicencias;
+    private List<Licencia> licenciasTramitadas;
 }
