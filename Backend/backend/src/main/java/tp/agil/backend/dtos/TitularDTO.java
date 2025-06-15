@@ -1,5 +1,7 @@
 package tp.agil.backend.dtos;
 
+import lombok.Getter;
+import lombok.Setter;
 import tp.agil.backend.entities.TipoDocumento;
 import java.time.LocalDate;
 
@@ -7,6 +9,8 @@ import java.time.LocalDate;
  * @author Marcos Debona
  */
 
+@Getter
+@Setter
 public class TitularDTO {
     private TipoDocumento tipoDocumento;
     private Long numeroDocumento;

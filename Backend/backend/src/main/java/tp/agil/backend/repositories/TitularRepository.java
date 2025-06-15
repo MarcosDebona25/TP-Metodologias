@@ -8,4 +8,5 @@ import tp.agil.backend.entities.Titular;
  */
 
 public interface TitularRepository extends JpaRepository<Titular, Long> {
+    Titular findByNumeroDocumento(Long titularId);
 }

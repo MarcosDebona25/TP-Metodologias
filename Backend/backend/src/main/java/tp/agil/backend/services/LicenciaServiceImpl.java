@@ -2,12 +2,12 @@ package tp.agil.backend.services;
 
 import org.springframework.stereotype.Service;
 import tp.agil.backend.dtos.LicenciaDTO;
-import tp.agil.backend.dtos.TitularDTO;
 import tp.agil.backend.entities.*;
 import tp.agil.backend.mappers.LicenciaMapper;
 import tp.agil.backend.mappers.TitularMapper;
 import tp.agil.backend.repositories.LicenciaRepository;
 import tp.agil.backend.repositories.TitularRepository;
+import tp.agil.backend.repositories.UsuarioRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,39 +17,31 @@ public class LicenciaServiceImpl implements LicenciaService {
 
     private final LicenciaRepository licenciaRepository;
     private final TitularRepository titularRepository;
+    private final UsuarioRepository usuarioRepository;
     private final TitularMapper titularMapper;
     private final LicenciaMapper licenciaMapper;
 
-    public LicenciaServiceImpl(LicenciaRepository licenciaRepository, TitularRepository titularRepository, TitularMapper titularMapper, LicenciaMapper licenciaMapper) {
+    public LicenciaServiceImpl(LicenciaRepository licenciaRepository, TitularRepository titularRepository, UsuarioRepository usuarioRepository, TitularMapper titularMapper, LicenciaMapper licenciaMapper) {
         this.licenciaRepository = licenciaRepository;
         this.titularRepository = titularRepository;
+        this.usuarioRepository = usuarioRepository;
         this.titularMapper = titularMapper;
         this.licenciaMapper = licenciaMapper;
     }
 
     @Override
-    public LicenciaDTO crearLicencia(TitularDTO titular, String tipoClase1) {
-        TipoClase tipoClase = TipoClase.valueOf(tipoClase1);
+    public LicenciaDTO crearLicencia(LicenciaDTO licenciaDTO) {
+        TipoClase tipoClase = TipoClase.valueOf(licenciaDTO.getTipoClase());
+        Titular titularLicencia = titularRepository.findByNumeroDocumento(licenciaDTO.getTitularId());
+        Usuario usuarioAdm = usuarioRepository.findByNumeroDocumento(licenciaDTO.getUsuarioId());
+        List<Licencia> listaLicencias = licenciaRepository.findByTitular(titularLicencia);
 
-        if (!validarDatosTitular(titularMapper.dtoToEntity(titular))) {
-            throw new IllegalArgumentException("Datos del titular inválidos.");
-        }
-        if (!verificarRequisitosPorClase(titularMapper.dtoToEntity(titular), tipoClase)) {
+        // VERIFICAR LAS COMPATIBILIDADES Y LIMITES ETARIOS DEL TITULAR CON LA CLASE QUE ESTÁ SOLICITANTO Y SUS LICENCIAS YA REGISTRADAS
+
+        if (!verificarRequisitosPorClase(titularLicencia, tipoClase)) {
             throw new IllegalArgumentException("El titular no cumple los requisitos para la clase de licencia.");
         }
 
-        Licencia nuevaLicencia = new Licencia();
-        nuevaLicencia.setNumero(generarNumeroLicencia());
-        nuevaLicencia.setTipoClase(tipoClase);
-        nuevaLicencia.setFechaEmision(LocalDate.now());
-        nuevaLicencia.setFechaVencimiento(LocalDate.now().plusYears(5));
-        nuevaLicencia.setEstadoLicencia(EstadoLicencia.VIGENTE);
-        nuevaLicencia.setTitular(titularMapper.dtoToEntity(titular));
-
-        titularRepository.save(titularMapper.dtoToEntity(titular));
-        licenciaRepository.save(nuevaLicencia);
-
-        return licenciaMapper.entityToDto(nuevaLicencia);
     }
 
     @Override
