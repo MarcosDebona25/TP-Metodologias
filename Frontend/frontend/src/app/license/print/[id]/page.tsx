@@ -1,3 +1,5 @@
+'use client'
+
 import Image from "next/image"
 
 interface Props {
@@ -7,11 +9,11 @@ interface Props {
 export default async function PrintLicensePage({ params }: Props) {
     const id = params.id
 
-    // 🔧 Simulación: en producción hacé fetch a tu backend
+    // 🔧 Simulación de fetch; reemplazar por API real
     const license = await getMockLicenseById(id)
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-[#4EE0CC] print:bg-white">
+        <div className="flex flex-col justify-center items-center min-h-screen bg-[#4EE0CC] print:bg-white">
             <div className="bg-white rounded-xl shadow-lg w-[750px] h-[400px] p-4 relative text-[14px] text-black font-sans print:shadow-none">
                 {/* Encabezado */}
                 <div className="flex justify-between">
@@ -39,19 +41,19 @@ export default async function PrintLicensePage({ params }: Props) {
 
                     {/* Datos */}
                     <div className="w-3/4 pl-4 grid grid-cols-2 gap-1">
-                        <p><b> N° Licencia:</b> {license.licencia}</p>
-                        <p><b> Clase:</b> {license.clase}</p>
+                        <p><b>N° Licencia:</b> {license.licencia}</p>
+                        <p><b>Clase:</b> {license.clase}</p>
 
-                        <p><b> Apellido:</b> {license.apellido}</p>
-                        <p><b> Nombre:</b> {license.nombre}</p>
+                        <p><b>Apellido:</b> {license.apellido}</p>
+                        <p><b>Nombre:</b> {license.nombre}</p>
 
-                        <p><b> Domicilio:</b> {license.direccion}</p>
-                        <p><b> Fecha de Nac.:</b> {formatear(license.fechaNacimiento)}</p>
+                        <p><b>Domicilio:</b> {license.direccion}</p>
+                        <p><b>Fecha de Nac.:</b> {formatear(license.fechaNacimiento)}</p>
 
-                        <p><b> Otorgamiento:</b> {formatear(license.fechaEmision)}</p>
-                        <p><b> Vencimiento:</b> {formatear(license.fechaVencimiento)}</p>
+                        <p><b>Otorgamiento:</b> {formatear(license.fechaEmision)}</p>
+                        <p><b>Vencimiento:</b> {formatear(license.fechaVencimiento)}</p>
 
-                        <p><b> Firma:</b> ________________________</p>
+                        <p><b>Firma:</b> ________________________</p>
                     </div>
                 </div>
 
@@ -64,16 +66,29 @@ export default async function PrintLicensePage({ params }: Props) {
                     República Argentina
                 </div>
             </div>
+
+            {/* Botón de impresión - fuera del área imprimible */}
+            <div className="mt-6 print:hidden">
+                <button
+                    onClick={() => window.print()}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+                >
+                    Imprimir licencia
+                </button>
+            </div>
         </div>
     )
 }
 
 function formatear(fecha: string) {
-    return new Date(fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })
+    return new Date(fecha).toLocaleDateString("es-AR", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    })
 }
 
 async function getMockLicenseById(id: string) {
-    // Acá simulás datos; luego reemplazás por fetch real
     return {
         nombre: "LIONEL ANDRES",
         apellido: "MESSI",
