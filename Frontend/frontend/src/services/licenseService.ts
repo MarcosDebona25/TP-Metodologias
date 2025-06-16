@@ -1,16 +1,14 @@
-type LicenseSubmission = {
-  personId: string;
-  licenseTypes: string[];
-};
+import { LicenseFormSchema } from "@/schemas/licenseSchema";
 
-export async function submitLicense(data: LicenseSubmission): Promise<void> {
-  const response = await fetch("/api/licenses", {
+export async function submitLicense(data: LicenseFormSchema): Promise<void> {
+  const response = await fetch("http://localhost:8000/api/licencias", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
 
   if (!response.ok) {
-    throw new Error("Failed to submit license");
+  const errorText = await response.text();
+    throw new Error(errorText || "Error al crear licencia");
   }
 }

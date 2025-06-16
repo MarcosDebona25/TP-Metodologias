@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { z } from "zod";
 import { Person } from "../types/Person";
 import { getPersonByIdNumber } from "../services/peopleService";
 
@@ -9,14 +10,23 @@ type Props = {
   onPersonFound: (person: Person) => void;
 };
 
+const idSchema = z.string().length(8, "DNI debe tener 8 dígitos de longitud")
+    .regex(/^\d+$/, "DNI debe contener solo dígitos numéricos");
+
 export default function PersonSearchField({ onPersonFound }: Props) {
   const [idNumber, setIdNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const fetchPerson = async () => {
-    if (!idNumber.trim()) return;
+    const result = idSchema.safeParse(idNumber);
+    if (!result.success) {
+      setValidationError(result.error.errors[0].message);
+      return;
+    }
 
+    setValidationError(null);
     setLoading(true);
     setError(null);
 
@@ -39,7 +49,9 @@ export default function PersonSearchField({ onPersonFound }: Props) {
           value={idNumber}
           onChange={(e) => setIdNumber(e.target.value)}
           placeholder="Ingrese DNI"
-          className="w-full text-black rounded border-grey-800 border-1 focus:ring-blue-500"
+          className='w-full text-black rounded border-grey-800 border-1 ${
+            validationError || error ? "border-red-500" : "border-gray-300"
+          } focus:ring-blue-500'
         />
         <button
           onClick={fetchPerson}
@@ -67,7 +79,12 @@ export default function PersonSearchField({ onPersonFound }: Props) {
           )}
         </button>
       </div>
-      {error && <div className="text-red-500 text-sm">{error}</div>}
+      {validationError && (
+        <div className="text-red-500 text-sm">{validationError}</div>
+      )}
+      {error && !validationError && (
+        <div className="text-red-500 text-sm">{error}</div>
+      )}
     </div>
   );
 }
