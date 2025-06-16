@@ -1,0 +1,88 @@
+import Image from "next/image"
+
+interface Props {
+    params: { id: string }
+}
+
+export default async function PrintLicensePage({ params }: Props) {
+    const id = params.id
+
+    // 🔧 Simulación: en producción hacé fetch a tu backend
+    const license = await getMockLicenseById(id)
+
+    return (
+        <div className="flex justify-center items-center min-h-screen bg-[#4EE0CC] print:bg-white">
+            <div className="bg-white rounded-xl shadow-lg w-[750px] h-[400px] p-4 relative text-[14px] text-black font-sans print:shadow-none">
+                {/* Encabezado */}
+                <div className="flex justify-between">
+                    <div>
+                        <p className="text-sm font-semibold">Licencia Nacional de Conducir</p>
+                        <p className="text-xs">Rosario - Santa Fe</p>
+                    </div>
+                    <div>
+                        <Image src="/logo-arg.png" width={40} height={40} alt="Escudo" />
+                    </div>
+                </div>
+
+                {/* Contenido */}
+                <div className="flex mt-2">
+                    {/* Foto */}
+                    <div className="w-1/4">
+                        <Image
+                            src={license.fotoUrl}
+                            width={140}
+                            height={180}
+                            alt="Foto"
+                            className="rounded border"
+                        />
+                    </div>
+
+                    {/* Datos */}
+                    <div className="w-3/4 pl-4 grid grid-cols-2 gap-1">
+                        <p><b> N° Licencia:</b> {license.licencia}</p>
+                        <p><b> Clase:</b> {license.clase}</p>
+
+                        <p><b> Apellido:</b> {license.apellido}</p>
+                        <p><b> Nombre:</b> {license.nombre}</p>
+
+                        <p><b> Domicilio:</b> {license.direccion}</p>
+                        <p><b> Fecha de Nac.:</b> {formatear(license.fechaNacimiento)}</p>
+
+                        <p><b> Otorgamiento:</b> {formatear(license.fechaEmision)}</p>
+                        <p><b> Vencimiento:</b> {formatear(license.fechaVencimiento)}</p>
+
+                        <p><b> Firma:</b> ________________________</p>
+                    </div>
+                </div>
+
+                {/* Pie de página */}
+                <div className="absolute bottom-4 left-4 text-[12px] font-semibold">
+                    SEGURIDAD VIAL
+                </div>
+                <div className="absolute bottom-4 right-4 text-[12px] text-right">
+                    Ministerio de Transporte<br />
+                    República Argentina
+                </div>
+            </div>
+        </div>
+    )
+}
+
+function formatear(fecha: string) {
+    return new Date(fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })
+}
+
+async function getMockLicenseById(id: string) {
+    // Acá simulás datos; luego reemplazás por fetch real
+    return {
+        nombre: "LIONEL ANDRES",
+        apellido: "MESSI",
+        licencia: id,
+        direccion: "Mitre 559",
+        fechaNacimiento: "1987-06-24",
+        fechaEmision: "2025-06-16",
+        fechaVencimiento: "2028-06-24",
+        clase: "A3 B1",
+        fotoUrl: "/foto-ejemplo.png",
+    }
+}
