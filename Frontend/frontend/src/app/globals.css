@@ -38,4 +38,9 @@ body {
     box-shadow: none !important;
   }
 }
+@media print {
+  .print\:hidden {
+    display: none !important;
+  }
+}
 
