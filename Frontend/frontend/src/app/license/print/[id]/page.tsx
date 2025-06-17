@@ -55,6 +55,9 @@ export default async function PrintLicensePage({ params }: Props) {
                         <p><b>Vencimiento:</b> {formatear(license.fechaVencimiento)}</p>
 
                         <p><b>Firma:</b> ________________________</p>
+                        <p><b>Grupo y Factor:</b> {license.grupoFactor}</p>
+
+                        <p className="col-span-2"><b>Observaciones:</b> {license.observaciones}</p>
                     </div>
                 </div>
 
@@ -124,5 +127,7 @@ async function getMockLicenseById(id: string) {
         fechaVencimiento: "2028-06-24",
         clase: "A3 B1",
         fotoUrl: "/foto-documento.jpg",
+        grupoFactor: "A+",
+        observaciones: "Utiliza lentes, texto muy muy largoooooooooooo",
     }
 }
