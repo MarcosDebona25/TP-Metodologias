@@ -23,7 +23,7 @@ export default function NewPersonForm() {
       lastName: "",
       dateOfBirth: "",
       address: "",
-      bloodType: "",
+      bloodType: undefined,
       donor: false,
     },
   });
@@ -119,12 +119,20 @@ export default function NewPersonForm() {
             <label className="block font-medium text-gray-700">
               Grupo Sanguíneo y Factor RH
             </label>
-            <input
-              type="text"
+            <select
               {...register("bloodType")}
               className="w-full rounded border border-gray-300 text-gray-800 bg-white"
-              placeholder="Ej: A+, O-"
-            />
+            >
+              <option value="">Selecciona un grupo sanguíneo</option>
+              <option value="A+">A+</option>
+              <option value="A-">A−</option>
+              <option value="B+">B+</option>
+              <option value="B-">B−</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB−</option>
+              <option value="O+">O+</option>
+              <option value="O-">O−</option>
+            </select>
             {errors.bloodType && (
               <p className="text-red-500 text-sm">{errors.bloodType.message}</p>
             )}

@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { Person } from "../types/Person";
 import { PersonFormSchema } from "@/schemas/personSchema";
 
