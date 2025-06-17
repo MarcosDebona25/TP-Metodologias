@@ -3,15 +3,16 @@
 import { useState } from "react";
 import { z } from "zod";
 import { Person } from "../types/Person";
-import { getPersonByIdNumber } from "../services/peopleService";
-
+import { getPersonByIdNumber } from "../services/personService";
 
 type Props = {
   onPersonFound: (person: Person) => void;
 };
 
-const idSchema = z.string().length(8, "DNI debe tener 8 dígitos de longitud")
-    .regex(/^\d+$/, "DNI debe contener solo dígitos numéricos");
+const idSchema = z
+  .string()
+  .length(8, "DNI debe tener 8 dígitos de longitud")
+  .regex(/^\d+$/, "DNI debe contener solo dígitos numéricos");
 
 export default function PersonSearchField({ onPersonFound }: Props) {
   const [idNumber, setIdNumber] = useState("");
