@@ -1,8 +1,9 @@
 import { LicenseFormSchema } from "@/schemas/licenseSchema";
 
 export async function submitLicense(data: LicenseFormSchema): Promise<void> {
-  const response = await fetch("http://localhost:8000/api/licencias", {
+  const response = await fetch("http://localhost:8080/api/licencias", {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
