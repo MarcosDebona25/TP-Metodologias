@@ -43,7 +43,7 @@ export default async function PrintLicensePage({ params }: Props) {
                     {/* Datos */}
                     <div className="w-3/4 pl-4 grid grid-cols-2 gap-1">
                         <p><b>N° Licencia:</b> {license.licencia}</p>
-                        <p><b>Clase:</b> {license.clase}</p>
+                        <p><b>Clases:</b> {license.clase}</p>
 
                         <p><b>Apellido:</b> {license.apellido}</p>
                         <p><b>Nombre:</b> {license.nombre}</p>
@@ -123,6 +123,6 @@ async function getMockLicenseById(id: string) {
         fechaEmision: "2025-06-16",
         fechaVencimiento: "2028-06-24",
         clase: "A3 B1",
-        fotoUrl: "/foto-ejemplo.png",
+        fotoUrl: "/foto-documento.jpg",
     }
 }
