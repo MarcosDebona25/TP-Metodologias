@@ -5,7 +5,6 @@ import tp.agil.backend.dtos.LicenciaDTO;
 import tp.agil.backend.dtos.LicenciaFormDTO;
 import tp.agil.backend.entities.*;
 import tp.agil.backend.mappers.LicenciaMapper;
-import tp.agil.backend.repositories.LicenciaRepository;
 import tp.agil.backend.repositories.TitularRepository;
 import tp.agil.backend.repositories.UsuarioRepository;
 

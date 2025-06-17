@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -12,16 +13,26 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @ToString
 @Entity
-public class Clase {
+public class LicenciaVencida {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long numero;
 
-    @Enumerated(EnumType.STRING)
-    private TipoClase tipo;
+    private String observaciones;
+
+    private List<TipoClase> listaClases;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaEmision;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaVencimiento;
+
+    @ManyToOne
+    @JoinColumn(name = "titular_numeroDocumento")
+    private Titular titular;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_numeroDocumento")
+    private Usuario usuario;
 }

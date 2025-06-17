@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,15 +19,20 @@ public class Titular {
 
     private String nombre;
     private String apellido;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaNacimiento;
-    private String direccion;
-    private String grupoSanguineo; // A, B, AB, O
-    private boolean factorRh;      // true = positivo, false = negativo
+
+    private String domicilio;
+    private String grupoFactor;
     private boolean donanteOrganos;
 
     @OneToOne(mappedBy = "titular", cascade = CascadeType.ALL)
-    private Licencia licencia;
+    private LicenciaActiva licenciaActiva;
+
+    @OneToMany(mappedBy = "titular", cascade = CascadeType.ALL)
+    private List<LicenciaVencida> licenciasVencidas;
+
 
     public int calcularEdad() {
         LocalDate hoy = LocalDate.now();
