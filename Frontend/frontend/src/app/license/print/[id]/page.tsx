@@ -14,7 +14,8 @@ export default async function PrintLicensePage({ params }: Props) {
 
     return (
         <div className="flex flex-col justify-center items-center min-h-screen bg-[#4EE0CC] print:bg-white">
-            <div className="bg-white rounded-xl shadow-lg w-[750px] h-[400px] p-4 relative text-[14px] text-black font-sans print:shadow-none">
+            <div
+                className="bg-white rounded-xl shadow-lg w-[750px] h-[400px] p-4 relative text-[14px] text-black font-sans print:shadow-none">
                 {/* Encabezado */}
                 <div className="flex justify-between">
                     <div>
@@ -22,7 +23,7 @@ export default async function PrintLicensePage({ params }: Props) {
                         <p className="text-xs">Rosario - Santa Fe</p>
                     </div>
                     <div>
-                        <Image src="/logo-arg.png" width={40} height={40} alt="Escudo" />
+                        <Image src="/logo-arg.png" width={40} height={40} alt="Escudo"/>
                     </div>
                 </div>
 
@@ -62,7 +63,7 @@ export default async function PrintLicensePage({ params }: Props) {
                     SEGURIDAD VIAL
                 </div>
                 <div className="absolute bottom-4 right-4 text-[12px] text-right">
-                    Ministerio de Transporte<br />
+                    Ministerio de Transporte<br/>
                     República Argentina
                 </div>
             </div>
@@ -76,6 +77,30 @@ export default async function PrintLicensePage({ params }: Props) {
                     Imprimir licencia
                 </button>
             </div>
+            <style jsx global>{`
+                @media print {
+                    body {
+                        margin: 0;
+                    }
+
+                    @page {
+                        size: auto;
+                        margin: 0;
+                    }
+
+                    /* 👇 Fuerza a imprimir bordes, sombras y estilos visuales */
+                    * {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        box-shadow: none !important;
+                    }
+
+                    .rounded-xl {
+                        border-radius: 12px !important;
+                        border: 1px solid #000 !important;
+                    }
+                }
+            `}</style>
         </div>
     )
 }
