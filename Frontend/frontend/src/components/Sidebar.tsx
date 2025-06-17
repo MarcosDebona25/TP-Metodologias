@@ -11,6 +11,9 @@ export default function Sidebar() {
         <Link href="/license/list" className="block hover:bg-gray-700 p-2 rounded">
             Listar Licencias
         </Link>
+        <Link href="/person/new" className="block hover:bg-gray-700 p-2 rounded">
+            Registrar Titular
+        </Link>
       </nav>
     </aside>
   );
