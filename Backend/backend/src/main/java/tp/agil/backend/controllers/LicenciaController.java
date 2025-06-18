@@ -35,13 +35,13 @@ public class LicenciaController {
     }
 
     @GetMapping("/{numeroDocumento}")
-    public ResponseEntity<LicenciaActivaDTO> buscarLicenciaActivaPorDni(@PathVariable Long numeroDocumento) {
+    public ResponseEntity<LicenciaActivaDTO> buscarLicenciaActivaPorDni(@PathVariable String numeroDocumento) {
         LicenciaActivaDTO dto = licenciaService.buscarLicenciaActivaPorDni(numeroDocumento);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     @GetMapping("/comprobante/{numeroDocumento}")
-    public ResponseEntity<ComprobanteDTO> devolverComprobanteLicenciaPorDni(@PathVariable Long numeroDocumento) {
+    public ResponseEntity<ComprobanteDTO> devolverComprobanteLicenciaPorDni(@PathVariable String numeroDocumento) {
         ComprobanteDTO dto = licenciaService.devolverComprobanteLicenciaPorDni(numeroDocumento);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }

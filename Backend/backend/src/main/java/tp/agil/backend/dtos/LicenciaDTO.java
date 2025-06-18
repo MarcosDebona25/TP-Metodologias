@@ -10,9 +10,9 @@ import java.time.LocalDate;
 public class LicenciaDTO {
 
     //Documento del titular
-    private Long titularId;
+    private String documentoTitular;
     //Documento del usuario administrativo
-    private Long usuarioId;
+    private String documentoUsuario;
 
     private String observaciones;
 

@@ -39,11 +39,8 @@ public class LicenciaServiceImpl implements LicenciaService {
 
     @Override
     public LicenciaDTO emitirLicencia(LicenciaFormDTO licenciaFormDTO) {
-        Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getTitularID());
-        Usuario usuario = usuarioRepository.findByNumeroDocumento(licenciaFormDTO.getUsuarioId());
-
-        // Convierte la lista de clases a un string separado por espacios
-        String clases = String.join(" ", licenciaFormDTO.getListaLicencias());
+        Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getDocumentoTitular());
+        Usuario usuario = usuarioRepository.findByNumeroDocumento("11999888"); // getDocumentoUsuario() SERÁ CUANDO TENGAMOS LOGIN
 
         LocalDate fechaEmision = LocalDate.now();
         LocalDate fechaVencimiento = calcularFechaVencimiento(titular);
@@ -52,13 +49,16 @@ public class LicenciaServiceImpl implements LicenciaService {
         licenciaActiva.setTitular(titular);
         licenciaActiva.setUsuario(usuario);
         licenciaActiva.setObservaciones(licenciaFormDTO.getObservaciones());
-        licenciaActiva.setClases(clases);
+        licenciaActiva.setClases(licenciaFormDTO.getClases());
         licenciaActiva.setFechaEmision(fechaEmision);
         licenciaActiva.setFechaVencimiento(fechaVencimiento);
 
         licenciaActivaRepository.save(licenciaActiva);
 
-        return licenciaActivaMapper.entityToDto(licenciaActiva);
+        LicenciaDTO dto = licenciaActivaMapper.entityToDto(licenciaActiva);
+        dto.setDocumentoTitular(titular.getNumeroDocumento());
+        dto.setDocumentoUsuario(usuario.getNumeroDocumento());
+        return dto;
     }
 
     private LocalDate calcularFechaVencimiento(Titular titular) {
@@ -94,14 +94,14 @@ public class LicenciaServiceImpl implements LicenciaService {
     }
 
     @Override
-    public LicenciaActivaDTO buscarLicenciaActivaPorDni(Long numeroDocumento) {
+    public LicenciaActivaDTO buscarLicenciaActivaPorDni(String numeroDocumento) {
         LicenciaActiva licencia = licenciaActivaRepository.findByTitular_NumeroDocumento(numeroDocumento);
         if (licencia == null) {
             throw new LicenciaNoEncontradaException("No se encontró una licencia activa para el DNI: " + numeroDocumento);
         }
         Titular titular = licencia.getTitular();
         LicenciaActivaDTO dto = new LicenciaActivaDTO();
-        dto.setDniTitular(titular.getNumeroDocumento());
+        dto.setDocumentoTitular(titular.getNumeroDocumento());
         dto.setNombreTitular(titular.getNombre());
         dto.setApellidoTitular(titular.getApellido());
         dto.setClases(licencia.getClases());
@@ -115,7 +115,7 @@ public class LicenciaServiceImpl implements LicenciaService {
     }
 
     @Override
-    public ComprobanteDTO devolverComprobanteLicenciaPorDni(Long numeroDocumento) {
+    public ComprobanteDTO devolverComprobanteLicenciaPorDni(String numeroDocumento) {
         LicenciaActiva licencia = licenciaActivaRepository.findByTitular_NumeroDocumento(numeroDocumento);
         if (licencia == null) {
             throw new LicenciaNoEncontradaException("No se encontró una licencia activa para el DNI: " + numeroDocumento);

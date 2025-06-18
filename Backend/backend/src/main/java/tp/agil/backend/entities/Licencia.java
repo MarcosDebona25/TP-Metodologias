@@ -28,4 +28,8 @@ public abstract class Licencia {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaVencimiento;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_numeroDocumento")
+    private Usuario usuario;
 }

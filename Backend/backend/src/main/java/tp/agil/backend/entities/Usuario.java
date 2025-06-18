@@ -10,7 +10,11 @@ import java.util.List;
 @Entity
 public class Usuario {
     @Id
-    private Long numeroDocumento;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true)
+    private String numeroDocumento;
 
     private String nombre;
     private String apellido;

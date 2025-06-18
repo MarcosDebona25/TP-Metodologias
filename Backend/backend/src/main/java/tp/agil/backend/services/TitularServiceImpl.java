@@ -19,7 +19,7 @@ public class TitularServiceImpl implements TitularService {
     }
 
     @Override
-    public TitularDTO getTitularById(Long numeroDocumento) {
+    public TitularDTO getTitularById(String numeroDocumento) {
         Titular titular = titularRepository.findByNumeroDocumento(numeroDocumento);
         return titularMapper.entityToDto(titular);
     }

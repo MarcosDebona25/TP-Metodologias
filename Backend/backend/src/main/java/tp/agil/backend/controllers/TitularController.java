@@ -18,14 +18,13 @@ public class TitularController {
     }
 
     @GetMapping("/id/{numeroDocumento}")
-    public TitularDTO getTitularById(@PathVariable Long numeroDocumento) {
+    public TitularDTO getTitularById(@PathVariable String numeroDocumento) {
         return titularService.getTitularById(numeroDocumento);
     }
 
     @PostMapping()
-    public ResponseEntity<TitularDTO> altaTitular(@RequestBody TitularDTO titularDTO){
+    public ResponseEntity<TitularDTO> altaTitular(@RequestBody TitularDTO titularDTO) {
         TitularDTO titularCreado = titularService.crearTitular(titularDTO);
         return new ResponseEntity<>(titularCreado, HttpStatus.OK);
     }
-
 }

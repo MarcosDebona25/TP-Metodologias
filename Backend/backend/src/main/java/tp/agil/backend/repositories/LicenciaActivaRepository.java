@@ -6,6 +6,6 @@ import tp.agil.backend.entities.Titular;
 
 public interface LicenciaActivaRepository extends JpaRepository<LicenciaActiva, Long> {
     LicenciaActiva findByTitular(Titular titular);
-    LicenciaActiva findByTitular_NumeroDocumento(Long numeroDocumento);
+    LicenciaActiva findByTitular_NumeroDocumento(String titular_numeroDocumento);
     //CRUD ya implementado por JPA
 }

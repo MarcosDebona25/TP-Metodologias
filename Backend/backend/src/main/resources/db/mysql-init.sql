@@ -4,3 +4,7 @@ CREATE DATABASE IF NOT EXISTS licenciasdb CHARACTER SET utf8mb4 COLLATE utf8mb4_
 CREATE USER IF NOT EXISTS `licenciasadmin`@`%` IDENTIFIED WITH mysql_native_password BY 'password';
 GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, REFERENCES, INDEX, ALTER, EXECUTE, CREATE VIEW, SHOW VIEW,
 CREATE ROUTINE, ALTER ROUTINE, EVENT, TRIGGER ON `licenciasdb`.* TO `licenciasadmin`@`%`;
+
+-- CREACION DE USUARIO ADMINISTRATIVO
+INSERT INTO usuario (numero_documento, nombre, apellido, email
+) VALUES ('11999888', 'Administrador','Sistema','admin@santafe.gob.ar');

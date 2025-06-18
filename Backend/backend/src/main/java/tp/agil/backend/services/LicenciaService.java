@@ -7,6 +7,6 @@ import tp.agil.backend.dtos.LicenciaDTO;
 
 public interface LicenciaService {
     LicenciaDTO emitirLicencia(LicenciaFormDTO licenciaFormDTO);
-    LicenciaActivaDTO buscarLicenciaActivaPorDni(Long numeroDocumento);
-    ComprobanteDTO devolverComprobanteLicenciaPorDni(Long numeroDocumento);
+    LicenciaActivaDTO buscarLicenciaActivaPorDni(String numeroDocumento);
+    ComprobanteDTO devolverComprobanteLicenciaPorDni(String numeroDocumento);
 }

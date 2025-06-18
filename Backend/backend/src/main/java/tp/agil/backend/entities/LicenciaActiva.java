@@ -14,7 +14,4 @@ public class LicenciaActiva extends Licencia {
     @JoinColumn(name = "titular_numeroDocumento")
     private Titular titular;
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_numeroDocumento")
-    private Usuario usuario;
 }

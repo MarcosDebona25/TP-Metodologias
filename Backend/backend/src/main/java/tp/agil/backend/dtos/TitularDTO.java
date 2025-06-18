@@ -9,12 +9,14 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class TitularDTO {
-    private Long numeroDocumento;
+    private String numeroDocumento;
     private String nombre;
     private String apellido;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaNacimiento;
-    private String direccion;
+
+    private String domicilio;
     private String grupoFactor;
     private boolean donanteOrganos;
 }
