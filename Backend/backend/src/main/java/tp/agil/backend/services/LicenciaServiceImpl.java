@@ -9,23 +9,24 @@ import tp.agil.backend.repositories.TitularRepository;
 import tp.agil.backend.repositories.UsuarioRepository;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class LicenciaServiceImpl implements LicenciaService {
 
-    private final LicenciaRepository licenciaRepository;
-    private final TitularRepository titularRepository;
-    private final LicenciaMapper licenciaMapper;
-    private final UsuarioRepository usuarioRepository;
-
-    public LicenciaServiceImpl(LicenciaRepository licenciaRepository, TitularRepository titularRepository, LicenciaMapper licenciaMapper, UsuarioRepository usuarioRepository) {
-        this.licenciaRepository = licenciaRepository;
-        this.titularRepository = titularRepository;
-        this.licenciaMapper = licenciaMapper;
-        this.usuarioRepository = usuarioRepository;
-    }
+//    private final LicenciaRepository licenciaRepository;
+//    private final TitularRepository titularRepository;
+//    private final LicenciaMapper licenciaMapper;
+//    private final UsuarioRepository usuarioRepository;
+//
+//    public LicenciaServiceImpl(LicenciaRepository licenciaRepository, TitularRepository titularRepository, LicenciaMapper licenciaMapper, UsuarioRepository usuarioRepository) {
+//        this.licenciaRepository = licenciaRepository;
+//        this.titularRepository = titularRepository;
+//        this.licenciaMapper = licenciaMapper;
+//        this.usuarioRepository = usuarioRepository;
+//    }
 
     @Override
     public LicenciaDTO emitirLicencia(LicenciaFormDTO licenciaFormDTO) {
@@ -40,7 +41,7 @@ public class LicenciaServiceImpl implements LicenciaService {
             Clase clase = new Clase();
             clase.setTipo(tipoClase);
             clase.setFechaEmision(LocalDate.now());
-            clase.setFechaVencimiento(calcularFechaVencimiento(titular));
+            clase.setFechaVencimiento(calcularFechaVencimiento(titular, licenciasPrevias));
             clase.setEstado(EstadoLicencia.VIGENTE);
             return clase;
         }).collect(Collectors.toList());
@@ -80,10 +81,41 @@ public class LicenciaServiceImpl implements LicenciaService {
                 throw new IllegalArgumentException("Debe tener al menos 17 años para clase " + tipoClase);
         }
     }
-    
-    // SE TIENE QUE IMPLEMENTAR (HISTORIA DEDICADA)
-    public LocalDate calcularFechaVencimiento(Titular titular){
-        return LocalDate.parse("0000-00-00");
-    }
 
+    public LocalDate calcularFechaVencimiento(Titular titular, List<Licencia> licenciasPrevias) {
+        LocalDate hoy = LocalDate.now();
+        LocalDate nacimiento = titular.getFechaNacimiento();
+        int edad = titular.calcularEdad();
+
+        // Determinar vigencia según edad
+        int vigencia;
+        if (edad < 21) {
+            // Primera vez: 1 año, si ya tuvo: 3 años
+            vigencia = licenciasPrevias == null || licenciasPrevias.isEmpty() ? 1 : 3;
+        } else if (edad <= 46) {
+            vigencia = 5;
+        } else if (edad <= 60) {
+            vigencia = 4;
+        } else if (edad <= 70) {
+            vigencia = 3;
+        } else {
+            vigencia = 1;
+        }
+
+        // Próximo cumpleaños
+        LocalDate proximoCumple = nacimiento.withYear(hoy.getYear());
+        if (!proximoCumple.isAfter(hoy)) {
+            proximoCumple = proximoCumple.plusYears(1);
+        }
+
+        long diasHastaCumple = ChronoUnit.DAYS.between(hoy, proximoCumple);
+
+        // Si faltan más de 31 días, se descuenta 1 año de vigencia
+        if (diasHastaCumple > 31) {
+            vigencia--;
+        }
+
+        // El vencimiento es el próximo cumpleaños + vigenciaFinal años
+        return proximoCumple.plusYears(vigencia);
+    }
 }

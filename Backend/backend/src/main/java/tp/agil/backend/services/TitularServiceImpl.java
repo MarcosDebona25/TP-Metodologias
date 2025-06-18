@@ -3,6 +3,7 @@ package tp.agil.backend.services;
 import org.springframework.stereotype.Service;
 import tp.agil.backend.dtos.TitularDTO;
 import tp.agil.backend.entities.Titular;
+import tp.agil.backend.exceptions.TitularExistenteException;
 import tp.agil.backend.mappers.TitularMapper;
 import tp.agil.backend.repositories.TitularRepository;
 
@@ -21,5 +22,15 @@ public class TitularServiceImpl implements TitularService {
     public TitularDTO getTitularById(Long numeroDocumento) {
         Titular titular = titularRepository.findByNumeroDocumento(numeroDocumento);
         return titularMapper.entityToDto(titular);
+    }
+
+    @Override
+    public TitularDTO crearTitular(TitularDTO titularDTO) {
+        Titular existente = titularRepository.findByNumeroDocumento(titularDTO.getNumeroDocumento());
+        if (existente != null) {
+            throw new TitularExistenteException("Ya existe un titular con el número de documento proporcionado.");
+        }
+        Titular titularGuardado = titularRepository.save(titularMapper.dtoToEntity(titularDTO));
+        return titularMapper.entityToDto(titularGuardado);
     }
 }

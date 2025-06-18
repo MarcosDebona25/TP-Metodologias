@@ -15,7 +15,6 @@ public class TitularDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaNacimiento;
     private String direccion;
-    private String grupoSanguineo;
-    private boolean factorRh;
+    private String grupoFactor;
     private boolean donanteOrganos;
 }

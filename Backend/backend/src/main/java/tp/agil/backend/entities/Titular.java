@@ -9,11 +9,9 @@ import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode
-@RequiredArgsConstructor
-@ToString
 @Entity
 public class Titular {
+
     @Id
     private Long numeroDocumento;
 
@@ -31,8 +29,7 @@ public class Titular {
     private LicenciaActiva licenciaActiva;
 
     @OneToMany(mappedBy = "titular", cascade = CascadeType.ALL)
-    private List<LicenciaVencida> licenciasVencidas;
-
+    private List<LicenciaExpirada> licenciasExpiradas;
 
     public int calcularEdad() {
         LocalDate hoy = LocalDate.now();

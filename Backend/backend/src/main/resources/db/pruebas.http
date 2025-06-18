@@ -1,0 +1,27 @@
+###
+POST http://localhost:8080/api/titulares
+Content-Type: application/json
+
+{
+  "numeroDocumento": 12345678,
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "fechaNacimiento": "1990-05-15",
+  "direccion": "Calle Falsa 123",
+  "grupoFactor": "A+",
+  "donanteOrganos": true
+}
+
+###
+POST http://localhost:8080/api/titulares
+Content-Type: application/json
+
+{
+"numeroDocumento": 12345678,
+"nombre": "Juan",
+"apellido": "Pérez",
+"fechaNacimiento": "1990-05-15",
+"direccion": "Calle Falsa 123",
+"grupoFactor": "A+",
+"donanteOrganos": true
+}

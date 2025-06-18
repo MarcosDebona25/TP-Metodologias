@@ -8,9 +8,9 @@ import lombok.*;
 @Setter
 @EqualsAndHashCode(callSuper = false)
 @ToString
-public class LicenciaActiva extends Licencia {
+public class LicenciaExpirada extends Licencia {
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "titular_numeroDocumento")
     private Titular titular;
 

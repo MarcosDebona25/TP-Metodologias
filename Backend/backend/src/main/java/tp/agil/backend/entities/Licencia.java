@@ -1,38 +1,31 @@
 package tp.agil.backend.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.time.LocalDate;
-import java.util.List;
 
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
 @EqualsAndHashCode
-@RequiredArgsConstructor
 @ToString
-@Entity
-public class LicenciaVencida {
+public abstract class Licencia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long numero;
 
     private String observaciones;
 
-    private List<TipoClase> listaClases;
+    private String clases;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaEmision;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaVencimiento;
-
-    @ManyToOne
-    @JoinColumn(name = "titular_numeroDocumento")
-    private Titular titular;
-
-    @ManyToOne
-    @JoinColumn(name = "usuario_numeroDocumento")
-    private Usuario usuario;
 }

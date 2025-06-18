@@ -36,6 +36,7 @@ public class LicenciaController {
         //fechaEmisionLicencia: LocalDate ("AAAA-mm-DD")
         //fechaVencimientoLicencia: LocalDate ("AAAA-mm-DD")
         //grupoFactor: string
+        //donanteOrganos: Si/No
         //observacionesLicencia: string
     }
 
