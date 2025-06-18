@@ -12,6 +12,9 @@ export async function GET() {
     donor: "Sí",
     allowedLicenseTypes: "A B C",
     currentLicenseTypes: "C",
+    observaciones: "",
+    licenseGrantDate: "2024-04-10",
+    licenseExpirationDate: "2027-04-10",
   };
   return NextResponse.json(dummyPeople);
 }

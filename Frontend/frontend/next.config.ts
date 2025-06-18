@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
 };
-module.exports = {
+/*module.exports = {
   async rewrites() {
     return [
       {
@@ -12,6 +12,6 @@ module.exports = {
       },
     ];
   },
-};
+};*/
 
 export default nextConfig;
