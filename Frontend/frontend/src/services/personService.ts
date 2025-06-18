@@ -17,10 +17,8 @@ export async function getPersonByIdNumber(idNumber: string): Promise<Person> {
   const data = await response.json();
 
   return {
-    ...data,
-    allowedLicenseTypes: data.allowedLicenseTypes
-      ? data.allowedLicenseTypes.split(" ").filter(Boolean)
-      : [],
+    ...data.titular,
+    clases: data.clases ? data.clases.split(" ").filter(Boolean) : [],
   };
 }
 
@@ -41,7 +39,7 @@ export async function getPersonWithLicenseByIdNumber(
   const person = await personResponse.json();
 
   let licenseResponse = await fetch(
-    `http://localhost:8080/api/licencias/dni/${idNumber}`,
+    `http://localhost:8080/api/licencias/${idNumber}`,
     //`http://localhost:3000/api/licenses/${idNumber}`
     {
       method: "GET",
@@ -66,13 +64,13 @@ export async function getPersonWithLicenseByIdNumber(
   const license = await licenseResponse.json();
 
   return {
-    ...person,
-    allowedLicenseTypes: person.allowedLicenseTypes
-      ? person.allowedLicenseTypes.split(" ").filter(Boolean)
+    ...person.titular,
+    allowedLicenseTypes: person.clases
+      ? person.clases.split(" ").filter(Boolean)
       : [],
     ...license,
-    currentLicenseTypes: license.currentLicenseTypes
-      ? license.currentLicenseTypes.split(" ").filter(Boolean)
+    currentLicenseTypes: license.clases
+      ? license.clases.split(" ").filter(Boolean)
       : [],
   };
 }

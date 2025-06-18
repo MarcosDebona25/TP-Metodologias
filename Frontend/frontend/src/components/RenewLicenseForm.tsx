@@ -25,8 +25,8 @@ export default function RenewLicenseForm() {
   } = useForm<LicenseFormSchema>({
     resolver: zodResolver(licenseFormSchema),
     defaultValues: {
-      personId: "",
-      licenseTypes: [],
+      documentoTitular: "",
+      clases: [],
       observaciones: "",
     },
     mode: "onChange",
@@ -35,9 +35,9 @@ export default function RenewLicenseForm() {
 
   const onPersonFound = (p: PersonWithLicense) => {
     setPerson(p);
-    setValue("personId", p.idNumber);
+    setValue("documentoTitular", p.numeroDocumento);
     setValue("observaciones", p.observaciones || "");
-    setValue("licenseTypes", []); // license types to renew will be chosen by user
+    setValue("clases", []); // license types to renew will be chosen by user
   };
 
   const onSubmit = async (data: LicenseFormSchema) => {
@@ -52,7 +52,7 @@ export default function RenewLicenseForm() {
     }
   };
 
-  const selectedTypes = watch("licenseTypes");
+  const selectedTypes = watch("clases");
 
   const hasInvalidRenewTypes =
     person &&
@@ -73,15 +73,22 @@ export default function RenewLicenseForm() {
           getPersonByIdNumber={getPersonWithLicenseByIdNumber}
         />
 
-        <input type="text" {...register("personId")} disabled hidden />
-        {errors.personId && (
-          <p className="text-red-500 text-sm">{errors.personId.message}</p>
+        <input type="text" {...register("documentoTitular")} disabled hidden />
+        {errors.documentoTitular && (
+          <p className="text-red-500 text-sm">
+            {errors.documentoTitular.message}
+          </p>
         )}
 
         {person && (
           <>
             <div className="space-y-2 mt-4">
-              <input type="text" {...register("personId")} hidden disabled />
+              <input
+                type="text"
+                {...register("documentoTitular")}
+                hidden
+                disabled
+              />
 
               <div>
                 <label className="block font-medium text-gray-700">
@@ -90,7 +97,7 @@ export default function RenewLicenseForm() {
                 <input
                   className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
                   disabled
-                  value={person.firstName}
+                  value={person.nombre}
                 />
               </div>
               <div>
@@ -100,7 +107,7 @@ export default function RenewLicenseForm() {
                 <input
                   className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
                   disabled
-                  value={person.lastName}
+                  value={person.apellido}
                 />
               </div>
               <div>
@@ -110,7 +117,7 @@ export default function RenewLicenseForm() {
                 <input
                   className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
                   disabled
-                  value={person.dateOfBirth}
+                  value={person.fechaNacimiento}
                 />
               </div>
               <div>
@@ -120,7 +127,7 @@ export default function RenewLicenseForm() {
                 <input
                   className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
                   disabled
-                  value={person.address}
+                  value={person.domicilio}
                 />
               </div>
               <div>
@@ -130,7 +137,7 @@ export default function RenewLicenseForm() {
                 <input
                   className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
                   disabled
-                  value={person.bloodType}
+                  value={person.grupoFactor}
                 />
               </div>
 
@@ -141,7 +148,7 @@ export default function RenewLicenseForm() {
                 <input
                   className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
                   disabled
-                  value={person.donor}
+                  value={person.donanteOrganos}
                 />
               </div>
 
@@ -153,7 +160,7 @@ export default function RenewLicenseForm() {
                   <input
                     className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
                     disabled
-                    value={person.licenseGrantDate}
+                    value={person.fechaEmisionLicencia}
                   />
                 </div>
 
@@ -164,7 +171,7 @@ export default function RenewLicenseForm() {
                   <input
                     className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
                     disabled
-                    value={person.licenseExpirationDate}
+                    value={person.fechaVencimientoLicencia}
                   />
                 </div>
               </div>
@@ -183,14 +190,14 @@ export default function RenewLicenseForm() {
               <div className="mt-4">
                 <LicenseTypeSelect
                   value={selectedTypes}
-                  onChange={(selected) => setValue("licenseTypes", selected)}
+                  onChange={(selected) => setValue("clases", selected)}
                   allowedTypes={person.allowedLicenseTypes} // Only allow renewals of current types
                   currentTypes={person.currentLicenseTypes}
                   currentTypesWarnings={false}
                 />
-                {errors.licenseTypes && (
+                {errors.clases && (
                   <p className="text-red-500 text-sm">
-                    {errors.licenseTypes.message}
+                    {errors.clases.message}
                   </p>
                 )}
                 {hasInvalidRenewTypes && (
