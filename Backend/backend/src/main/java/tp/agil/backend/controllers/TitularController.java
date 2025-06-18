@@ -3,6 +3,7 @@ package tp.agil.backend.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tp.agil.backend.dtos.TitularClasesDTO;
 import tp.agil.backend.dtos.TitularDTO;
 import tp.agil.backend.entities.Titular;
 import tp.agil.backend.services.TitularService;
@@ -18,8 +19,8 @@ public class TitularController {
     }
 
     @GetMapping("/id/{numeroDocumento}")
-    public TitularDTO getTitularById(@PathVariable String numeroDocumento) {
-        return titularService.getTitularById(numeroDocumento);
+    public TitularClasesDTO getTitularById(@PathVariable String numeroDocumento) {
+        return titularService.getTitularConClases(numeroDocumento);
     }
 
     @PostMapping()
