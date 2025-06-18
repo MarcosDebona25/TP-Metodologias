@@ -18,7 +18,7 @@ export default function PaymentReceiptPage({ params }: Props) {
     }
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-[#4EE0CC] print:bg-white">
+        <div className="flex justify-center items-center min-h-screen bg-[#4b9ce9] print:bg-white">
             <div className="bg-white rounded-xl shadow-lg w-[600px] p-6 text-sm font-sans print:shadow-none border border-gray-300 text-black">
                 <h1 className="text-xl font-bold mb-4 text-center">Comprobante de Pago</h1>
 
