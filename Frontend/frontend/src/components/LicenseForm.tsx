@@ -4,15 +4,15 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { licenseFormSchema, LicenseFormSchema } from "../schemas/licenseSchema";
-import { Person } from "../types/Person";
+import { PersonWithLicense } from "../types/Person";
 import { submitLicense } from "../services/licenseService";
 import PersonSearchField from "./PersonSearchField";
 import LicenseTypeSelect from "./LicenseTypeSelect";
 import { useRouter } from "next/navigation";
-import { getPersonByIdNumber } from "@/services/personService";
+import { getPersonWithLicenseByIdNumber } from "@/services/personService";
 
 export default function LicenseForm() {
-  const [person, setPerson] = useState<Person | null>(null);
+  const [person, setPerson] = useState<PersonWithLicense | null>(null);
   const router = useRouter();
 
   const {
@@ -34,7 +34,7 @@ export default function LicenseForm() {
   });
 
   // When a person is found, populate personId and reset licenseTypes
-  const onPersonFound = (p: Person) => {
+  const onPersonFound = (p: PersonWithLicense) => {
     setPerson(p);
     setValue("personId", p.idNumber);
     setValue("licenseTypes", []);
@@ -68,7 +68,7 @@ export default function LicenseForm() {
 
         <PersonSearchField
           onPersonFound={onPersonFound}
-          getPersonByIdNumber={getPersonByIdNumber}
+          getPersonByIdNumber={getPersonWithLicenseByIdNumber}
         />
         <input type="text" {...register("personId")} disabled hidden />
 

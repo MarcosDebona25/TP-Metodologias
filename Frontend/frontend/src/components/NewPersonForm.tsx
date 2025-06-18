@@ -18,13 +18,13 @@ export default function NewPersonForm() {
   } = useForm<PersonFormSchema>({
     resolver: zodResolver(personFormSchema),
     defaultValues: {
-      idNumber: "",
-      firstName: "",
-      lastName: "",
-      dateOfBirth: "",
-      address: "",
-      bloodType: undefined,
-      donor: false,
+      numeroDocumento: "",
+      nombre: "",
+      apellido: "",
+      fechaNacimiento: "",
+      domicilio: "",
+      grupoFactor: undefined,
+      donanteOrganos: false,
     },
   });
 
@@ -54,12 +54,14 @@ export default function NewPersonForm() {
             </label>
             <input
               type="text"
-              {...register("idNumber")}
+              {...register("numeroDocumento")}
               className="w-full rounded border border-gray-300 text-gray-800 bg-white"
               placeholder="Ej: 12345678"
             />
-            {errors.idNumber && (
-              <p className="text-red-500 text-sm">{errors.idNumber.message}</p>
+            {errors.numeroDocumento && (
+              <p className="text-red-500 text-sm">
+                {errors.numeroDocumento.message}
+              </p>
             )}
           </div>
 
@@ -67,11 +69,11 @@ export default function NewPersonForm() {
             <label className="block font-medium text-gray-700">Nombres</label>
             <input
               type="text"
-              {...register("firstName")}
+              {...register("nombre")}
               className="w-full rounded border border-gray-300 text-gray-800 bg-white"
             />
-            {errors.firstName && (
-              <p className="text-red-500 text-sm">{errors.firstName.message}</p>
+            {errors.nombre && (
+              <p className="text-red-500 text-sm">{errors.nombre.message}</p>
             )}
           </div>
 
@@ -79,11 +81,11 @@ export default function NewPersonForm() {
             <label className="block font-medium text-gray-700">Apellidos</label>
             <input
               type="text"
-              {...register("lastName")}
+              {...register("apellido")}
               className="w-full rounded border border-gray-300 text-gray-800 bg-white"
             />
-            {errors.lastName && (
-              <p className="text-red-500 text-sm">{errors.lastName.message}</p>
+            {errors.apellido && (
+              <p className="text-red-500 text-sm">{errors.apellido.message}</p>
             )}
           </div>
 
@@ -93,12 +95,12 @@ export default function NewPersonForm() {
             </label>
             <input
               type="date"
-              {...register("dateOfBirth")}
+              {...register("fechaNacimiento")}
               className="w-full rounded border border-gray-300 text-gray-800 bg-white"
             />
-            {errors.dateOfBirth && (
+            {errors.fechaNacimiento && (
               <p className="text-red-500 text-sm">
-                {errors.dateOfBirth.message}
+                {errors.fechaNacimiento.message}
               </p>
             )}
           </div>
@@ -107,11 +109,11 @@ export default function NewPersonForm() {
             <label className="block font-medium text-gray-700">Domicilio</label>
             <input
               type="text"
-              {...register("address")}
+              {...register("domicilio")}
               className="w-full rounded border border-gray-300 text-gray-800 bg-white"
             />
-            {errors.address && (
-              <p className="text-red-500 text-sm">{errors.address.message}</p>
+            {errors.domicilio && (
+              <p className="text-red-500 text-sm">{errors.domicilio.message}</p>
             )}
           </div>
 
@@ -120,7 +122,7 @@ export default function NewPersonForm() {
               Grupo Sanguíneo y Factor RH
             </label>
             <select
-              {...register("bloodType")}
+              {...register("grupoFactor")}
               className="w-full rounded border border-gray-300 text-gray-800 bg-white"
             >
               <option value="">Selecciona un grupo sanguíneo</option>
@@ -133,19 +135,23 @@ export default function NewPersonForm() {
               <option value="O+">O+</option>
               <option value="O-">O−</option>
             </select>
-            {errors.bloodType && (
-              <p className="text-red-500 text-sm">{errors.bloodType.message}</p>
+            {errors.grupoFactor && (
+              <p className="text-red-500 text-sm">
+                {errors.grupoFactor.message}
+              </p>
             )}
           </div>
 
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
-              {...register("donor")}
+              {...register("donanteOrganos")}
               className="h-4 w-4 text-blue-600"
             />
-            {errors.donor && (
-              <p className="text-red-500 text-sm">{errors.donor.message}</p>
+            {errors.donanteOrganos && (
+              <p className="text-red-500 text-sm">
+                {errors.donanteOrganos.message}
+              </p>
             )}
             <label className="text-gray-700 font-medium">
               Donante de Órganos
