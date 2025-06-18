@@ -14,4 +14,9 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(ex.getMessage());
     }
+
+    @ExceptionHandler(LicenciaNoEncontradaException.class)
+    public ResponseEntity<String> handleLicenciaNoEncontradaException(LicenciaNoEncontradaException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }

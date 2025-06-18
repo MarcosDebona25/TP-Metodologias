@@ -25,3 +25,68 @@ Content-Type: application/json
 "grupoFactor": "A+",
 "donanteOrganos": true
 }
+
+###
+POST http://localhost:8080/api/licencias
+Content-Type: application/json
+
+{
+  "titularID": 12345678,
+  "usuarioId": 87654321,
+  "listaLicencias": ["A", "B"],
+  "observaciones": "Sin observaciones"
+}
+
+###
+GET http://localhost:8080/api/licencias/12345678
+
+###
+GET http://localhost:8080/api/licencias/comprobante/12345678
+
+###
+POST http://localhost:8080/api/titulares
+Content-Type: application/json
+
+{
+  "numeroDocumento": 12345678,
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "fechaNacimiento": "1990-05-15",
+  "direccion": "Calle Falsa 123",
+  "grupoFactor": "A+",
+  "donanteOrganos": true
+}
+
+###
+POST http://localhost:8080/api/titulares
+Content-Type: application/json
+
+{
+  "numeroDocumento": 87654321,
+  "nombre": "Ana",
+  "apellido": "García",
+  "fechaNacimiento": "1985-10-20",
+  "direccion": "Av. Siempre Viva 742",
+  "grupoFactor": "B-",
+  "donanteOrganos": false
+}
+
+###
+GET http://localhost:8080/api/titulares/id/12345678
+
+###
+POST http://localhost:8080/api/licencias
+Content-Type: application/json
+
+{
+  "titularID": 12345678,
+  "usuarioId": 87654321,
+  "listaLicencias": ["A", "B"],
+  "observaciones": "Sin observaciones"
+}
+
+###
+GET http://localhost:8080/api/licencias/12345678
+
+###
+GET http://localhost:8080/api/licencias/comprobante/12345678
