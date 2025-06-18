@@ -5,14 +5,29 @@ export default function Sidebar() {
     <aside className="w-64 h-screen bg-gray-800 text-white p-4">
       <h2 className="text-xl font-bold mb-6">Gestor de Licencias</h2>
       <nav className="space-y-2">
-        <Link href="/license/new" className="block hover:bg-gray-700 p-2 rounded">
-            Nueva Licencia
+        <Link
+          href="/license/new"
+          className="block hover:bg-gray-700 p-2 rounded"
+        >
+          Nueva Licencia
         </Link>
-        <Link href="/license/list" className="block hover:bg-gray-700 p-2 rounded">
-            Listar Licencias
+        <Link
+          href="/license/renew"
+          className="block hover:bg-gray-700 p-2 rounded"
+        >
+          Renovar Licencia
         </Link>
-        <Link href="/person/new" className="block hover:bg-gray-700 p-2 rounded">
-            Registrar Titular
+        <Link
+          href="/license/list"
+          className="block hover:bg-gray-700 p-2 rounded"
+        >
+          Listar Licencias
+        </Link>
+        <Link
+          href="/person/new"
+          className="block hover:bg-gray-700 p-2 rounded"
+        >
+          Registrar Titular
         </Link>
       </nav>
     </aside>

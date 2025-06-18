@@ -6,6 +6,13 @@ export type Person = {
   dateOfBirth: string;
   address: string;
   bloodType: string;
-  donor: boolean;
+  donor: string;
   allowedLicenseTypes: string[];
+  currentLicenseTypes: string[];
 };
+
+export interface PersonWithLicense extends Person {
+  licenseGrantDate: string;
+  licenseExpirationDate: string;
+  observaciones: string;
+}

@@ -4,15 +4,15 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { licenseFormSchema, LicenseFormSchema } from "../schemas/licenseSchema";
-import { Person } from "../types/Person";
+import { Person, PersonWithLicense } from "../types/Person";
 import { submitLicense } from "../services/licenseService";
+import { getPersonWithLicenseByIdNumber } from "@/services/personService";
 import PersonSearchField from "./PersonSearchField";
 import LicenseTypeSelect from "./LicenseTypeSelect";
 import { useRouter } from "next/navigation";
-import { getPersonByIdNumber } from "@/services/personService";
 
-export default function LicenseForm() {
-  const [person, setPerson] = useState<Person | null>(null);
+export default function RenewLicenseForm() {
+  const [person, setPerson] = useState<PersonWithLicense | null>(null);
   const router = useRouter();
 
   const {
@@ -33,45 +33,48 @@ export default function LicenseForm() {
     shouldUnregister: false,
   });
 
-  // When a person is found, populate personId and reset licenseTypes
-  const onPersonFound = (p: Person) => {
+  const onPersonFound = (person: Person) => {
+    const p = person as PersonWithLicense;
     setPerson(p);
     setValue("personId", p.idNumber);
-    setValue("licenseTypes", []);
+    setValue("observaciones", p.observaciones || "");
+    setValue("licenseTypes", []); // license types to renew will be chosen by user
   };
 
-  // Ensure validation runs when person is set
-
-  // Handle form submit
   const onSubmit = async (data: LicenseFormSchema) => {
     try {
       await submitLicense(data);
-      alert("Licencia creada exitosamente");
+      alert("Renovación de licencia exitosa");
       reset();
       setPerson(null);
-      router.push("/license/new");
+      router.push("/license/renew");
     } catch (err: any) {
-      alert(err.message || "Error al crear licencia");
+      alert(err.message || "Error al renovar licencia");
     }
   };
+
   const selectedTypes = watch("licenseTypes");
-  const hasDisallowedSelection =
+
+  const hasInvalidRenewTypes =
     person &&
-    selectedTypes.some((type) => !person.allowedLicenseTypes.includes(type));
+    selectedTypes.some((type) => !person.currentLicenseTypes.includes(type));
+
+  //const currentOnlyText =
+  //person && `Actualmente posee: ${person.currentLicenseTypes.join(", ")}\n`;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="max-w-xl mx-auto p-4 border rounded shadow">
         <h2 className="text-2xl text-gray-800 font-bold mb-4">
-          Alta Nueva Licencia
+          Renovar Licencia
         </h2>
 
         <PersonSearchField
           onPersonFound={onPersonFound}
-          getPersonByIdNumber={getPersonByIdNumber}
+          getPersonByIdNumber={getPersonWithLicenseByIdNumber}
         />
-        <input type="text" {...register("personId")} disabled hidden />
 
+        <input type="text" {...register("personId")} disabled hidden />
         {errors.personId && (
           <p className="text-red-500 text-sm">{errors.personId.message}</p>
         )}
@@ -79,7 +82,7 @@ export default function LicenseForm() {
         {person && (
           <>
             <div className="space-y-2 mt-4">
-              <input type="text" {...register("personId")} disabled hidden />
+              <input type="text" {...register("personId")} hidden disabled />
 
               <div>
                 <label className="block font-medium text-gray-700">
@@ -91,7 +94,6 @@ export default function LicenseForm() {
                   value={person.firstName}
                 />
               </div>
-
               <div>
                 <label className="block font-medium text-gray-700">
                   Apellido
@@ -102,7 +104,6 @@ export default function LicenseForm() {
                   value={person.lastName}
                 />
               </div>
-
               <div>
                 <label className="block font-medium text-gray-700">
                   Fecha de Nacimiento
@@ -113,7 +114,6 @@ export default function LicenseForm() {
                   value={person.dateOfBirth}
                 />
               </div>
-
               <div>
                 <label className="block font-medium text-gray-700">
                   Dirección
@@ -124,7 +124,6 @@ export default function LicenseForm() {
                   value={person.address}
                 />
               </div>
-
               <div>
                 <label className="block font-medium text-gray-700">
                   Grupo Sanguíneo y Factor RH
@@ -146,32 +145,62 @@ export default function LicenseForm() {
                   value={person.donor}
                 />
               </div>
-            </div>
 
-            <div className="mt-4">
-              <label className="block font-medium text-gray-700">
-                Observaciones
-              </label>
-              <textarea
-                {...register("observaciones")}
-                className="w-full rounded text-gray-600 border-gray-300 border-1"
-                placeholder="..."
-              />
-            </div>
+              <div className="border-t pt-4 mt-4">
+                <div>
+                  <label className="block font-medium text-gray-700">
+                    Fecha de Otorgamiento
+                  </label>
+                  <input
+                    className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
+                    disabled
+                    value={person.licenseGrantDate}
+                  />
+                </div>
 
-            <div className="mt-4">
-              <LicenseTypeSelect
-                value={watch("licenseTypes")}
-                onChange={(selected) => setValue("licenseTypes", selected)}
-                allowedTypes={person.allowedLicenseTypes}
-                currentTypes={person.currentLicenseTypes}
-                currentTypesWarnings={true}
-              />
-              {errors.licenseTypes && (
-                <p className="text-red-500 text-sm">
-                  {errors.licenseTypes.message}
-                </p>
-              )}
+                <div>
+                  <label className="block font-medium text-gray-700">
+                    Fecha de Vencimiento
+                  </label>
+                  <input
+                    className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
+                    disabled
+                    value={person.licenseExpirationDate}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-medium text-gray-700">
+                  Observaciones
+                </label>
+                <textarea
+                  {...register("observaciones")}
+                  className="w-full rounded text-gray-600 border-gray-300 border-1"
+                  placeholder="..."
+                />
+              </div>
+
+              <div className="mt-4">
+                <LicenseTypeSelect
+                  value={selectedTypes}
+                  onChange={(selected) => setValue("licenseTypes", selected)}
+                  allowedTypes={person.allowedLicenseTypes} // Only allow renewals of current types
+                  currentTypes={person.currentLicenseTypes}
+                  currentTypesWarnings={false}
+                />
+                {errors.licenseTypes && (
+                  <p className="text-red-500 text-sm">
+                    {errors.licenseTypes.message}
+                  </p>
+                )}
+                {hasInvalidRenewTypes && (
+                  <p className="text-yellow-600 text-sm mt-1">
+                    Algunas clases seleccionadas no son parte de las licencias
+                    actuales.
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className="mt-6 flex justify-end gap-4">
@@ -185,12 +214,11 @@ export default function LicenseForm() {
               >
                 Borrar
               </button>
-
               <button
                 type="submit"
-                disabled={!person || !isValid || hasDisallowedSelection}
+                disabled={!person || !isValid || hasInvalidRenewTypes}
                 className={`px-4 py-2 rounded text-white ${
-                  !person || !isValid || hasDisallowedSelection
+                  !person || !isValid || hasInvalidRenewTypes
                     ? "bg-blue-400 cursor-not-allowed"
                     : "bg-blue-600 hover:bg-blue-700"
                 }`}
