@@ -1,9 +1,11 @@
 package tp.agil.backend.services;
 
 import org.springframework.stereotype.Service;
+import tp.agil.backend.dtos.TitularClasesDTO;
 import tp.agil.backend.dtos.TitularDTO;
 import tp.agil.backend.entities.Titular;
 import tp.agil.backend.exceptions.TitularExistenteException;
+import tp.agil.backend.exceptions.TitularNoEncontradoException;
 import tp.agil.backend.mappers.TitularMapper;
 import tp.agil.backend.repositories.TitularRepository;
 
@@ -21,6 +23,9 @@ public class TitularServiceImpl implements TitularService {
     @Override
     public TitularDTO getTitularById(String numeroDocumento) {
         Titular titular = titularRepository.findByNumeroDocumento(numeroDocumento);
+        if (titular == null) {
+            throw new TitularNoEncontradoException("No se encontró un titular con el número de documento: " + numeroDocumento);
+        }
         return titularMapper.entityToDto(titular);
     }
 
@@ -32,5 +37,41 @@ public class TitularServiceImpl implements TitularService {
         }
         Titular titularGuardado = titularRepository.save(titularMapper.dtoToEntity(titularDTO));
         return titularMapper.entityToDto(titularGuardado);
+    }
+
+    @Override
+    public TitularClasesDTO getTitularConClases(String numeroDocumento) {
+        Titular titular = titularRepository.findByNumeroDocumento(numeroDocumento);
+        if (titular == null) {
+            throw new TitularNoEncontradoException("No se encontró un titular con el número de documento: " + numeroDocumento);
+        }
+        TitularClasesDTO dto = new TitularClasesDTO();
+        dto.setTitular(titularMapper.entityToDto(titular));
+        dto.setClases(calcularClasesPosibles(titular));
+        return dto;
+    }
+
+    private String calcularClasesPosibles(Titular titular) {
+        int edad = titular.calcularEdad();
+        boolean tieneB = false;
+        boolean tieneProfesional = false;
+        boolean esMayor65 = edad > 65;
+
+        // Si tiene licencia B y profesional (C D E)
+        if (titular.getLicenciaActiva() != null) {
+            String clases = titular.getLicenciaActiva().getClases();
+            if (clases != null) {
+                tieneB = clases.contains("B");
+                tieneProfesional = clases.matches(".*[CDE].*");
+            }
+        }
+        StringBuilder clases = new StringBuilder();
+
+        // No profesionales (A B F G)
+        if (edad >= 17) clases.append("A B F G");
+        // Profesionales (C D E)
+        if (edad >= 21 && tieneB && !esMayor65) clases.append(" C D E");
+
+        return clases.toString().trim();
     }
 }
