@@ -6,9 +6,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode
-@RequiredArgsConstructor
-@ToString
+@NoArgsConstructor
 @Entity
 public class Usuario {
     @Id

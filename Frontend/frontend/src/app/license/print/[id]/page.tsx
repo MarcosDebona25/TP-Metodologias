@@ -13,7 +13,7 @@ export default async function PrintLicensePage({ params }: Props) {
     const license = await getMockLicenseById(id)
 
     return (
-        <div className="flex flex-col justify-center items-center min-h-screen bg-[#4EE0CC] print:bg-white">
+        <div className="flex flex-col justify-center items-center min-h-screen bg-[#4b9ce9] print:bg-white">
             <div
                 className="bg-white rounded-xl shadow-lg w-[750px] h-[400px] p-4 relative text-[14px] text-black font-sans print:shadow-none">
                 {/* Encabezado */}
@@ -54,7 +54,10 @@ export default async function PrintLicensePage({ params }: Props) {
                         <p><b>Otorgamiento:</b> {formatear(license.fechaEmision)}</p>
                         <p><b>Vencimiento:</b> {formatear(license.fechaVencimiento)}</p>
 
-                        <p><b>Firma:</b> ________________________</p>
+                        <p><b>Donante de Organos:</b> {license.esDonante}</p>
+                        <p><b>Grupo y Factor:</b> {license.grupoFactor}</p>
+
+                        <p className="col-span-2"><b>Observaciones:</b> {license.observaciones}</p>
                     </div>
                 </div>
 
@@ -124,5 +127,8 @@ async function getMockLicenseById(id: string) {
         fechaVencimiento: "2028-06-24",
         clase: "A3 B1",
         fotoUrl: "/foto-documento.jpg",
+        grupoFactor: "A+",
+        esDonante: "SÍ",
+        observaciones: "Utiliza lentes, texto muy muy largoooooooooooo",
     }
 }

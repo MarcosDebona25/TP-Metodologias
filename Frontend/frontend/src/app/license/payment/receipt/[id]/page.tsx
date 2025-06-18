@@ -14,12 +14,11 @@ export default function PaymentReceiptPage({ params }: Props) {
         costoTramite: 3000,
         gastosAdm: 500,
         total: 3500,
-        nroComprobante: "COMP-000017",
         fechaEmision: new Date().toISOString(),
     }
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-[#4EE0CC] print:bg-white">
+        <div className="flex justify-center items-center min-h-screen bg-[#4b9ce9] print:bg-white">
             <div className="bg-white rounded-xl shadow-lg w-[600px] p-6 text-sm font-sans print:shadow-none border border-gray-300 text-black">
                 <h1 className="text-xl font-bold mb-4 text-center">Comprobante de Pago</h1>
 
@@ -38,7 +37,6 @@ export default function PaymentReceiptPage({ params }: Props) {
                     </div>
 
                     <div className="border-t border-gray-200 pt-3 mt-2 text-sm">
-                        <p><b>N° Comprobante:</b> {data.nroComprobante}</p>
                         <p><b>Fecha de emisión:</b> {formatear(data.fechaEmision)}</p>
                     </div>
                 </div>
@@ -51,7 +49,7 @@ export default function PaymentReceiptPage({ params }: Props) {
                 <div className="mt-6 flex justify-center print:hidden">
                     <button
                         onClick={() => window.print()}
-                        className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-green-700"
+                        className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
                     >
                         Imprimir comprobante
                     </button>
