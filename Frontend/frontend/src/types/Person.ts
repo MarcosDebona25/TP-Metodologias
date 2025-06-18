@@ -7,12 +7,12 @@ export type Person = {
   domicilio: string;
   grupoFactor: string;
   donanteOrganos: string;
-  clasesPermitidas: string[];
+  allowedLicenseTypes: string[];
 };
 
 export interface PersonWithLicense extends Person {
   currentLicenseTypes: string[];
-  licenseGrantDate: string;
-  licenseExpirationDate: string;
+  fechaEmisionLicencia: string;
+  fechaVencimientoLicencia: string;
   observaciones: string;
 }

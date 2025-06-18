@@ -25,19 +25,19 @@ export default function LicenseForm() {
   } = useForm<LicenseFormSchema>({
     resolver: zodResolver(licenseFormSchema),
     defaultValues: {
-      personId: "",
-      licenseTypes: [],
+      documentoTitular: "",
+      clases: [],
       observaciones: "",
     },
     mode: "onChange",
     shouldUnregister: false,
   });
 
-  // When a person is found, populate personId and reset licenseTypes
+  // When a person is found, populate documentoTitular and reset clases
   const onPersonFound = (p: PersonWithLicense) => {
     setPerson(p);
-    setValue("personId", p.idNumber);
-    setValue("licenseTypes", []);
+    setValue("documentoTitular", p.numeroDocumento);
+    setValue("clases", []);
   };
 
   // Ensure validation runs when person is set
@@ -54,7 +54,7 @@ export default function LicenseForm() {
       alert(err.message || "Error al crear licencia");
     }
   };
-  const selectedTypes = watch("licenseTypes");
+  const selectedTypes = watch("clases");
   const hasDisallowedSelection =
     person &&
     selectedTypes.some((type) => !person.allowedLicenseTypes.includes(type));
@@ -70,16 +70,23 @@ export default function LicenseForm() {
           onPersonFound={onPersonFound}
           getPersonByIdNumber={getPersonWithLicenseByIdNumber}
         />
-        <input type="text" {...register("personId")} disabled hidden />
+        <input type="text" {...register("documentoTitular")} disabled hidden />
 
-        {errors.personId && (
-          <p className="text-red-500 text-sm">{errors.personId.message}</p>
+        {errors.documentoTitular && (
+          <p className="text-red-500 text-sm">
+            {errors.documentoTitular.message}
+          </p>
         )}
 
         {person && (
           <>
             <div className="space-y-2 mt-4">
-              <input type="text" {...register("personId")} disabled hidden />
+              <input
+                type="text"
+                {...register("documentoTitular")}
+                disabled
+                hidden
+              />
 
               <div>
                 <label className="block font-medium text-gray-700">
@@ -88,7 +95,7 @@ export default function LicenseForm() {
                 <input
                   className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
                   disabled
-                  value={person.firstName}
+                  value={person.nombre}
                 />
               </div>
 
@@ -99,7 +106,7 @@ export default function LicenseForm() {
                 <input
                   className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
                   disabled
-                  value={person.lastName}
+                  value={person.apellido}
                 />
               </div>
 
@@ -110,7 +117,7 @@ export default function LicenseForm() {
                 <input
                   className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
                   disabled
-                  value={person.dateOfBirth}
+                  value={person.fechaNacimiento}
                 />
               </div>
 
@@ -121,7 +128,7 @@ export default function LicenseForm() {
                 <input
                   className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
                   disabled
-                  value={person.address}
+                  value={person.domicilio}
                 />
               </div>
 
@@ -132,7 +139,7 @@ export default function LicenseForm() {
                 <input
                   className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
                   disabled
-                  value={person.bloodType}
+                  value={person.grupoFactor}
                 />
               </div>
 
@@ -143,7 +150,7 @@ export default function LicenseForm() {
                 <input
                   className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
                   disabled
-                  value={person.donor}
+                  value={person.donanteOrganos ? "Sí" : "No"}
                 />
               </div>
             </div>
@@ -161,16 +168,14 @@ export default function LicenseForm() {
 
             <div className="mt-4">
               <LicenseTypeSelect
-                value={watch("licenseTypes")}
-                onChange={(selected) => setValue("licenseTypes", selected)}
+                value={watch("clases")}
+                onChange={(selected) => setValue("clases", selected)}
                 allowedTypes={person.allowedLicenseTypes}
                 currentTypes={person.currentLicenseTypes}
                 currentTypesWarnings={true}
               />
-              {errors.licenseTypes && (
-                <p className="text-red-500 text-sm">
-                  {errors.licenseTypes.message}
-                </p>
+              {errors.clases && (
+                <p className="text-red-500 text-sm">{errors.clases.message}</p>
               )}
             </div>
 

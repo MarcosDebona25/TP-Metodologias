@@ -36,6 +36,7 @@ export default function PersonSearchField({
 
     try {
       const data = await getPersonByIdNumber(idNumber);
+      console.log(data);
       onPersonFound(data);
     } catch (err: any) {
       setError(err.message || "Error al buscar persona");

@@ -34,9 +34,11 @@ export default function NewPersonForm() {
       setSuccessMessage("Persona creada exitosamente");
       setErrorMessage("");
       reset();
-    } catch (error: any) {
-      setErrorMessage(error.message);
-      setSuccessMessage("");
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+        setSuccessMessage("");
+      }
     }
   };
 
@@ -66,7 +68,7 @@ export default function NewPersonForm() {
           </div>
 
           <div>
-            <label className="block font-medium text-gray-700">Nombres</label>
+            <label className="block font-medium text-gray-700">Nombre</label>
             <input
               type="text"
               {...register("nombre")}
@@ -78,7 +80,7 @@ export default function NewPersonForm() {
           </div>
 
           <div>
-            <label className="block font-medium text-gray-700">Apellidos</label>
+            <label className="block font-medium text-gray-700">Apellido</label>
             <input
               type="text"
               {...register("apellido")}
