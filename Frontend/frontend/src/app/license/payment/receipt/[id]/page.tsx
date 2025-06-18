@@ -49,7 +49,7 @@ export default function PaymentReceiptPage({ params }: Props) {
                 <div className="mt-6 flex justify-center print:hidden">
                     <button
                         onClick={() => window.print()}
-                        className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+                        className="px-6 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700"
                     >
                         Imprimir comprobante
                     </button>

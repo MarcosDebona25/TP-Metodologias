@@ -75,7 +75,7 @@ export default async function PrintLicensePage({ params }: Props) {
             <div className="mt-6 print:hidden">
                 <button
                     onClick={() => window.print()}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+                    className="px-6 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700"
                 >
                     Imprimir licencia
                 </button>
