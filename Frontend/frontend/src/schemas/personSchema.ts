@@ -2,35 +2,35 @@
 import { z } from "zod";
 
 export const personFormSchema = z.object({
-  idNumber: z
+  numeroDocumento: z
     .string()
     .length(8, { message: "El número de DNI debe tener 8 dígitos" })
     .regex(/^\d+$/, { message: "Solo se permiten números" }),
 
-  firstName: z
+  nombre: z
     .string()
     .min(1, { message: "El nombre es obligatorio" })
     .max(50, { message: "El nombre es demasiado largo" }),
 
-  lastName: z
+  apellido: z
     .string()
     .min(1, { message: "El apellido es obligatorio" })
     .max(50, { message: "El apellido es demasiado largo" }),
 
-  dateOfBirth: z.string().refine((val) => !isNaN(Date.parse(val)), {
+  fechaNacimiento: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: "Fecha inválida",
   }),
 
-  address: z
+  domicilio: z
     .string()
     .min(5, { message: "La dirección es muy corta" })
     .max(100, { message: "La dirección es demasiado larga" }),
 
-  bloodType: z.enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], {
+  grupoFactor: z.enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], {
     errorMap: () => ({ message: "Selecciona un grupo sanguíneo válido" }),
   }),
 
-  donor: z.boolean(),
+  donanteOrganos: z.boolean(),
 });
 
 export type PersonFormSchema = z.infer<typeof personFormSchema>;

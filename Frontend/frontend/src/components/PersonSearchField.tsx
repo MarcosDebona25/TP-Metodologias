@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { z } from "zod";
-import { Person } from "../types/Person";
+import { PersonWithLicense } from "../types/Person";
 
 type Props = {
-  onPersonFound: (person: Person) => void;
-  getPersonByIdNumber: (id: string) => Promise<Person>;
+  onPersonFound: (person: PersonWithLicense) => void;
+  getPersonByIdNumber: (id: string) => Promise<PersonWithLicense>;
 };
 
 const idSchema = z

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { licenseFormSchema, LicenseFormSchema } from "../schemas/licenseSchema";
-import { Person, PersonWithLicense } from "../types/Person";
+import { PersonWithLicense } from "../types/Person";
 import { submitLicense } from "../services/licenseService";
 import { getPersonWithLicenseByIdNumber } from "@/services/personService";
 import PersonSearchField from "./PersonSearchField";
@@ -33,8 +33,7 @@ export default function RenewLicenseForm() {
     shouldUnregister: false,
   });
 
-  const onPersonFound = (person: Person) => {
-    const p = person as PersonWithLicense;
+  const onPersonFound = (p: PersonWithLicense) => {
     setPerson(p);
     setValue("personId", p.idNumber);
     setValue("observaciones", p.observaciones || "");

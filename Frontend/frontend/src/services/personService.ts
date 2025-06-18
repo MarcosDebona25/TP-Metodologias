@@ -1,14 +1,15 @@
+import { NextResponse } from "next/server";
 import { Person, PersonWithLicense } from "../types/Person";
 import { PersonFormSchema } from "@/schemas/personSchema";
 
 export async function getPersonByIdNumber(idNumber: string): Promise<Person> {
   const response = await fetch(
-    //`http://localhost:8080/api/titulares/id/${idNumber}`,
-    `http://localhost:3000/api/people/${idNumber}`
-    //{
-    //method: "GET",
-    //credentials: "include",
-    //}
+    `http://localhost:8080/api/titulares/id/${idNumber}`,
+    //`http://localhost:3000/api/people/${idNumber}`
+    {
+      method: "GET",
+      credentials: "include",
+    }
   );
   if (!response.ok) {
     throw new Error("Titular no encontrado");
@@ -19,9 +20,6 @@ export async function getPersonByIdNumber(idNumber: string): Promise<Person> {
     ...data,
     allowedLicenseTypes: data.allowedLicenseTypes
       ? data.allowedLicenseTypes.split(" ").filter(Boolean)
-      : [],
-    currentLicenseTypes: data.currentLicenseTypes
-      ? data.currentLicenseTypes.split(" ").filter(Boolean)
       : [],
   };
 }
@@ -29,26 +27,52 @@ export async function getPersonByIdNumber(idNumber: string): Promise<Person> {
 export async function getPersonWithLicenseByIdNumber(
   idNumber: string
 ): Promise<PersonWithLicense> {
-  const response = await fetch(
-    //`http://localhost:8080/api/licencias/dni/${idNumber}`,
-    `http://localhost:3000/api/licenses/${idNumber}`
-    //{
-    //method: "GET",
-    //credentials: "include",
-    //}
+  const personResponse = await fetch(
+    `http://localhost:8080/api/titulares/id/${idNumber}`,
+    //`http://localhost:3000/api/licenses/${idNumber}`
+    {
+      method: "GET",
+      credentials: "include",
+    }
   );
-  if (!response.ok) {
+  if (!personResponse.ok) {
     throw new Error("Titular no encontrado");
   }
-  const data = await response.json();
+  const person = await personResponse.json();
+
+  let licenseResponse = await fetch(
+    `http://localhost:8080/api/licencias/dni/${idNumber}`,
+    //`http://localhost:3000/api/licenses/${idNumber}`
+    {
+      method: "GET",
+      credentials: "include",
+    }
+  );
+  if (!licenseResponse.ok) {
+    const errorText = await licenseResponse.text();
+    if (errorText.includes("DNI")) {
+      const emptyLicense = {
+        currentLicenseTypes: "",
+        observaciones: "",
+        licenseGrantDate: "",
+        licenseExpirationDate: "",
+      };
+      licenseResponse = NextResponse.json(emptyLicense);
+    } else {
+      throw new Error("Titular no encontrado");
+    }
+  }
+
+  const license = await licenseResponse.json();
 
   return {
-    ...data,
-    allowedLicenseTypes: data.allowedLicenseTypes
-      ? data.allowedLicenseTypes.split(" ").filter(Boolean)
+    ...person,
+    allowedLicenseTypes: person.allowedLicenseTypes
+      ? person.allowedLicenseTypes.split(" ").filter(Boolean)
       : [],
-    currentLicenseTypes: data.currentLicenseTypes
-      ? data.currentLicenseTypes.split(" ").filter(Boolean)
+    ...license,
+    currentLicenseTypes: license.currentLicenseTypes
+      ? license.currentLicenseTypes.split(" ").filter(Boolean)
       : [],
   };
 }
