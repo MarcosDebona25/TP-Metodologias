@@ -12,6 +12,7 @@ import tp.agil.backend.exceptions.LicenciaNoEncontradaException;
 import tp.agil.backend.mappers.LicenciaActivaMapper;
 import tp.agil.backend.mappers.LicenciaEmitidaMapper;
 import tp.agil.backend.repositories.LicenciaActivaRepository;
+import tp.agil.backend.repositories.LicenciaExpiradaRepository;
 import tp.agil.backend.repositories.TitularRepository;
 import tp.agil.backend.repositories.UsuarioRepository;
 
@@ -22,6 +23,7 @@ import java.time.temporal.ChronoUnit;
 public class LicenciaServiceImpl implements LicenciaService {
 
     private final LicenciaActivaRepository licenciaActivaRepository;
+    private final LicenciaExpiradaRepository licenciaExpiradaRepository; // Assuming this is defined somewhere
     private final TitularRepository titularRepository;
     private final UsuarioRepository usuarioRepository;
     private final LicenciaActivaMapper licenciaActivaMapper;
@@ -30,13 +32,14 @@ public class LicenciaServiceImpl implements LicenciaService {
     private static final double GASTOS_ADMINISTRATIVOS = 8.0;
 
     public LicenciaServiceImpl(
-            LicenciaActivaRepository licenciaActivaRepository,
+            LicenciaActivaRepository licenciaActivaRepository, LicenciaExpiradaRepository licenciaExpiradaRepository,
             TitularRepository titularRepository,
             UsuarioRepository usuarioRepository,
             LicenciaActivaMapper licenciaActivaMapper,
             LicenciaEmitidaMapper licenciaEmitidaMapper
     ) {
         this.licenciaActivaRepository = licenciaActivaRepository;
+        this.licenciaExpiradaRepository = licenciaExpiradaRepository;
         this.titularRepository = titularRepository;
         this.usuarioRepository = usuarioRepository;
         this.licenciaActivaMapper = licenciaActivaMapper;
@@ -45,6 +48,8 @@ public class LicenciaServiceImpl implements LicenciaService {
 
     @Override
     public LicenciaEmitidaDTO emitirLicencia(LicenciaFormDTO licenciaFormDTO) {
+        validarFormularioLicencia(licenciaFormDTO);
+
         Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getDocumentoTitular());
         Usuario usuario = usuarioRepository.findByNumeroDocumento("11999888");
 
@@ -70,20 +75,7 @@ public class LicenciaServiceImpl implements LicenciaService {
     private LocalDate calcularFechaVencimiento(Titular titular) {
         LocalDate hoy = LocalDate.now();
         LocalDate nacimiento = titular.getFechaNacimiento();
-        int edad = titular.calcularEdad();
-
-        int vigencia;
-        if (edad < 21) {
-            vigencia = 1;
-        } else if (edad <= 46) {
-            vigencia = 5;
-        } else if (edad <= 60) {
-            vigencia = 4;
-        } else if (edad <= 70) {
-            vigencia = 3;
-        } else {
-            vigencia = 1;
-        }
+        int vigencia = calcularVigencia(titular);
 
         LocalDate proximoCumple = nacimiento.withYear(hoy.getYear());
         if (!proximoCumple.isAfter(hoy)) {
@@ -132,24 +124,14 @@ public class LicenciaServiceImpl implements LicenciaService {
         dto.setNombreTitular(titular.getNombre());
         dto.setApellidoTitular(titular.getApellido());
         dto.setClases(licencia.getClases());
-        dto.setCostosEmision(calcularCostoEmision(licencia.getClases(), titular.calcularEdad()));
+        dto.setCostosEmision(calcularCostoEmision(licencia.getClases(), titular));
+        dto.setFechaEmisionComprobante(licencia.getFechaEmision());
         dto.setCostosAdministrativos(GASTOS_ADMINISTRATIVOS);
         return dto;
     }
 
-    private double calcularCostoEmision(String clases, int edad) {
-        int vigencia;
-        if (edad < 21) {
-            vigencia = 1;
-        } else if (edad <= 46) {
-            vigencia = 5;
-        } else if (edad <= 60) {
-            vigencia = 4;
-        } else if (edad <= 70) {
-            vigencia = 3;
-        } else {
-            vigencia = 1;
-        }
+    private double calcularCostoEmision(String clases, Titular titular) {
+        int vigencia = calcularVigencia(titular);
 
         double total = 0.0;
         for (String clase : clases.trim().split("\\s+")) {
@@ -198,4 +180,100 @@ public class LicenciaServiceImpl implements LicenciaService {
         }
         throw new IllegalArgumentException("Clase o vigencia no válida");
     }
+
+    private int calcularVigencia(Titular titular) {
+        int edad = titular.calcularEdad();
+
+        boolean tuvoLicencia = false;
+        // Buscar licencia activa
+        if (licenciaActivaRepository.findByTitular_NumeroDocumento(titular.getNumeroDocumento()) != null) {
+            tuvoLicencia = true;
+        } else {
+            // Buscar licencias expiradas
+            // Suponiendo que existe licenciaexpiradaRepository y metodo findByTitular_NumeroDocumento
+            // (Asegurate de tener el bean inyectado)
+            if (!licenciaExpiradaRepository.findByTitular_NumeroDocumento(titular.getNumeroDocumento()).isEmpty()) {
+                tuvoLicencia = true;
+            }
+        }
+
+        if (edad < 21) {
+            return tuvoLicencia ? 3 : 1;
+        } else if (edad <= 46) {
+            return 5;
+        } else if (edad <= 60) {
+            return 4;
+        } else if (edad <= 70) {
+            return 3;
+        } else {
+            return 1;
+        }
+    }
+
+    private void validarFormularioLicencia(LicenciaFormDTO form) {
+        // Validar campos obligatorios
+        if (form.getDocumentoTitular() == null || form.getDocumentoTitular().isBlank())
+            throw new IllegalArgumentException("El documento del titular es obligatorio.");
+        if (form.getClases() == null || form.getClases().isBlank())
+            throw new IllegalArgumentException("Debe especificar al menos una clase.");
+
+        // Validar formato de documento (solo números, 7-9 dígitos)
+        if (!form.getDocumentoTitular().matches("\\d{7,9}"))
+            throw new IllegalArgumentException("El documento debe tener entre 7 y 9 dígitos numéricos.");
+
+        Titular titular = titularRepository.findByNumeroDocumento(form.getDocumentoTitular());
+        if (titular == null)
+            throw new IllegalArgumentException("No existe titular con ese documento.");
+
+        int edad = titular.calcularEdad();
+        String[] clases = form.getClases().trim().split("\\s+");
+
+        for (String clase : clases) {
+            boolean esProfesional = clase.equals("C") || clase.equals("D") || clase.equals("E");
+            if (esProfesional) {
+                // Edad mínima 21
+                if (edad < 21)
+                    throw new IllegalArgumentException("Debe tener al menos 21 años para clase " + clase + ".");
+                // Edad máxima 65 para primera profesional
+                boolean tieneLicenciaProfesional = false;
+                LicenciaActiva activa = licenciaActivaRepository.findByTitular_NumeroDocumento(titular.getNumeroDocumento());
+                if (activa != null && activa.getClases() != null && activa.getClases().matches(".*[CDE].*")) {
+                    tieneLicenciaProfesional = true;
+                } else {
+                    var expiradas = licenciaExpiradaRepository.findByTitular_NumeroDocumento(titular.getNumeroDocumento());
+                    tieneLicenciaProfesional = expiradas.stream().anyMatch(l -> l.getClases() != null && l.getClases().matches(".*[CDE].*"));
+                }
+                if (!tieneLicenciaProfesional && edad > 65)
+                    throw new IllegalArgumentException("Edad máxima para primera licencia profesional (" + clase + ") es 65 años.");
+
+                // Debe tener licencia B con al menos 1 año de antigüedad (activa o expirada)
+                boolean tieneLicenciaB = false;
+                LocalDate fechaEmisionB = null;
+                LicenciaActiva licenciaB = licenciaActivaRepository.findByTitular_NumeroDocumento(titular.getNumeroDocumento());
+                if (licenciaB != null && licenciaB.getClases() != null && licenciaB.getClases().contains("B")) {
+                    tieneLicenciaB = true;
+                    fechaEmisionB = licenciaB.getFechaEmision();
+                } else {
+                    var expiradas = licenciaExpiradaRepository.findByTitular_NumeroDocumento(titular.getNumeroDocumento());
+                    for (var l : expiradas) {
+                        if (l.getClases() != null && l.getClases().contains("B")) {
+                            tieneLicenciaB = true;
+                            if (fechaEmisionB == null || l.getFechaEmision().isBefore(fechaEmisionB)) {
+                                fechaEmisionB = l.getFechaEmision();
+                            }
+                        }
+                    }
+                }
+                if (!tieneLicenciaB)
+                    throw new IllegalArgumentException("Debe poseer licencia B para tramitar clase " + clase + ".");
+                if (fechaEmisionB == null || fechaEmisionB.isAfter(LocalDate.now().minusYears(1)))
+                    throw new IllegalArgumentException("Debe tener al menos 1 año de antigüedad con licencia B para clase " + clase + ".");
+            } else {
+                // Edad mínima 17
+                if (edad < 17)
+                    throw new IllegalArgumentException("Debe tener al menos 17 años para clase " + clase + ".");
+            }
+        }
+    }
+
 }

@@ -6,7 +6,7 @@ import tp.agil.backend.entities.Titular;
 
 import java.util.List;
 
-public interface LicenciaVencidaRepository extends JpaRepository<LicenciaExpirada, Long> {
+public interface LicenciaExpiradaRepository extends JpaRepository<LicenciaExpirada, Long> {
     List<LicenciaExpirada> findByTitular(Titular titular);
     List<LicenciaExpirada> findByTitular_NumeroDocumento(String titular_numeroDocumento);
     //CRUD implementado por JPA
