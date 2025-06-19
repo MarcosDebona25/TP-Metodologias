@@ -3,14 +3,17 @@ package tp.agil.backend.services;
 import org.springframework.stereotype.Service;
 import tp.agil.backend.dtos.ComprobanteDTO;
 import tp.agil.backend.dtos.LicenciaActivaDTO;
-import tp.agil.backend.dtos.LicenciaDTO;
+import tp.agil.backend.dtos.LicenciaEmitidaDTO;
 import tp.agil.backend.dtos.LicenciaFormDTO;
 import tp.agil.backend.entities.LicenciaActiva;
+import tp.agil.backend.entities.LicenciaExpirada;
 import tp.agil.backend.entities.Titular;
 import tp.agil.backend.entities.Usuario;
 import tp.agil.backend.exceptions.LicenciaNoEncontradaException;
 import tp.agil.backend.mappers.LicenciaActivaMapper;
+import tp.agil.backend.mappers.LicenciaEmitidaMapper;
 import tp.agil.backend.repositories.LicenciaActivaRepository;
+import tp.agil.backend.repositories.LicenciaVencidaRepository;
 import tp.agil.backend.repositories.TitularRepository;
 import tp.agil.backend.repositories.UsuarioRepository;
 
@@ -24,38 +27,65 @@ public class LicenciaServiceImpl implements LicenciaService {
     private final TitularRepository titularRepository;
     private final UsuarioRepository usuarioRepository;
     private final LicenciaActivaMapper licenciaActivaMapper;
+    private final LicenciaEmitidaMapper licenciaEmitidaMapper;
+    private final LicenciaVencidaRepository licenciaVencidaRepository;
+
+    private static final double GASTOS_ADMINISTRATIVOS = 8.0;
 
     public LicenciaServiceImpl(
             LicenciaActivaRepository licenciaActivaRepository,
             TitularRepository titularRepository,
             UsuarioRepository usuarioRepository,
-            LicenciaActivaMapper licenciaActivaMapper
+            LicenciaActivaMapper licenciaActivaMapper,
+            LicenciaEmitidaMapper licenciaEmitidaMapper, LicenciaVencidaRepository licenciaVencidaRepository
     ) {
         this.licenciaActivaRepository = licenciaActivaRepository;
         this.titularRepository = titularRepository;
         this.usuarioRepository = usuarioRepository;
         this.licenciaActivaMapper = licenciaActivaMapper;
+        this.licenciaEmitidaMapper = licenciaEmitidaMapper;
+        this.licenciaVencidaRepository = licenciaVencidaRepository;
     }
 
     @Override
-    public LicenciaDTO emitirLicencia(LicenciaFormDTO licenciaFormDTO) {
+    public LicenciaEmitidaDTO emitirLicencia(LicenciaFormDTO licenciaFormDTO) {
+        String documentoUsuario = "11999888";
         Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getDocumentoTitular());
-        Usuario usuario = usuarioRepository.findByNumeroDocumento("11999888"); // getDocumentoUsuario() SERÁ CUANDO TENGAMOS LOGIN
-
+        Usuario usuario = usuarioRepository.findByNumeroDocumento(documentoUsuario);
         LocalDate fechaEmision = LocalDate.now();
         LocalDate fechaVencimiento = calcularFechaVencimiento(titular);
 
-        LicenciaActiva licenciaActiva = new LicenciaActiva();
-        licenciaActiva.setTitular(titular);
-        licenciaActiva.setUsuario(usuario);
-        licenciaActiva.setObservaciones(licenciaFormDTO.getObservaciones());
-        licenciaActiva.setClases(licenciaFormDTO.getClases());
-        licenciaActiva.setFechaEmision(fechaEmision);
-        licenciaActiva.setFechaVencimiento(fechaVencimiento);
+        LicenciaActiva licenciaAnterior = titular.getLicenciaActiva();
+        if (licenciaAnterior != null) {
+            titular.setLicenciaActiva(null);
+            titularRepository.save(titular);
 
-        licenciaActivaRepository.save(licenciaActiva);
+            LicenciaExpirada expirada = new LicenciaExpirada();
+            expirada.setTitular(titular);
+            expirada.setUsuario(licenciaAnterior.getUsuario());
+            expirada.setObservaciones(licenciaAnterior.getObservaciones());
+            expirada.setClases(licenciaAnterior.getClases());
+            expirada.setFechaEmision(licenciaAnterior.getFechaEmision());
+            expirada.setFechaVencimiento(licenciaAnterior.getFechaVencimiento());
+            licenciaVencidaRepository.save(expirada);
 
-        LicenciaDTO dto = licenciaActivaMapper.entityToDto(licenciaActiva);
+            licenciaActivaRepository.delete(licenciaAnterior);
+        }
+
+        LicenciaActiva nuevaLicencia = new LicenciaActiva();
+        nuevaLicencia.setTitular(titular);
+        nuevaLicencia.setUsuario(usuario);
+        nuevaLicencia.setObservaciones(licenciaFormDTO.getObservaciones());
+        nuevaLicencia.setClases(licenciaFormDTO.getClases());
+        nuevaLicencia.setFechaEmision(fechaEmision);
+        nuevaLicencia.setFechaVencimiento(fechaVencimiento);
+
+        licenciaActivaRepository.save(nuevaLicencia);
+
+        titular.setLicenciaActiva(nuevaLicencia);
+        titularRepository.save(titular);
+
+        LicenciaEmitidaDTO dto = licenciaEmitidaMapper.entityToDto(nuevaLicencia);
         dto.setDocumentoTitular(titular.getNumeroDocumento());
         dto.setDocumentoUsuario(usuario.getNumeroDocumento());
         return dto;
@@ -104,6 +134,7 @@ public class LicenciaServiceImpl implements LicenciaService {
         dto.setDocumentoTitular(titular.getNumeroDocumento());
         dto.setNombreTitular(titular.getNombre());
         dto.setApellidoTitular(titular.getApellido());
+        dto.setFechaNacimientoTitular(titular.getFechaNacimiento());
         dto.setClases(licencia.getClases());
         dto.setDomicilioTitular(titular.getDomicilio());
         dto.setFechaEmisionLicencia(licencia.getFechaEmision());
@@ -125,8 +156,70 @@ public class LicenciaServiceImpl implements LicenciaService {
         dto.setNombreTitular(titular.getNombre());
         dto.setApellidoTitular(titular.getApellido());
         dto.setClases(licencia.getClases());
-        dto.setCostosEmision(1000.0);
-        dto.setCostosAdministrativos(500.0);
+        dto.setCostosEmision(calcularCostoEmision(licencia.getClases(), titular.calcularEdad()));
+        dto.setCostosAdministrativos(GASTOS_ADMINISTRATIVOS);
         return dto;
+    }
+
+    private double calcularCostoEmision(String clases, int edad) {
+        int vigencia;
+        if (edad < 21) {
+            vigencia = 1;
+        } else if (edad <= 46) {
+            vigencia = 5;
+        } else if (edad <= 60) {
+            vigencia = 4;
+        } else if (edad <= 70) {
+            vigencia = 3;
+        } else {
+            vigencia = 1;
+        }
+
+        double total = 0.0;
+        for (String clase : clases.trim().split("\\s+")) {
+            total += costoPorClaseYVigencia(clase, vigencia);
+        }
+        return total;
+    }
+
+    private double costoPorClaseYVigencia(String clase, int vigencia) {
+        switch (clase) {
+            case "A":
+            case "B":
+            case "G":
+            case "F":
+                switch (vigencia) {
+                    case 5: return 40.0;
+                    case 4: return 30.0;
+                    case 3: return 25.0;
+                    case 1: return 20.0;
+                }
+                break;
+            case "C":
+                switch (vigencia) {
+                    case 5: return 47.0;
+                    case 4: return 35.0;
+                    case 3: return 30.0;
+                    case 1: return 23.0;
+                }
+                break;
+            case "D":
+                switch (vigencia) {
+                    case 5: return 50.0;
+                    case 4: return 40.0;
+                    case 3: return 35.0;
+                    case 1: return 28.0;
+                }
+                break;
+            case "E":
+                switch (vigencia) {
+                    case 5: return 59.0;
+                    case 4: return 44.0;
+                    case 3: return 39.0;
+                    case 1: return 29.0;
+                }
+                break;
+        }
+        throw new IllegalArgumentException("Clase o vigencia no válida");
     }
 }

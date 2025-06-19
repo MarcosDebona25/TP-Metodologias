@@ -7,8 +7,7 @@ import java.util.List;
 @Getter
 @Setter
 public class LicenciaFormDTO {
-        private String documentoTitular; // dni del titular de la licencia
-        private String documentoUsuario; // dni del usuario administrativo que lleva a cabo el tramite
+        private String documentoTitular;
         private String clases;
         private String observaciones;
 }

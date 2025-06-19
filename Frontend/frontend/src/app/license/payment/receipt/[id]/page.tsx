@@ -1,20 +1,41 @@
 'use client'
 
-interface Props {
-    params: { id: string }
-}
+import { useEffect, useState } from "react"
+import { useParams } from "next/navigation"
+import { Comprobante } from "@/types/Receipt"
 
-export default function PaymentReceiptPage({ params }: Props) {
-    const id = params.id
+export default function PaymentReceiptPage() {
+    const params = useParams()
+    const id = params?.id as string
+
+    const [comprobante, setReceipt] = useState<Comprobante | null>(null)
+
+    useEffect(() => {
+        if (!id) return
+
+        async function fetchData() {
+            try {
+                const res = await fetch(`http://localhost:8080/api/licencias/comprobante/${id}`)
+                const data = await res.json()
+                setReceipt(data)
+            } catch (error) {
+                console.error("Error de comprobante:", error)
+            }
+        }
+
+        fetchData()
+    }, [id])
+
+    if (!comprobante) return <p>Cargando comprobante...</p>
 
     const data = {
-        id,
-        nombre: "JUAN PÉREZ",
-        tramite: "Renovación de Licencia Clase B",
-        costoTramite: 3000,
-        gastosAdm: 500,
-        total: 3500,
-        fechaEmision: new Date().toISOString(),
+        id: id,
+        nombre: `${comprobante.nombreTitular} ${comprobante.apellidoTitular}`,
+        tramite: `Renovación de Licencia Clase ${comprobante.clases}`,
+        costoTramite: `${comprobante.costosEmision}`,
+        gastosAdm:`${comprobante.costosAdministrativos}` ,
+        total: `${comprobante.costosAdministrativos+comprobante.costosEmision}`,
+        fechaEmision: `Fecha de emision`,
     }
 
     return (
@@ -45,7 +66,6 @@ export default function PaymentReceiptPage({ params }: Props) {
                     Conserve este comprobante para presentarlo al momento del pago.
                 </p>
 
-                {/* BOTÓN ABAJO, CENTRADO */}
                 <div className="mt-6 flex justify-center print:hidden">
                     <button
                         onClick={() => window.print()}
