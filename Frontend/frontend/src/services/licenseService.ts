@@ -5,9 +5,7 @@ export async function fetchExpiringLicenses(
   from: string,
   to: string
 ): Promise<LicenseSummary[]> {
-  const response = await fetch(
-    `/api/licencias/expiradas?desde=${from}&hasta=${to}`
-  );
+  const response = await fetch(`/api/licenses/expiring?from=${from}&to=${to}`);
   if (!response.ok) {
     throw new Error("Error obteniendo licencias");
   }
@@ -37,20 +35,23 @@ export async function submitLicense(data: LicenseFormSchema): Promise<void> {
 // src/services/licenseService.ts
 
 export async function getLicenseById(idNumber: string) {
-  const response = await fetch(`http://localhost:8080/api/titulares/id/${idNumber}`, {
-    method: "GET",
-    credentials: "include",
-    cache: "no-store"
-  })
+  const response = await fetch(
+    `http://localhost:8080/api/titulares/id/${idNumber}`,
+    {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+    }
+  );
 
-  if (!response.ok) throw new Error("No se pudo obtener la licencia")
+  if (!response.ok) throw new Error("No se pudo obtener la licencia");
 
   const data = await response.json();
 
   return {
     ...data,
     allowedLicenseTypes: data.allowedLicenseTypes
-        ? data.allowedLicenseTypes.split(" ").filter(Boolean)
-        : [],
+      ? data.allowedLicenseTypes.split(" ").filter(Boolean)
+      : [],
   };
 }

@@ -4,12 +4,22 @@ import { useState } from "react";
 import { fetchExpiringLicenses } from "@/services/licenseService";
 import { LicenseSummary } from "@/types/LicenseSummary";
 
+type SortField =
+  | "numeroDocumento"
+  | "clases"
+  | "fechaEmision"
+  | "fechaVencimiento";
+type SortDirection = "asc" | "desc";
+
 export default function ExpiringLicensesTable() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [results, setResults] = useState<LicenseSummary[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const [sortField, setSortField] = useState<SortField>("fechaVencimiento");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   const handleSearch = async () => {
     if (!from || !to) return;
@@ -35,12 +45,34 @@ export default function ExpiringLicensesTable() {
     try {
       const data = await fetchExpiringLicenses(from, to);
       setResults(data);
-    } catch (err: any) {
-      setError(err.message || "Error fetching data");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message || "Error fetching data");
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  const handleSort = (field: SortField) => {
+    if (field === sortField) {
+      // toggle direction
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedResults = [...results].sort((a, b) => {
+    const aVal = a[sortField];
+    const bVal = b[sortField];
+
+    return sortDirection === "asc"
+      ? String(aVal).localeCompare(String(bVal))
+      : String(bVal).localeCompare(String(aVal));
+  });
+
   let validRange = true;
   if (from && to) {
     const fromDate = new Date(from);
@@ -51,10 +83,11 @@ export default function ExpiringLicensesTable() {
       validRange = false;
     }
   }
+
   return (
     <div className="max-w-4xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4 text-gray-800">
-        Licencias Vencidas o por Vencer
+        Licencias a Expirar
       </h1>
 
       <div className="flex gap-4 items-end mb-6">
@@ -96,26 +129,44 @@ export default function ExpiringLicensesTable() {
       )}
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
-      {results.length > 0 ? (
+      {sortedResults.length > 0 ? (
         <div className="overflow-x-auto">
-          <table className="min-w-full border border-gray-300">
-            <thead className="bg-gray-100">
+          <table className="min-w-full border-gray-500 border-2">
+            <thead className="bg-blue-500 text-white">
               <tr>
-                <th className="px-4 py-2 border">Titular</th>
-                <th className="px-4 py-2 border">Clase/s</th>
-                <th className="px-4 py-2 border">Fecha de emisión</th>
-                <th className="px-4 py-2 border">Fecha de vencimiento</th>
+                {[
+                  { label: "Titular", field: "numeroDocumento" },
+                  { label: "Clase/s", field: "clases" },
+                  { label: "Fecha de emisión", field: "fechaEmision" },
+                  { label: "Fecha de vencimiento", field: "fechaVencimiento" },
+                ].map(({ label, field }) => (
+                  <th
+                    key={field}
+                    onClick={() => handleSort(field as SortField)}
+                    className="cursor-pointer max-w-2.5 py-2 border border-gray-500"
+                  >
+                    {label}
+                    {sortField === field &&
+                      (sortDirection === "asc" ? " ▲" : " ▼")}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {results.map((license, index) => (
+              {sortedResults.map((license, index) => (
                 <tr key={index} className="text-center">
-                  <td className="px-4 py-2 border">{license.idNumber}</td>
-                  <td className="px-4 py-2 border">
-                    {license.licenseTypes.join(", ")}
+                  <td className="border text-gray-800 border-gray-500 bg-gray-200 px-4 py-2">
+                    {license.numeroDocumento}
                   </td>
-                  <td className="px-4 py-2 border">{license.grantDate}</td>
-                  <td className="px-4 py-2 border">{license.expirationDate}</td>
+                  <td className="border text-gray-800 border-gray-500 bg-gray-200 px-4 py-2">
+                    {license.clases}
+                  </td>
+                  <td className="border text-gray-800 border-gray-500 bg-gray-200 px-4 py-2">
+                    {license.fechaEmision}
+                  </td>
+                  <td className="border text-gray-800 border-gray-500 bg-gray-200 px-4 py-2">
+                    {license.fechaVencimiento}
+                  </td>
                 </tr>
               ))}
             </tbody>
