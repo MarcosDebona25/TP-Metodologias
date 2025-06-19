@@ -30,6 +30,8 @@ public class LicenciaServiceImpl implements LicenciaService {
     private final LicenciaEmitidaMapper licenciaEmitidaMapper;
     private final LicenciaVencidaRepository licenciaVencidaRepository;
 
+    private static final double GASTOS_ADMINISTRATIVOS = 8.0;
+
     public LicenciaServiceImpl(
             LicenciaActivaRepository licenciaActivaRepository,
             TitularRepository titularRepository,
@@ -154,8 +156,70 @@ public class LicenciaServiceImpl implements LicenciaService {
         dto.setNombreTitular(titular.getNombre());
         dto.setApellidoTitular(titular.getApellido());
         dto.setClases(licencia.getClases());
-        dto.setCostosEmision(1000.0);
-        dto.setCostosAdministrativos(500.0);
+        dto.setCostosEmision(calcularCostoEmision(licencia.getClases(), titular.calcularEdad()));
+        dto.setCostosAdministrativos(GASTOS_ADMINISTRATIVOS);
         return dto;
+    }
+
+    private double calcularCostoEmision(String clases, int edad) {
+        int vigencia;
+        if (edad < 21) {
+            vigencia = 1;
+        } else if (edad <= 46) {
+            vigencia = 5;
+        } else if (edad <= 60) {
+            vigencia = 4;
+        } else if (edad <= 70) {
+            vigencia = 3;
+        } else {
+            vigencia = 1;
+        }
+
+        double total = 0.0;
+        for (String clase : clases.trim().split("\\s+")) {
+            total += costoPorClaseYVigencia(clase, vigencia);
+        }
+        return total;
+    }
+
+    private double costoPorClaseYVigencia(String clase, int vigencia) {
+        switch (clase) {
+            case "A":
+            case "B":
+            case "G":
+            case "F":
+                switch (vigencia) {
+                    case 5: return 40.0;
+                    case 4: return 30.0;
+                    case 3: return 25.0;
+                    case 1: return 20.0;
+                }
+                break;
+            case "C":
+                switch (vigencia) {
+                    case 5: return 47.0;
+                    case 4: return 35.0;
+                    case 3: return 30.0;
+                    case 1: return 23.0;
+                }
+                break;
+            case "D":
+                switch (vigencia) {
+                    case 5: return 50.0;
+                    case 4: return 40.0;
+                    case 3: return 35.0;
+                    case 1: return 28.0;
+                }
+                break;
+            case "E":
+                switch (vigencia) {
+                    case 5: return 59.0;
+                    case 4: return 44.0;
+                    case 3: return 39.0;
+                    case 1: return 29.0;
+                }
+                break;
+        }
+        throw new IllegalArgumentException("Clase o vigencia no válida");
     }
 }
