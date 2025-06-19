@@ -1,11 +1,28 @@
+import { NextResponse } from "next/server";
 import { LicenseFormSchema } from "@/schemas/licenseSchema";
-import { LicenseSummary } from "@/types/LicenseSummary";
+import { LicenciaActiva } from "@/types/License";
 
 export async function fetchExpiringLicenses(
   from: string,
   to: string
-): Promise<LicenseSummary[]> {
-  const response = await fetch(`/api/licenses/expiring?from=${from}&to=${to}`);
+): Promise<LicenciaActiva[]> {
+  let response = await fetch(
+    `http://localhost:8080/api/licencias/expiradas?desde=${from}&hasta=${to}`,
+    {
+      method: "GET",
+      credentials: "include",
+    }
+  );
+  if (!response.ok) {
+    const errorText = await response.text();
+    if (errorText.includes("DNI")) {
+      const emptyList: any[] = [];
+      response = NextResponse.json(emptyList);
+    } else {
+      throw new Error("Titular no encontrado");
+    }
+  }
+
   if (!response.ok) {
     throw new Error("Error obteniendo licencias");
   }
