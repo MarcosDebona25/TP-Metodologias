@@ -35,7 +35,7 @@ export default function PaymentReceiptPage() {
         costoTramite: `${comprobante.costosEmision}`,
         gastosAdm:`${comprobante.costosAdministrativos}` ,
         total: `${comprobante.costosAdministrativos+comprobante.costosEmision}`,
-        fechaEmision: `Fecha de emision`,
+        fechaEmision: `${comprobante.fechaEmisionComprobante}`,
     }
 
     return (
@@ -80,9 +80,12 @@ export default function PaymentReceiptPage() {
 }
 
 function formatear(fecha: string) {
-    return new Date(fecha).toLocaleDateString("es-AR", {
+    // Agregamos 'T00:00:00' para evitar el desfase por zona horaria
+    const localDate = new Date(fecha + 'T00:00:00')
+    return localDate.toLocaleDateString("es-AR", {
         day: "2-digit",
         month: "long",
         year: "numeric"
     })
 }
+

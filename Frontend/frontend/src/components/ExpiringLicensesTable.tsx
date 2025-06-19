@@ -2,23 +2,25 @@
 
 import { useState } from "react";
 import { fetchExpiringLicenses } from "@/services/licenseService";
-import { LicenseSummary } from "@/types/LicenseSummary";
+import { LicenciaActiva } from "@/types/License";
 
 type SortField =
-  | "numeroDocumento"
+  | "documentoTitular"
   | "clases"
-  | "fechaEmision"
-  | "fechaVencimiento";
+  | "fechaEmisionLicencia"
+  | "fechaVencimientoLicencia";
 type SortDirection = "asc" | "desc";
 
 export default function ExpiringLicensesTable() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const [results, setResults] = useState<LicenseSummary[]>([]);
+  const [results, setResults] = useState<LicenciaActiva[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const [sortField, setSortField] = useState<SortField>("fechaVencimiento");
+  const [sortField, setSortField] = useState<SortField>(
+    "fechaVencimientoLicencia"
+  );
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   const handleSearch = async () => {
@@ -156,16 +158,16 @@ export default function ExpiringLicensesTable() {
               {sortedResults.map((license, index) => (
                 <tr key={index} className="text-center">
                   <td className="border text-gray-800 border-gray-500 bg-gray-200 px-4 py-2">
-                    {license.numeroDocumento}
+                    {license.documentoTitular}
                   </td>
                   <td className="border text-gray-800 border-gray-500 bg-gray-200 px-4 py-2">
                     {license.clases}
                   </td>
                   <td className="border text-gray-800 border-gray-500 bg-gray-200 px-4 py-2">
-                    {license.fechaEmision}
+                    {license.fechaEmisionLicencia}
                   </td>
                   <td className="border text-gray-800 border-gray-500 bg-gray-200 px-4 py-2">
-                    {license.fechaVencimiento}
+                    {license.fechaVencimientoLicencia}
                   </td>
                 </tr>
               ))}
