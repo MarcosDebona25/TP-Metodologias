@@ -47,7 +47,15 @@ export default function LicenseForm() {
     try {
       await submitLicense(data);
       alert("Licencia creada exitosamente");
+
+      // Navigate current tab
       router.push(`/license/print/${person?.numeroDocumento}`);
+
+      // Navigate new tab
+      const receiptTab = window.open();
+      if (receiptTab) {
+        receiptTab.location.href = `/license/payment/receipt/${person?.numeroDocumento}`;
+      }
     } catch (err) {
       if (err instanceof Error) {
         alert(err.message || "Error al crear licencia");
