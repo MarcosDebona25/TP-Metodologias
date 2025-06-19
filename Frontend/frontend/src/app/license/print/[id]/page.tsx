@@ -3,8 +3,9 @@
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import { LicenciaActiva } from "@/types/License"
-import { Person } from "@/types/Person"
+import { Person, PersonWithLicense } from "@/types/Person"
 import {useParams} from "next/navigation";
+import { getPersonByIdNumber, getPersonWithLicenseByIdNumber } from "@/services/personService"
 
 
 
@@ -20,14 +21,14 @@ export default function PrintLicensePage() {
 
         async function fetchData() {
             const res = await fetch(`http://localhost:8080/api/licencias/${id}`)
-            const res2 = await fetch(`http://localhost:3000/api/titulares/${id}`)
+            const res2 = await fetch(`http://localhost:8080/api/titulares/id/${id}`)
             const licenciaData = await res.json()
             const personData = await res2.json()
             setLicense(licenciaData)
-            setPerson(personData)
+            setPerson(personData.titular)
         }
 
-        fetchData()
+        fetchData();
     }, [id])
 
     if (!license || !person) return <p>Cargando licencia...</p>
