@@ -1,15 +1,16 @@
 package tp.agil.backend.controllers;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tp.agil.backend.dtos.ComprobanteDTO;
-import tp.agil.backend.dtos.LicenciaActivaDTO;
-import tp.agil.backend.dtos.LicenciaEmitidaDTO;
-import tp.agil.backend.dtos.LicenciaFormDTO;
+import tp.agil.backend.dtos.*;
 import tp.agil.backend.services.LicenciaService;
 import tp.agil.backend.repositories.LicenciaActivaRepository;
 import tp.agil.backend.repositories.TitularRepository;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/licencias")
@@ -47,5 +48,13 @@ public class LicenciaController {
     public ResponseEntity<LicenciaEmitidaDTO> renovarLicencia(@RequestBody LicenciaFormDTO licenciaFormDTO, @PathVariable String motivo) {
         LicenciaEmitidaDTO renovada = licenciaService.renovarLicencia(licenciaFormDTO, motivo);
         return new ResponseEntity<>(renovada, HttpStatus.OK);
+    }
+
+    @GetMapping("/vencidas")
+    public ResponseEntity<LicenciasVencidasDTO> obtenerLicenciasVencidasEntre(
+            @RequestParam("desde") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam("hasta") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta) {
+        LicenciasVencidasDTO lista = licenciaService.obtenerLicenciasVencidasEntre(desde, hasta);
+        return new ResponseEntity<>(lista, HttpStatus.OK);
     }
 }

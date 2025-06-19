@@ -1,10 +1,7 @@
 package tp.agil.backend.services;
 
 import org.springframework.stereotype.Service;
-import tp.agil.backend.dtos.ComprobanteDTO;
-import tp.agil.backend.dtos.LicenciaActivaDTO;
-import tp.agil.backend.dtos.LicenciaEmitidaDTO;
-import tp.agil.backend.dtos.LicenciaFormDTO;
+import tp.agil.backend.dtos.*;
 import tp.agil.backend.entities.LicenciaActiva;
 import tp.agil.backend.entities.LicenciaExpirada;
 import tp.agil.backend.entities.Titular;
@@ -13,6 +10,7 @@ import tp.agil.backend.exceptions.LicenciaNoEncontradaException;
 import tp.agil.backend.exceptions.TitularNoEncontradoException;
 import tp.agil.backend.mappers.LicenciaActivaMapper;
 import tp.agil.backend.mappers.LicenciaEmitidaMapper;
+import tp.agil.backend.mappers.LicenciaExpiradaMapper;
 import tp.agil.backend.repositories.LicenciaActivaRepository;
 import tp.agil.backend.repositories.LicenciaExpiradaRepository;
 import tp.agil.backend.repositories.TitularRepository;
@@ -20,6 +18,8 @@ import tp.agil.backend.repositories.UsuarioRepository;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LicenciaServiceImpl implements LicenciaService {
@@ -30,6 +30,7 @@ public class LicenciaServiceImpl implements LicenciaService {
     private final UsuarioRepository usuarioRepository;
     private final LicenciaActivaMapper licenciaActivaMapper;
     private final LicenciaEmitidaMapper licenciaEmitidaMapper;
+    private final LicenciaExpiradaMapper licenciaExpiradaMapper;
 
     private static final double GASTOS_ADMINISTRATIVOS = 8.0;
 
@@ -38,7 +39,7 @@ public class LicenciaServiceImpl implements LicenciaService {
                                TitularRepository titularRepository,
                                UsuarioRepository usuarioRepository,
                                LicenciaActivaMapper licenciaActivaMapper,
-                               LicenciaEmitidaMapper licenciaEmitidaMapper
+                               LicenciaEmitidaMapper licenciaEmitidaMapper, LicenciaExpiradaMapper licenciaExpiradaMapper
     ) {
         this.licenciaActivaRepository = licenciaActivaRepository;
         this.licenciaExpiradaRepository = licenciaExpiradaRepository;
@@ -46,6 +47,7 @@ public class LicenciaServiceImpl implements LicenciaService {
         this.usuarioRepository = usuarioRepository;
         this.licenciaActivaMapper = licenciaActivaMapper;
         this.licenciaEmitidaMapper = licenciaEmitidaMapper;
+        this.licenciaExpiradaMapper = licenciaExpiradaMapper;
     }
 
     @Override
@@ -185,6 +187,27 @@ public class LicenciaServiceImpl implements LicenciaService {
         return dto;
     }
 
+
+    @Override
+    public LicenciasVencidasDTO obtenerLicenciasVencidasEntre(LocalDate desde, LocalDate hasta) {
+        List<LicenciaExpiradaDTO> expiradas = licenciaExpiradaRepository
+                .findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(desde, hasta)
+                .stream()
+                .map(licenciaExpiradaMapper::entityToDto)
+                .collect(Collectors.toList());
+
+        List<LicenciaActivaDTO> activasVencidas = licenciaActivaRepository
+                .findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(desde, hasta)
+                .stream()
+                .filter(l -> !l.getFechaVencimiento().isAfter(LocalDate.now()))
+                .map(licenciaActivaMapper::entityToDto)
+                .collect(Collectors.toList());
+
+        LicenciasVencidasDTO resultado = new LicenciasVencidasDTO();
+        resultado.setExpiradas(expiradas);
+        resultado.setActivasVencidas(activasVencidas);
+        return resultado;
+    }
     private LocalDate calcularFechaVencimiento(Titular titular) {
         LocalDate hoy = LocalDate.now();
         LocalDate nacimiento = titular.getFechaNacimiento();
