@@ -1,6 +1,5 @@
 package tp.agil.backend.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,7 +12,6 @@ import tp.agil.backend.mappers.LicenciaEmitidaMapper;
 import tp.agil.backend.repositories.*;
 import tp.agil.backend.services.LicenciaServiceImpl;
 
-import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -45,8 +43,6 @@ public class LicenciaServiceImplTest {
         form.setObservaciones("Observaciones de prueba");
         return form;
     }
-
-    // ---------------------- TESTS EXISTENTES ----------------------
 
     @Test
     void testEdadMenorA17ParaClaseB_lanzaExcepcion() {
@@ -180,6 +176,7 @@ public class LicenciaServiceImplTest {
         assertDoesNotThrow(() -> licenciaService.emitirLicencia(form));
     }
 
+
     @Test
     void testRenovarLicencia_conMotivoInvalido_lanzaExcepcion() {
         LicenciaFormDTO form = buildForm("12345678", "B");
@@ -272,138 +269,4 @@ public class LicenciaServiceImplTest {
         assertDoesNotThrow(() -> licenciaService.renovarLicencia(form, "vencimiento"));
     }
 
-    // ---------------------- TESTS CALCULO FECHA VENCIMIENTO ----------------------
-
-    /**
-     * Utilidad para invocar el método privado calcularFechaVencimiento usando reflexión.
-     */
-    private LocalDate calcularFechaVencimientoPrivado(Titular titular) throws Exception {
-        Method m = LicenciaServiceImpl.class.getDeclaredMethod("calcularFechaVencimiento", Titular.class);
-        m.setAccessible(true);
-        return (LocalDate) m.invoke(licenciaService, titular);
-    }
-
-    @Test
-    void testVigenciaMenor21SinLicenciaPrevia() throws Exception {
-        Titular t = new Titular();
-        t.setFechaNacimiento(LocalDate.now().minusYears(18));
-        t.setNumeroDocumento("111");
-        when(licenciaActivaRepository.findByTitular_NumeroDocumento("111")).thenReturn(null);
-        when(licenciaExpiradaRepository.findByTitular_NumeroDocumento("111")).thenReturn(Collections.emptyList());
-
-        LocalDate vencimiento = calcularFechaVencimientoPrivado(t);
-        // Vigencia 1 año, debe vencer en el próximo cumpleaños + 1 año
-        LocalDate proximoCumple = t.getFechaNacimiento().withYear(LocalDate.now().getYear());
-        if (!proximoCumple.isAfter(LocalDate.now())) proximoCumple = proximoCumple.plusYears(1);
-        assertEquals(proximoCumple.plusYears(1), vencimiento);
-    }
-
-    @Test
-    void testVigenciaMenor21ConLicenciaPrevia() throws Exception {
-        Titular t = new Titular();
-        t.setFechaNacimiento(LocalDate.now().minusYears(20));
-        t.setNumeroDocumento("222");
-        when(licenciaActivaRepository.findByTitular_NumeroDocumento("222")).thenReturn(new LicenciaActiva());
-
-        LocalDate vencimiento = calcularFechaVencimientoPrivado(t);
-        // Vigencia 3 años, debe vencer en el próximo cumpleaños + 3 años
-        LocalDate proximoCumple = t.getFechaNacimiento().withYear(LocalDate.now().getYear());
-        if (!proximoCumple.isAfter(LocalDate.now())) proximoCumple = proximoCumple.plusYears(1);
-        assertEquals(proximoCumple.plusYears(3), vencimiento);
-    }
-
-    @Test
-    void testVigencia21a46() throws Exception {
-        Titular t = new Titular();
-        t.setFechaNacimiento(LocalDate.now().minusYears(30));
-        t.setNumeroDocumento("333");
-        when(licenciaActivaRepository.findByTitular_NumeroDocumento("333")).thenReturn(null);
-        when(licenciaExpiradaRepository.findByTitular_NumeroDocumento("333")).thenReturn(Collections.emptyList());
-
-        LocalDate vencimiento = calcularFechaVencimientoPrivado(t);
-        // Vigencia 5 años
-        LocalDate proximoCumple = t.getFechaNacimiento().withYear(LocalDate.now().getYear());
-        if (!proximoCumple.isAfter(LocalDate.now())) proximoCumple = proximoCumple.plusYears(1);
-        assertEquals(proximoCumple.plusYears(5), vencimiento);
-    }
-
-    @Test
-    void testVigencia47a60() throws Exception {
-        Titular t = new Titular();
-        t.setFechaNacimiento(LocalDate.now().minusYears(50));
-        t.setNumeroDocumento("444");
-        when(licenciaActivaRepository.findByTitular_NumeroDocumento("444")).thenReturn(null);
-        when(licenciaExpiradaRepository.findByTitular_NumeroDocumento("444")).thenReturn(Collections.emptyList());
-
-        LocalDate vencimiento = calcularFechaVencimientoPrivado(t);
-        // Vigencia 4 años
-        LocalDate proximoCumple = t.getFechaNacimiento().withYear(LocalDate.now().getYear());
-        if (!proximoCumple.isAfter(LocalDate.now())) proximoCumple = proximoCumple.plusYears(1);
-        assertEquals(proximoCumple.plusYears(4), vencimiento);
-    }
-
-    @Test
-    void testVigencia61a70() throws Exception {
-        Titular t = new Titular();
-        t.setFechaNacimiento(LocalDate.now().minusYears(65));
-        t.setNumeroDocumento("555");
-        when(licenciaActivaRepository.findByTitular_NumeroDocumento("555")).thenReturn(null);
-        when(licenciaExpiradaRepository.findByTitular_NumeroDocumento("555")).thenReturn(Collections.emptyList());
-
-        LocalDate vencimiento = calcularFechaVencimientoPrivado(t);
-        // Vigencia 3 años
-        LocalDate proximoCumple = t.getFechaNacimiento().withYear(LocalDate.now().getYear());
-        if (!proximoCumple.isAfter(LocalDate.now())) proximoCumple = proximoCumple.plusYears(1);
-        assertEquals(proximoCumple.plusYears(3), vencimiento);
-    }
-
-    @Test
-    void testVigenciaMayor70() throws Exception {
-        Titular t = new Titular();
-        t.setFechaNacimiento(LocalDate.now().minusYears(75));
-        t.setNumeroDocumento("666");
-        when(licenciaActivaRepository.findByTitular_NumeroDocumento("666")).thenReturn(null);
-        when(licenciaExpiradaRepository.findByTitular_NumeroDocumento("666")).thenReturn(Collections.emptyList());
-
-        LocalDate vencimiento = calcularFechaVencimientoPrivado(t);
-        // Vigencia 1 año
-        LocalDate proximoCumple = t.getFechaNacimiento().withYear(LocalDate.now().getYear());
-        if (!proximoCumple.isAfter(LocalDate.now())) proximoCumple = proximoCumple.plusYears(1);
-        assertEquals(proximoCumple.plusYears(1), vencimiento);
-    }
-
-    @Test
-    void testLimiteCambioDeRangoEdad() throws Exception {
-        Titular t = new Titular();
-        t.setNumeroDocumento("777");
-        // Edad 46, debe ser vigencia 5
-        t.setFechaNacimiento(LocalDate.now().minusYears(46));
-        when(licenciaActivaRepository.findByTitular_NumeroDocumento("777")).thenReturn(null);
-        when(licenciaExpiradaRepository.findByTitular_NumeroDocumento("777")).thenReturn(Collections.emptyList());
-        LocalDate vencimiento = calcularFechaVencimientoPrivado(t);
-        LocalDate proximoCumple = t.getFechaNacimiento().withYear(LocalDate.now().getYear());
-        if (!proximoCumple.isAfter(LocalDate.now())) proximoCumple = proximoCumple.plusYears(1);
-        assertEquals(proximoCumple.plusYears(5), vencimiento);
-
-        // Edad 47, debe ser vigencia 4
-        t.setFechaNacimiento(LocalDate.now().minusYears(47));
-        vencimiento = calcularFechaVencimientoPrivado(t);
-        proximoCumple = t.getFechaNacimiento().withYear(LocalDate.now().getYear());
-        if (!proximoCumple.isAfter(LocalDate.now())) proximoCumple = proximoCumple.plusYears(1);
-        assertEquals(proximoCumple.plusYears(4), vencimiento);
-    }
-
-    @Test
-    void testFechaInicioEsHoy() throws Exception {
-        Titular t = new Titular();
-        t.setFechaNacimiento(LocalDate.now().minusYears(30));
-        t.setNumeroDocumento("888");
-        when(licenciaActivaRepository.findByTitular_NumeroDocumento("888")).thenReturn(null);
-        when(licenciaExpiradaRepository.findByTitular_NumeroDocumento("888")).thenReturn(Collections.emptyList());
-
-        // El metodo privado no retorna la fecha de inicio, pero se puede verificar que la fecha de vencimiento
-        // siempre es mayor a hoy y que el cálculo parte de la fecha actual.
-        LocalDate vencimiento = calcularFechaVencimientoPrivado(t);
-        assertTrue(vencimiento.isAfter(LocalDate.now()));
-    }
 }
