@@ -47,13 +47,22 @@ export default function LicenseForm() {
     try {
       await submitLicense(data);
       alert("Licencia creada exitosamente");
+
+      // Navigate current tab
       router.push(`/license/print/${person?.numeroDocumento}`);
+
+      const receiptTab = window.open();
+      // Navigate new tab
+      if (receiptTab) {
+        receiptTab.location.href = `/license/payment/receipt/${person?.numeroDocumento}`;
+      }
     } catch (err) {
       if (err instanceof Error) {
         alert(err.message || "Error al crear licencia");
       }
     }
   };
+
   const selectedTypes = watch("clases");
   const hasDisallowedSelection =
     person != null &&

@@ -52,7 +52,7 @@ public class LicenciaServiceImpl implements LicenciaService {
 
         String documentoUsuario = "11999888";
         Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getDocumentoTitular());
-        Usuario usuario = usuarioRepository.findByNumeroDocumento(documentoUsuario);
+        //Usuario usuario = usuarioRepository.findByNumeroDocumento(documentoUsuario);
         LocalDate fechaEmision = LocalDate.now();
         LocalDate fechaVencimiento = calcularFechaVencimiento(titular);
 
@@ -63,7 +63,7 @@ public class LicenciaServiceImpl implements LicenciaService {
 
             LicenciaExpirada expirada = new LicenciaExpirada();
             expirada.setTitular(titular);
-            expirada.setUsuario(licenciaAnterior.getUsuario());
+            //expirada.setUsuario(licenciaAnterior.getUsuario());
             expirada.setObservaciones(licenciaAnterior.getObservaciones());
             expirada.setClases(licenciaAnterior.getClases());
             expirada.setFechaEmision(licenciaAnterior.getFechaEmision());
@@ -75,7 +75,7 @@ public class LicenciaServiceImpl implements LicenciaService {
 
         LicenciaActiva nuevaLicencia = new LicenciaActiva();
         nuevaLicencia.setTitular(titular);
-        nuevaLicencia.setUsuario(usuario);
+        //nuevaLicencia.setUsuario(usuario);
         nuevaLicencia.setObservaciones(licenciaFormDTO.getObservaciones());
         nuevaLicencia.setClases(licenciaFormDTO.getClases());
         nuevaLicencia.setFechaEmision(fechaEmision);
@@ -88,7 +88,7 @@ public class LicenciaServiceImpl implements LicenciaService {
 
         LicenciaEmitidaDTO dto = licenciaEmitidaMapper.entityToDto(nuevaLicencia);
         dto.setDocumentoTitular(titular.getNumeroDocumento());
-        dto.setDocumentoUsuario(usuario.getNumeroDocumento());
+        //dto.setDocumentoUsuario(usuario.getNumeroDocumento());
         return dto;
     }
 
