@@ -5,7 +5,11 @@ export const licenseFormSchema = z.object({
     .string()
     .length(8, "DNI debe tener 8 dígitos de longitud")
     .regex(/^\d+$/, "DNI debe contener solo dígitos numéricos"),
-  observaciones: z.string().optional().or(z.literal("")),
+  observaciones: z
+    .string()
+    .max(100, "Las observaciones no deben superar los 100 caracteres")
+    .optional()
+    .or(z.literal("")),
   clases: z
     .array(z.string())
     .min(1, "Seleccione al menos una clase de licencia"),

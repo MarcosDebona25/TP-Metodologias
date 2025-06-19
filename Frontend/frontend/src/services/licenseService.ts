@@ -1,4 +1,18 @@
 import { LicenseFormSchema } from "@/schemas/licenseSchema";
+import { LicenseSummary } from "@/types/LicenseSummary";
+
+export async function fetchExpiringLicenses(
+  from: string,
+  to: string
+): Promise<LicenseSummary[]> {
+  const response = await fetch(
+    `/api/licencias/expiradas?desde=${from}&hasta=${to}`
+  );
+  if (!response.ok) {
+    throw new Error("Error obteniendo licencias");
+  }
+  return response.json();
+}
 
 export async function submitLicense(data: LicenseFormSchema): Promise<void> {
   const clases = data.clases.join(" ");

@@ -11,18 +11,28 @@ export default function Sidebar() {
         >
           Nueva Licencia
         </Link>
+
         <Link
           href="/license/renew"
           className="block hover:bg-gray-700 p-2 rounded"
         >
           Renovar Licencia
         </Link>
+
         <Link
           href="/license/list"
           className="block hover:bg-gray-700 p-2 rounded"
         >
           Listar Licencias
         </Link>
+
+        <Link
+          href="/license/expiring"
+          className="block hover:bg-gray-700 p-2 rounded"
+        >
+          Licencias a Expirar
+        </Link>
+
         <Link
           href="/person/new"
           className="block hover:bg-gray-700 p-2 rounded"
