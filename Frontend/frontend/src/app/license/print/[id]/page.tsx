@@ -1,21 +1,40 @@
-'use client'
+"use client"
 
 import Image from "next/image"
+import { useEffect, useState } from "react"
+import { LicenciaActiva } from "@/types/License"
+import { Person } from "@/types/Person"
+import {useParams} from "next/navigation";
 
-interface Props {
-    params: { id: string }
-}
 
-export default async function PrintLicensePage({ params }: Props) {
-    const id = params.id
 
-    // 🔧 Simulación de fetch; reemplazar por API real
-    const license = await getMockLicenseById(id)
+export default function PrintLicensePage() {
+    const params = useParams()
+    const id = params?.id as string  // 👈 aseguramos que sea string
+
+    const [license, setLicense] = useState<LicenciaActiva | null>(null)
+    const [person, setPerson] = useState<Person | null>(null)
+
+    useEffect(() => {
+        if (!id) return
+
+        async function fetchData() {
+            const res = await fetch(`http://localhost:8080/api/licencias/${id}`)
+            const res2 = await fetch(`http://localhost:3000/api/titulares/${id}`)
+            const licenciaData = await res.json()
+            const personData = await res2.json()
+            setLicense(licenciaData)
+            setPerson(personData)
+        }
+
+        fetchData()
+    }, [id])
+
+    if (!license || !person) return <p>Cargando licencia...</p>
 
     return (
         <div className="flex flex-col justify-center items-center min-h-screen bg-[#4b9ce9] print:bg-white">
-            <div
-                className="bg-white rounded-xl shadow-lg w-[750px] h-[400px] p-4 relative text-[14px] text-black font-sans print:shadow-none">
+            <div className="bg-white rounded-xl shadow-lg w-[750px] h-[400px] p-4 relative text-[14px] text-black font-sans print:shadow-none">
                 {/* Encabezado */}
                 <div className="flex justify-between">
                     <div>
@@ -29,10 +48,9 @@ export default async function PrintLicensePage({ params }: Props) {
 
                 {/* Contenido */}
                 <div className="flex mt-2">
-                    {/* Foto */}
                     <div className="w-1/4">
                         <Image
-                            src={license.fotoUrl}
+                            src="/foto-documento.jpg"
                             width={140}
                             height={180}
                             alt="Foto"
@@ -40,28 +58,21 @@ export default async function PrintLicensePage({ params }: Props) {
                         />
                     </div>
 
-                    {/* Datos */}
                     <div className="w-3/4 pl-4 grid grid-cols-2 gap-1">
-                        <p><b>N° Licencia:</b> {license.licencia}</p>
-                        <p><b>Clases:</b> {license.clase}</p>
-
-                        <p><b>Apellido:</b> {license.apellido}</p>
-                        <p><b>Nombre:</b> {license.nombre}</p>
-
-                        <p><b>Domicilio:</b> {license.direccion}</p>
-                        <p><b>Fecha de Nac.:</b> {formatear(license.fechaNacimiento)}</p>
-
-                        <p><b>Otorgamiento:</b> {formatear(license.fechaEmision)}</p>
-                        <p><b>Vencimiento:</b> {formatear(license.fechaVencimiento)}</p>
-
-                        <p><b>Donante de Organos:</b> {license.esDonante}</p>
+                        <p><b>N° Licencia:</b> {license.documentoTitular}</p>
+                        <p><b>Clases:</b> {license.clases}</p>
+                        <p><b>Apellido:</b> {license.apellidoTitular}</p>
+                        <p><b>Nombre:</b> {license.nombreTitular}</p>
+                        <p><b>Domicilio:</b> {license.domicilioTitular}</p>
+                        <p><b>Fecha de Nac.:</b> {formatear(person.fechaNacimiento)}</p>
+                        <p><b>Otorgamiento:</b> {formatear(license.fechaEmisionLicencia)}</p>
+                        <p><b>Vencimiento:</b> {formatear(license.fechaVencimientoLicencia)}</p>
+                        <p><b>Donante de Organos:</b> {license.donanteOrganos}</p>
                         <p><b>Grupo y Factor:</b> {license.grupoFactor}</p>
-
-                        <p className="col-span-2"><b>Observaciones:</b> {license.observaciones}</p>
+                        <p className="col-span-2"><b>Observaciones:</b> {license.observacionesLicencia}</p>
                     </div>
                 </div>
 
-                {/* Pie de página */}
                 <div className="absolute bottom-4 left-4 text-[12px] font-semibold">
                     SEGURIDAD VIAL
                 </div>
@@ -71,33 +82,29 @@ export default async function PrintLicensePage({ params }: Props) {
                 </div>
             </div>
 
-            {/* Botón de impresión - fuera del área imprimible */}
             <div className="mt-6 print:hidden">
                 <button
                     onClick={() => window.print()}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+                    className="px-6 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700"
                 >
                     Imprimir licencia
                 </button>
             </div>
+
             <style jsx global>{`
                 @media print {
                     body {
                         margin: 0;
                     }
-
                     @page {
                         size: auto;
                         margin: 0;
                     }
-
-                    /* 👇 Fuerza a imprimir bordes, sombras y estilos visuales */
                     * {
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
                         box-shadow: none !important;
                     }
-
                     .rounded-xl {
                         border-radius: 12px !important;
                         border: 1px solid #000 !important;
@@ -114,21 +121,4 @@ function formatear(fecha: string) {
         month: "short",
         year: "numeric"
     })
-}
-
-async function getMockLicenseById(id: string) {
-    return {
-        nombre: "LIONEL ANDRES",
-        apellido: "MESSI",
-        licencia: id,
-        direccion: "Mitre 559",
-        fechaNacimiento: "1987-06-24",
-        fechaEmision: "2025-06-16",
-        fechaVencimiento: "2028-06-24",
-        clase: "A3 B1",
-        fotoUrl: "/foto-documento.jpg",
-        grupoFactor: "A+",
-        esDonante: "SÍ",
-        observaciones: "Utiliza lentes, texto muy muy largoooooooooooo",
-    }
 }
