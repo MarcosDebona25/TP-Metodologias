@@ -1,6 +1,6 @@
 "use client";
 
-import Select from "react-select";
+import Select, { MultiValue } from "react-select";
 
 const LICENSE_TYPES = ["A", "B", "C", "D", "E", "F", "G"];
 
@@ -21,9 +21,13 @@ export default function LicenseTypeSelect({
 }: Props) {
   const options = LICENSE_TYPES.map((type) => ({ value: type, label: type }));
 
-  const handleChange = (selectedOptions: any) => {
+  const handleChange = (
+    selectedOptions: MultiValue<{ value: string; label: string }>
+  ) => {
     const selectedValues = selectedOptions
-      ? selectedOptions.map((opt: any) => opt.value)
+      ? selectedOptions.map(
+          (opt: { value: string; label: string }) => opt.value
+        )
       : [];
     onChange(selectedValues);
   };
