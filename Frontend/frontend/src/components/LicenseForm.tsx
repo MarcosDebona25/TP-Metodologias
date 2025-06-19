@@ -47,16 +47,16 @@ export default function LicenseForm() {
     try {
       await submitLicense(data);
       alert("Licencia creada exitosamente");
-      reset();
-      setPerson(null);
-      router.push("/license/new");
-    } catch (err: any) {
-      alert(err.message || "Error al crear licencia");
+      router.push(`/license/print/${person?.numeroDocumento}`);
+    } catch (err) {
+      if (err instanceof Error) {
+        alert(err.message || "Error al crear licencia");
+      }
     }
   };
   const selectedTypes = watch("clases");
   const hasDisallowedSelection =
-    person &&
+    person != null &&
     selectedTypes.some((type) => !person.allowedLicenseTypes.includes(type));
 
   return (

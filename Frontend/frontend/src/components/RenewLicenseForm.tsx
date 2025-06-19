@@ -44,18 +44,18 @@ export default function RenewLicenseForm() {
     try {
       await submitLicense(data);
       alert("Renovación de licencia exitosa");
-      reset();
-      setPerson(null);
-      router.push("/license/renew");
-    } catch (err: any) {
-      alert(err.message || "Error al renovar licencia");
+      router.push(`/license/print/${person?.numeroDocumento}`);
+    } catch (err) {
+      if (err instanceof Error) {
+        alert(err.message || "Error al renovar licencia");
+      }
     }
   };
 
   const selectedTypes = watch("clases");
 
   const hasInvalidRenewTypes =
-    person &&
+    person != null &&
     selectedTypes.some((type) => !person.currentLicenseTypes.includes(type));
 
   //const currentOnlyText =
