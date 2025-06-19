@@ -54,23 +54,35 @@ public class TitularServiceImpl implements TitularService {
     private String calcularClasesPosibles(Titular titular) {
         int edad = titular.calcularEdad();
         boolean tieneB = false;
-        boolean tieneProfesional = false;
         boolean esMayor65 = edad > 65;
+        java.time.LocalDate fechaEmisionB = null;
 
-        // Si tiene licencia B y profesional (C D E)
         if (titular.getLicenciaActiva() != null) {
             String clases = titular.getLicenciaActiva().getClases();
-            if (clases != null) {
-                tieneB = clases.contains("B");
-                tieneProfesional = clases.matches(".*[CDE].*");
+            if (clases != null && clases.contains("B")) {
+                tieneB = true;
+                fechaEmisionB = titular.getLicenciaActiva().getFechaEmision();
             }
         }
-        StringBuilder clases = new StringBuilder();
 
-        // No profesionales (A B F G)
+        if (titular.getLicenciasExpiradas() != null) {
+            for (var l : titular.getLicenciasExpiradas()) {
+                if (l.getClases() != null && l.getClases().contains("B")) {
+                    tieneB = true;
+                    if (fechaEmisionB == null || l.getFechaEmision().isBefore(fechaEmisionB)) {
+                        fechaEmisionB = l.getFechaEmision();
+                    }
+                }
+            }
+        }
+
+        StringBuilder clases = new StringBuilder();
         if (edad >= 17) clases.append("A B F G");
-        // Profesionales (C D E)
-        if (edad >= 21 && tieneB && !esMayor65) clases.append(" C D E");
+        boolean puedeProfesional = false;
+        if (tieneB && fechaEmisionB != null && fechaEmisionB.isBefore(java.time.LocalDate.now().minusYears(1))) {
+            puedeProfesional = true;
+        }
+        if (edad >= 21 && puedeProfesional && !esMayor65) clases.append(" C D E");
 
         return clases.toString().trim();
     }

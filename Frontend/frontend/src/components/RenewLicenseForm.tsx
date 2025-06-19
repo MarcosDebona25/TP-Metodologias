@@ -44,15 +44,7 @@ export default function RenewLicenseForm() {
     try {
       await submitLicense(data);
       alert("Renovación de licencia exitosa");
-
-      // Navigate current tab
       router.push(`/license/print/${person?.numeroDocumento}`);
-
-      const receiptTab = window.open();
-      // Navigate new tab
-      if (receiptTab) {
-        receiptTab.location.href = `/license/payment/receipt/${person?.numeroDocumento}`;
-      }
     } catch (err) {
       if (err instanceof Error) {
         alert(err.message || "Error al renovar licencia");
