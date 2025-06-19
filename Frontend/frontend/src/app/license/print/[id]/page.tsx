@@ -39,7 +39,7 @@ export default function PrintLicensePage() {
             <p className="text-sm font-semibold">
               Licencia Nacional de Conducir
             </p>
-            <p className="text-xs">Rosario - Santa Fe</p>
+            <p className="text-xs">Santa Fe - Santa Fe</p>
           </div>
           <div>
             <Image src="/logo-arg.png" width={40} height={40} alt="Escudo" />

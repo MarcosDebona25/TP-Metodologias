@@ -31,7 +31,7 @@ export default function NewPersonForm() {
   const onSubmit = async (data: PersonFormSchema) => {
     try {
       await submitPerson(data);
-      setSuccessMessage("Persona creada exitosamente");
+      setSuccessMessage("Titular creado exitosamente");
       setErrorMessage("");
       reset();
     } catch (error) {
@@ -46,7 +46,7 @@ export default function NewPersonForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="max-w-xl mx-auto p-4 border rounded shadow">
         <h2 className="text-2xl text-gray-800 font-bold mb-4">
-          Alta Nueva Persona
+          Registrar Titular
         </h2>
 
         <div className="space-y-4">
@@ -174,7 +174,7 @@ export default function NewPersonForm() {
             type="submit"
             className="px-4 py-2 bg-blue-600 text-white rounded"
           >
-            Crear Persona
+            Registrar Titular
           </button>
         </div>
       </div>

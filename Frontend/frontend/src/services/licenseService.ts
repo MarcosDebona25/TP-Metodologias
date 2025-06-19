@@ -16,17 +16,15 @@ export async function fetchExpiringLicenses(
   if (!response.ok) {
     const errorText = await response.text();
     if (errorText.includes("DNI")) {
-      const emptyList: any[] = [];
+      const emptyList = { expiradas: [], activasVencidas: [] };
       response = NextResponse.json(emptyList);
     } else {
       throw new Error("Titular no encontrado");
     }
   }
 
-  if (!response.ok) {
-    throw new Error("Error obteniendo licencias");
-  }
-  return response.json();
+  const data = await response.json();
+  return data.expiradas.join(data.activasVencidas);
 }
 
 export async function submitLicense(data: LicenseFormSchema): Promise<void> {
