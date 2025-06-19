@@ -40,7 +40,7 @@ export default function PrintLicensePage() {
                 <div className="flex justify-between">
                     <div>
                         <p className="text-sm font-semibold">Licencia Nacional de Conducir</p>
-                        <p className="text-xs">Rosario - Santa Fe</p>
+                        <p className="text-xs">Santa Fe Capital - Santa Fe</p>
                     </div>
                     <div>
                         <Image src="/logo-arg.png" width={40} height={40} alt="Escudo"/>
@@ -68,7 +68,7 @@ export default function PrintLicensePage() {
                         <p><b>Fecha de Nac.:</b> {formatear(person.fechaNacimiento)}</p>
                         <p><b>Otorgamiento:</b> {formatear(license.fechaEmisionLicencia)}</p>
                         <p><b>Vencimiento:</b> {formatear(license.fechaVencimientoLicencia)}</p>
-                        <p><b>Donante de Organos:</b> {license.donanteOrganos}</p>
+                        <p><b>Donante de Órganos:</b> {license.donanteOrganos}</p>
                         <p><b>Grupo y Factor:</b> {license.grupoFactor}</p>
                         <p className="col-span-2"><b>Observaciones:</b> {license.observacionesLicencia}</p>
                     </div>
