@@ -12,6 +12,8 @@ public class LicenciaActivaDTO {
     private String documentoTitular;
     private String nombreTitular;
     private String apellidoTitular;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate fechaNacimientoTitular;
     private String clases;
     private String domicilioTitular;
     @DateTimeFormat(pattern = "yyyy-MM-dd")

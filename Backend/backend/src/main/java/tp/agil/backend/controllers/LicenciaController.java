@@ -5,11 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tp.agil.backend.dtos.ComprobanteDTO;
 import tp.agil.backend.dtos.LicenciaActivaDTO;
-import tp.agil.backend.dtos.LicenciaDTO;
+import tp.agil.backend.dtos.LicenciaEmitidaDTO;
 import tp.agil.backend.dtos.LicenciaFormDTO;
 import tp.agil.backend.services.LicenciaService;
-import tp.agil.backend.entities.LicenciaActiva;
-import tp.agil.backend.entities.Titular;
 import tp.agil.backend.repositories.LicenciaActivaRepository;
 import tp.agil.backend.repositories.TitularRepository;
 
@@ -29,8 +27,8 @@ public class LicenciaController {
     }
 
     @PostMapping()
-    public ResponseEntity<LicenciaDTO> emitirLicencia(@RequestBody LicenciaFormDTO licenciaform) {
-        LicenciaDTO licenciaCreada = licenciaService.emitirLicencia(licenciaform);
+    public ResponseEntity<LicenciaEmitidaDTO> emitirLicencia(@RequestBody LicenciaFormDTO licenciaform) {
+        LicenciaEmitidaDTO licenciaCreada = licenciaService.emitirLicencia(licenciaform);
         return new ResponseEntity<>(licenciaCreada, HttpStatus.OK);
     }
 

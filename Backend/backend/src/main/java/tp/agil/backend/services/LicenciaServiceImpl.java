@@ -3,13 +3,14 @@ package tp.agil.backend.services;
 import org.springframework.stereotype.Service;
 import tp.agil.backend.dtos.ComprobanteDTO;
 import tp.agil.backend.dtos.LicenciaActivaDTO;
-import tp.agil.backend.dtos.LicenciaDTO;
+import tp.agil.backend.dtos.LicenciaEmitidaDTO;
 import tp.agil.backend.dtos.LicenciaFormDTO;
 import tp.agil.backend.entities.LicenciaActiva;
 import tp.agil.backend.entities.Titular;
 import tp.agil.backend.entities.Usuario;
 import tp.agil.backend.exceptions.LicenciaNoEncontradaException;
 import tp.agil.backend.mappers.LicenciaActivaMapper;
+import tp.agil.backend.mappers.LicenciaEmitidaMapper;
 import tp.agil.backend.repositories.LicenciaActivaRepository;
 import tp.agil.backend.repositories.TitularRepository;
 import tp.agil.backend.repositories.UsuarioRepository;
@@ -24,40 +25,43 @@ public class LicenciaServiceImpl implements LicenciaService {
     private final TitularRepository titularRepository;
     private final UsuarioRepository usuarioRepository;
     private final LicenciaActivaMapper licenciaActivaMapper;
+    private final LicenciaEmitidaMapper licenciaEmitidaMapper;
 
     public LicenciaServiceImpl(
             LicenciaActivaRepository licenciaActivaRepository,
             TitularRepository titularRepository,
             UsuarioRepository usuarioRepository,
-            LicenciaActivaMapper licenciaActivaMapper
+            LicenciaActivaMapper licenciaActivaMapper,
+            LicenciaEmitidaMapper licenciaEmitidaMapper
     ) {
         this.licenciaActivaRepository = licenciaActivaRepository;
         this.titularRepository = titularRepository;
         this.usuarioRepository = usuarioRepository;
         this.licenciaActivaMapper = licenciaActivaMapper;
+        this.licenciaEmitidaMapper = licenciaEmitidaMapper;
     }
 
     @Override
-    public LicenciaDTO emitirLicencia(LicenciaFormDTO licenciaFormDTO) {
+    public LicenciaEmitidaDTO emitirLicencia(LicenciaFormDTO licenciaFormDTO) {
         Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getDocumentoTitular());
-        Usuario usuario = usuarioRepository.findByNumeroDocumento("11999888"); // getDocumentoUsuario() SERÁ CUANDO TENGAMOS LOGIN
+        Usuario usuario = usuarioRepository.findByNumeroDocumento("11999888");
 
         LocalDate fechaEmision = LocalDate.now();
         LocalDate fechaVencimiento = calcularFechaVencimiento(titular);
 
-        LicenciaActiva licenciaActiva = new LicenciaActiva();
-        licenciaActiva.setTitular(titular);
-        licenciaActiva.setUsuario(usuario);
-        licenciaActiva.setObservaciones(licenciaFormDTO.getObservaciones());
-        licenciaActiva.setClases(licenciaFormDTO.getClases());
-        licenciaActiva.setFechaEmision(fechaEmision);
-        licenciaActiva.setFechaVencimiento(fechaVencimiento);
+        LicenciaActiva LicenciaEmitida = new LicenciaActiva();
 
-        licenciaActivaRepository.save(licenciaActiva);
+        LicenciaEmitida.setTitular(titular);
+        LicenciaEmitida.setUsuario(usuario);
+        LicenciaEmitida.setObservaciones(licenciaFormDTO.getObservaciones());
+        LicenciaEmitida.setClases(licenciaFormDTO.getClases());
+        LicenciaEmitida.setFechaEmision(fechaEmision);
+        LicenciaEmitida.setFechaVencimiento(fechaVencimiento);
 
-        LicenciaDTO dto = licenciaActivaMapper.entityToDto(licenciaActiva);
+        licenciaActivaRepository.save(LicenciaEmitida);
+
+        LicenciaEmitidaDTO dto = licenciaEmitidaMapper.entityToDto(LicenciaEmitida);
         dto.setDocumentoTitular(titular.getNumeroDocumento());
-        dto.setDocumentoUsuario(usuario.getNumeroDocumento());
         return dto;
     }
 
@@ -104,6 +108,7 @@ public class LicenciaServiceImpl implements LicenciaService {
         dto.setDocumentoTitular(titular.getNumeroDocumento());
         dto.setNombreTitular(titular.getNombre());
         dto.setApellidoTitular(titular.getApellido());
+        dto.setFechaNacimientoTitular(titular.getFechaNacimiento());
         dto.setClases(licencia.getClases());
         dto.setDomicilioTitular(titular.getDomicilio());
         dto.setFechaEmisionLicencia(licencia.getFechaEmision());
