@@ -6,12 +6,14 @@ import tp.agil.backend.dtos.LicenciaActivaDTO;
 import tp.agil.backend.dtos.LicenciaEmitidaDTO;
 import tp.agil.backend.dtos.LicenciaFormDTO;
 import tp.agil.backend.entities.LicenciaActiva;
+import tp.agil.backend.entities.LicenciaExpirada;
 import tp.agil.backend.entities.Titular;
 import tp.agil.backend.entities.Usuario;
 import tp.agil.backend.exceptions.LicenciaNoEncontradaException;
 import tp.agil.backend.mappers.LicenciaActivaMapper;
 import tp.agil.backend.mappers.LicenciaEmitidaMapper;
 import tp.agil.backend.repositories.LicenciaActivaRepository;
+import tp.agil.backend.repositories.LicenciaVencidaRepository;
 import tp.agil.backend.repositories.TitularRepository;
 import tp.agil.backend.repositories.UsuarioRepository;
 
@@ -26,6 +28,7 @@ public class LicenciaServiceImpl implements LicenciaService {
     private final UsuarioRepository usuarioRepository;
     private final LicenciaActivaMapper licenciaActivaMapper;
     private final LicenciaEmitidaMapper licenciaEmitidaMapper;
+    private final LicenciaVencidaRepository licenciaVencidaRepository;
 
     private static final double GASTOS_ADMINISTRATIVOS = 8.0;
 
@@ -34,36 +37,57 @@ public class LicenciaServiceImpl implements LicenciaService {
             TitularRepository titularRepository,
             UsuarioRepository usuarioRepository,
             LicenciaActivaMapper licenciaActivaMapper,
-            LicenciaEmitidaMapper licenciaEmitidaMapper
+            LicenciaEmitidaMapper licenciaEmitidaMapper, LicenciaVencidaRepository licenciaVencidaRepository
     ) {
         this.licenciaActivaRepository = licenciaActivaRepository;
         this.titularRepository = titularRepository;
         this.usuarioRepository = usuarioRepository;
         this.licenciaActivaMapper = licenciaActivaMapper;
         this.licenciaEmitidaMapper = licenciaEmitidaMapper;
+        this.licenciaVencidaRepository = licenciaVencidaRepository;
     }
 
     @Override
     public LicenciaEmitidaDTO emitirLicencia(LicenciaFormDTO licenciaFormDTO) {
+        String documentoUsuario = "11999888";
         Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getDocumentoTitular());
-        Usuario usuario = usuarioRepository.findByNumeroDocumento("11999888");
-
+        Usuario usuario = usuarioRepository.findByNumeroDocumento(documentoUsuario);
         LocalDate fechaEmision = LocalDate.now();
         LocalDate fechaVencimiento = calcularFechaVencimiento(titular);
 
-        LicenciaActiva LicenciaEmitida = new LicenciaActiva();
+        LicenciaActiva licenciaAnterior = titular.getLicenciaActiva();
+        if (licenciaAnterior != null) {
+            titular.setLicenciaActiva(null);
+            titularRepository.save(titular);
 
-        LicenciaEmitida.setTitular(titular);
-        LicenciaEmitida.setUsuario(usuario);
-        LicenciaEmitida.setObservaciones(licenciaFormDTO.getObservaciones());
-        LicenciaEmitida.setClases(licenciaFormDTO.getClases());
-        LicenciaEmitida.setFechaEmision(fechaEmision);
-        LicenciaEmitida.setFechaVencimiento(fechaVencimiento);
+            LicenciaExpirada expirada = new LicenciaExpirada();
+            expirada.setTitular(titular);
+            expirada.setUsuario(licenciaAnterior.getUsuario());
+            expirada.setObservaciones(licenciaAnterior.getObservaciones());
+            expirada.setClases(licenciaAnterior.getClases());
+            expirada.setFechaEmision(licenciaAnterior.getFechaEmision());
+            expirada.setFechaVencimiento(licenciaAnterior.getFechaVencimiento());
+            licenciaVencidaRepository.save(expirada);
 
-        licenciaActivaRepository.save(LicenciaEmitida);
+            licenciaActivaRepository.delete(licenciaAnterior);
+        }
 
-        LicenciaEmitidaDTO dto = licenciaEmitidaMapper.entityToDto(LicenciaEmitida);
+        LicenciaActiva nuevaLicencia = new LicenciaActiva();
+        nuevaLicencia.setTitular(titular);
+        nuevaLicencia.setUsuario(usuario);
+        nuevaLicencia.setObservaciones(licenciaFormDTO.getObservaciones());
+        nuevaLicencia.setClases(licenciaFormDTO.getClases());
+        nuevaLicencia.setFechaEmision(fechaEmision);
+        nuevaLicencia.setFechaVencimiento(fechaVencimiento);
+
+        licenciaActivaRepository.save(nuevaLicencia);
+
+        titular.setLicenciaActiva(nuevaLicencia);
+        titularRepository.save(titular);
+
+        LicenciaEmitidaDTO dto = licenciaEmitidaMapper.entityToDto(nuevaLicencia);
         dto.setDocumentoTitular(titular.getNumeroDocumento());
+        dto.setDocumentoUsuario(usuario.getNumeroDocumento());
         return dto;
     }
 

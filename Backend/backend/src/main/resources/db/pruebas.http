@@ -1,4 +1,4 @@
-### 1. Dar de alta un titular (POST /api/titulares)
+### Dar de alta un titular (POST /api/titulares)
 POST http://localhost:8080/api/titulares
 Content-Type: application/json
 
@@ -12,7 +12,7 @@ Content-Type: application/json
   "donanteOrganos": true
 }
 
-### 2. Intentar dar de alta un titular ya existente (debe devolver error 409)
+### Intentar dar de alta un titular ya existente (debe devolver error 409)
 POST http://localhost:8080/api/titulares
 Content-Type: application/json
 
@@ -26,24 +26,32 @@ Content-Type: application/json
   "donanteOrganos": true
 }
 
-### 3. Obtener titular por número de documento (GET /api/titulares/id/{numeroDocumento})
+### Obtener titular por número de documento (GET /api/titulares/id/{numeroDocumento})
 GET http://localhost:8080/api/titulares/id/12345678
 
 
-
-### 4. Emitir una licencia (POST /api/licencias)
+### Emitir una licencia por primera vez (POST /api/licencias)
 POST http://localhost:8080/api/licencias
 Content-Type: application/json
 
 {
   "documentoTitular": "12345678",
-  "documentoUsuario": "11999888",
-  "clases": "A B",
+  "clases": "A",
   "observaciones": "Conduce con lentes de contacto"
 }
 
-### 5. Buscar licencia activa por DNI (GET /api/licencias/{numeroDocumento})
+### Emitir otra licencia para un mismo titular, sumando una clase (POST /api/licencias)
+POST http://localhost:8080/api/licencias
+Content-Type: application/json
+
+{
+  "documentoTitular": "12345678",
+  "clases": "A B",
+  "observaciones": "No conduce más con lentes de contacto, se curó"
+}
+
+### Buscar licencia activa por DNI (GET /api/licencias/{numeroDocumento})
 GET http://localhost:8080/api/licencias/12345678
 
-### 6. Obtener comprobante de licencia por DNI (GET /api/licencias/comprobante/{numeroDocumento})
+### Obtener comprobante de licencia por DNI (GET /api/licencias/comprobante/{numeroDocumento})
 GET http://localhost:8080/api/licencias/comprobante/12345678
