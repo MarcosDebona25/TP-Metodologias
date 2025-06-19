@@ -13,11 +13,7 @@ import tp.agil.backend.exceptions.LicenciaNoEncontradaException;
 import tp.agil.backend.mappers.LicenciaActivaMapper;
 import tp.agil.backend.mappers.LicenciaEmitidaMapper;
 import tp.agil.backend.repositories.LicenciaActivaRepository;
-<<<<<<< HEAD
 import tp.agil.backend.repositories.LicenciaExpiradaRepository;
-=======
-import tp.agil.backend.repositories.LicenciaVencidaRepository;
->>>>>>> 9eea5ae22756843e64b43b9adc1fabbfe90b6ece
 import tp.agil.backend.repositories.TitularRepository;
 import tp.agil.backend.repositories.UsuarioRepository;
 
@@ -33,7 +29,6 @@ public class LicenciaServiceImpl implements LicenciaService {
     private final UsuarioRepository usuarioRepository;
     private final LicenciaActivaMapper licenciaActivaMapper;
     private final LicenciaEmitidaMapper licenciaEmitidaMapper;
-    private final LicenciaVencidaRepository licenciaVencidaRepository;
 
     private static final double GASTOS_ADMINISTRATIVOS = 8.0;
 
@@ -42,7 +37,7 @@ public class LicenciaServiceImpl implements LicenciaService {
             TitularRepository titularRepository,
             UsuarioRepository usuarioRepository,
             LicenciaActivaMapper licenciaActivaMapper,
-            LicenciaEmitidaMapper licenciaEmitidaMapper, LicenciaVencidaRepository licenciaVencidaRepository
+            LicenciaEmitidaMapper licenciaEmitidaMapper
     ) {
         this.licenciaActivaRepository = licenciaActivaRepository;
         this.licenciaExpiradaRepository = licenciaExpiradaRepository;
@@ -50,17 +45,12 @@ public class LicenciaServiceImpl implements LicenciaService {
         this.usuarioRepository = usuarioRepository;
         this.licenciaActivaMapper = licenciaActivaMapper;
         this.licenciaEmitidaMapper = licenciaEmitidaMapper;
-        this.licenciaVencidaRepository = licenciaVencidaRepository;
     }
-
     @Override
     public LicenciaEmitidaDTO emitirLicencia(LicenciaFormDTO licenciaFormDTO) {
-<<<<<<< HEAD
         validarFormularioLicencia(licenciaFormDTO);
 
-=======
         String documentoUsuario = "11999888";
->>>>>>> 9eea5ae22756843e64b43b9adc1fabbfe90b6ece
         Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getDocumentoTitular());
         Usuario usuario = usuarioRepository.findByNumeroDocumento(documentoUsuario);
         LocalDate fechaEmision = LocalDate.now();
@@ -78,7 +68,7 @@ public class LicenciaServiceImpl implements LicenciaService {
             expirada.setClases(licenciaAnterior.getClases());
             expirada.setFechaEmision(licenciaAnterior.getFechaEmision());
             expirada.setFechaVencimiento(licenciaAnterior.getFechaVencimiento());
-            licenciaVencidaRepository.save(expirada);
+            licenciaExpiradaRepository.save(expirada);
 
             licenciaActivaRepository.delete(licenciaAnterior);
         }
