@@ -7,7 +7,7 @@ export async function fetchExpiringLicenses(
   to: string
 ): Promise<LicenciaActiva[]> {
   let response = await fetch(
-    `http://localhost:8080/api/licencias/expiradas?desde=${from}&hasta=${to}`,
+    `http://localhost:8080/api/licencias/vencidas?desde=${from}&hasta=${to}`,
     {
       method: "GET",
       credentials: "include",
