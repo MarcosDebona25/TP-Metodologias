@@ -9,4 +9,5 @@ public interface LicenciaService {
     LicenciaEmitidaDTO emitirLicencia(LicenciaFormDTO licenciaFormDTO);
     LicenciaActivaDTO buscarLicenciaActivaPorDni(String numeroDocumento);
     ComprobanteDTO devolverComprobanteLicenciaPorDni(String numeroDocumento);
+    LicenciaEmitidaDTO renovarLicencia(LicenciaFormDTO licenciaFormDTO, String motivo);
 }

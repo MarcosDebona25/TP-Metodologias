@@ -10,6 +10,7 @@ import tp.agil.backend.entities.LicenciaExpirada;
 import tp.agil.backend.entities.Titular;
 import tp.agil.backend.entities.Usuario;
 import tp.agil.backend.exceptions.LicenciaNoEncontradaException;
+import tp.agil.backend.exceptions.TitularNoEncontradoException;
 import tp.agil.backend.mappers.LicenciaActivaMapper;
 import tp.agil.backend.mappers.LicenciaEmitidaMapper;
 import tp.agil.backend.repositories.LicenciaActivaRepository;
@@ -24,7 +25,7 @@ import java.time.temporal.ChronoUnit;
 public class LicenciaServiceImpl implements LicenciaService {
 
     private final LicenciaActivaRepository licenciaActivaRepository;
-    private final LicenciaExpiradaRepository licenciaExpiradaRepository; // Assuming this is defined somewhere
+    private final LicenciaExpiradaRepository licenciaExpiradaRepository;
     private final TitularRepository titularRepository;
     private final UsuarioRepository usuarioRepository;
     private final LicenciaActivaMapper licenciaActivaMapper;
@@ -32,12 +33,12 @@ public class LicenciaServiceImpl implements LicenciaService {
 
     private static final double GASTOS_ADMINISTRATIVOS = 8.0;
 
-    public LicenciaServiceImpl(
-            LicenciaActivaRepository licenciaActivaRepository, LicenciaExpiradaRepository licenciaExpiradaRepository,
-            TitularRepository titularRepository,
-            UsuarioRepository usuarioRepository,
-            LicenciaActivaMapper licenciaActivaMapper,
-            LicenciaEmitidaMapper licenciaEmitidaMapper
+    public LicenciaServiceImpl(LicenciaActivaRepository licenciaActivaRepository,
+                               LicenciaExpiradaRepository licenciaExpiradaRepository,
+                               TitularRepository titularRepository,
+                               UsuarioRepository usuarioRepository,
+                               LicenciaActivaMapper licenciaActivaMapper,
+                               LicenciaEmitidaMapper licenciaEmitidaMapper
     ) {
         this.licenciaActivaRepository = licenciaActivaRepository;
         this.licenciaExpiradaRepository = licenciaExpiradaRepository;
@@ -46,12 +47,16 @@ public class LicenciaServiceImpl implements LicenciaService {
         this.licenciaActivaMapper = licenciaActivaMapper;
         this.licenciaEmitidaMapper = licenciaEmitidaMapper;
     }
+
     @Override
     public LicenciaEmitidaDTO emitirLicencia(LicenciaFormDTO licenciaFormDTO) {
         validarFormularioLicencia(licenciaFormDTO);
 
         String documentoUsuario = "11999888";
+
         Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getDocumentoTitular());
+        if (titular == null) throw new TitularNoEncontradoException("No se encontró un titular con el número de documento: " + licenciaFormDTO.getDocumentoTitular());
+
         Usuario usuario = usuarioRepository.findByNumeroDocumento(documentoUsuario);
         LocalDate fechaEmision = LocalDate.now();
         LocalDate fechaVencimiento = calcularFechaVencimiento(titular);
@@ -92,31 +97,11 @@ public class LicenciaServiceImpl implements LicenciaService {
         return dto;
     }
 
-    private LocalDate calcularFechaVencimiento(Titular titular) {
-        LocalDate hoy = LocalDate.now();
-        LocalDate nacimiento = titular.getFechaNacimiento();
-        int vigencia = calcularVigencia(titular);
-
-        LocalDate proximoCumple = nacimiento.withYear(hoy.getYear());
-        if (!proximoCumple.isAfter(hoy)) {
-            proximoCumple = proximoCumple.plusYears(1);
-        }
-
-        long diasHastaCumple = ChronoUnit.DAYS.between(hoy, proximoCumple);
-
-        if (diasHastaCumple > 31) {
-            vigencia--;
-        }
-
-        return proximoCumple.plusYears(vigencia);
-    }
-
     @Override
     public LicenciaActivaDTO buscarLicenciaActivaPorDni(String numeroDocumento) {
         LicenciaActiva licencia = licenciaActivaRepository.findByTitular_NumeroDocumento(numeroDocumento);
-        if (licencia == null) {
-            throw new LicenciaNoEncontradaException("No se encontró una licencia activa para el DNI: " + numeroDocumento);
-        }
+        if (licencia == null) throw new LicenciaNoEncontradaException("No se encontró una licencia activa para el DNI: " + numeroDocumento);
+
         Titular titular = licencia.getTitular();
         LicenciaActivaDTO dto = new LicenciaActivaDTO();
         dto.setDocumentoTitular(titular.getNumeroDocumento());
@@ -136,9 +121,8 @@ public class LicenciaServiceImpl implements LicenciaService {
     @Override
     public ComprobanteDTO devolverComprobanteLicenciaPorDni(String numeroDocumento) {
         LicenciaActiva licencia = licenciaActivaRepository.findByTitular_NumeroDocumento(numeroDocumento);
-        if (licencia == null) {
-            throw new LicenciaNoEncontradaException("No se encontró una licencia activa para el DNI: " + numeroDocumento);
-        }
+        if (licencia == null) throw new LicenciaNoEncontradaException("No se encontró una licencia activa para el DNI: " + numeroDocumento);
+
         Titular titular = licencia.getTitular();
         ComprobanteDTO dto = new ComprobanteDTO();
         dto.setNombreTitular(titular.getNombre());
@@ -150,10 +134,75 @@ public class LicenciaServiceImpl implements LicenciaService {
         return dto;
     }
 
-    private double calcularCostoEmision(String clases, Titular titular) {
+    @Override
+    public LicenciaEmitidaDTO renovarLicencia(LicenciaFormDTO licenciaFormDTO, String motivo) {
+        if (!"vencimiento".equalsIgnoreCase(motivo) && !"modificacion".equalsIgnoreCase(motivo)) {
+            throw new IllegalArgumentException("El motivo debe ser 'vencimiento' o 'modificacion'.");
+        }
+        if (!"vencimiento".equalsIgnoreCase(motivo)) {
+            throw new IllegalArgumentException("La renovación solo está permitida por vencimiento en esta versión.");
+        }
+
+        Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getDocumentoTitular());
+        if (titular == null) throw new TitularNoEncontradoException("No se encontró un titular con el número de documento: " + licenciaFormDTO.getDocumentoTitular());
+
+        LicenciaActiva licenciaAnterior = titular.getLicenciaActiva();
+        if (licenciaAnterior == null) throw new LicenciaNoEncontradaException("No hay licencia activa para renovar.");
+        if (licenciaAnterior.getFechaVencimiento().isAfter(LocalDate.now()) && "vencimiento".equalsIgnoreCase(motivo))
+            throw new IllegalArgumentException("La licencia aún no está vencida, no se puede renovar.");
+
+        LicenciaExpirada expirada = new LicenciaExpirada();
+        expirada.setTitular(titular);
+        expirada.setUsuario(licenciaAnterior.getUsuario());
+        expirada.setObservaciones(licenciaAnterior.getObservaciones());
+        expirada.setClases(licenciaAnterior.getClases());
+        expirada.setFechaEmision(licenciaAnterior.getFechaEmision());
+        expirada.setFechaVencimiento(licenciaAnterior.getFechaVencimiento());
+        licenciaExpiradaRepository.save(expirada);
+
+        licenciaActivaRepository.delete(licenciaAnterior);
+
+        Usuario usuario = usuarioRepository.findByNumeroDocumento("11999888"); // cuando toque, el usuario logeado
+        LocalDate fechaEmision = LocalDate.now();
+        LocalDate fechaVencimiento = calcularFechaVencimiento(titular);
+
+        LicenciaActiva nuevaLicencia = new LicenciaActiva();
+        nuevaLicencia.setTitular(titular);
+        nuevaLicencia.setUsuario(usuario);
+        nuevaLicencia.setObservaciones(licenciaFormDTO.getObservaciones());
+        nuevaLicencia.setClases(licenciaFormDTO.getClases());
+        nuevaLicencia.setFechaEmision(fechaEmision);
+        nuevaLicencia.setFechaVencimiento(fechaVencimiento);
+
+        licenciaActivaRepository.save(nuevaLicencia);
+
+        titular.setLicenciaActiva(nuevaLicencia);
+        titularRepository.save(titular);
+
+        LicenciaEmitidaDTO dto = licenciaEmitidaMapper.entityToDto(nuevaLicencia);
+        dto.setDocumentoTitular(titular.getNumeroDocumento());
+        dto.setDocumentoUsuario(usuario.getNumeroDocumento());
+        return dto;
+    }
+
+    private LocalDate calcularFechaVencimiento(Titular titular) {
+        LocalDate hoy = LocalDate.now();
+        LocalDate nacimiento = titular.getFechaNacimiento();
         int vigencia = calcularVigencia(titular);
 
+        LocalDate proximoCumple = nacimiento.withYear(hoy.getYear());
+        if (!proximoCumple.isAfter(hoy)) proximoCumple = proximoCumple.plusYears(1);
+
+        long diasHastaCumple = ChronoUnit.DAYS.between(hoy, proximoCumple);
+        if (diasHastaCumple > 31) vigencia--;
+
+        return proximoCumple.plusYears(vigencia);
+    }
+
+    private double calcularCostoEmision(String clases, Titular titular) {
+        int vigencia = calcularVigencia(titular);
         double total = 0.0;
+
         for (String clase : clases.trim().split("\\s+")) {
             total += costoPorClaseYVigencia(clase, vigencia);
         }
@@ -205,13 +254,9 @@ public class LicenciaServiceImpl implements LicenciaService {
         int edad = titular.calcularEdad();
 
         boolean tuvoLicencia = false;
-        // Buscar licencia activa
         if (licenciaActivaRepository.findByTitular_NumeroDocumento(titular.getNumeroDocumento()) != null) {
             tuvoLicencia = true;
         } else {
-            // Buscar licencias expiradas
-            // Suponiendo que existe licenciaexpiradaRepository y metodo findByTitular_NumeroDocumento
-            // (Asegurate de tener el bean inyectado)
             if (!licenciaExpiradaRepository.findByTitular_NumeroDocumento(titular.getNumeroDocumento()).isEmpty()) {
                 tuvoLicencia = true;
             }
@@ -295,5 +340,4 @@ public class LicenciaServiceImpl implements LicenciaService {
             }
         }
     }
-
 }

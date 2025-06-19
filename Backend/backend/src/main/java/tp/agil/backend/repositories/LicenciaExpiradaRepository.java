@@ -9,5 +9,4 @@ import java.util.List;
 public interface LicenciaExpiradaRepository extends JpaRepository<LicenciaExpirada, Long> {
     List<LicenciaExpirada> findByTitular(Titular titular);
     List<LicenciaExpirada> findByTitular_NumeroDocumento(String titular_numeroDocumento);
-    //CRUD implementado por JPA
 }

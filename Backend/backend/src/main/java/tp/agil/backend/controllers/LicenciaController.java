@@ -11,7 +11,6 @@ import tp.agil.backend.services.LicenciaService;
 import tp.agil.backend.repositories.LicenciaActivaRepository;
 import tp.agil.backend.repositories.TitularRepository;
 
-
 @RestController
 @RequestMapping("/api/licencias")
 public class LicenciaController {
@@ -42,5 +41,11 @@ public class LicenciaController {
     public ResponseEntity<ComprobanteDTO> devolverComprobanteLicenciaPorDni(@PathVariable String numeroDocumento) {
         ComprobanteDTO dto = licenciaService.devolverComprobanteLicenciaPorDni(numeroDocumento);
         return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @PostMapping("/renovar/{motivo}")
+    public ResponseEntity<LicenciaEmitidaDTO> renovarLicencia(@RequestBody LicenciaFormDTO licenciaFormDTO, @PathVariable String motivo) {
+        LicenciaEmitidaDTO renovada = licenciaService.renovarLicencia(licenciaFormDTO, motivo);
+        return new ResponseEntity<>(renovada, HttpStatus.OK);
     }
 }
