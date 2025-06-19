@@ -4,4 +4,6 @@ export interface Comprobante {
     clases: string
     costosEmision: number
     costosAdministrativos: number
+    fechaEmisionComprobante: String
+
 }
