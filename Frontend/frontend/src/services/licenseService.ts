@@ -24,7 +24,7 @@ export async function fetchExpiringLicenses(
   }
 
   const data = await response.json();
-  return data.expiradas.join(data.activasVencidas);
+  return data.expiradas.concat(data.activasVencidas);
 }
 
 export async function submitLicense(data: LicenseFormSchema): Promise<void> {

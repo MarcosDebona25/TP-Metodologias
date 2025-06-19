@@ -199,7 +199,6 @@ public class LicenciaServiceImpl implements LicenciaService {
         List<LicenciaActivaDTO> activasVencidas = licenciaActivaRepository
                 .findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(desde, hasta)
                 .stream()
-                .filter(l -> !l.getFechaVencimiento().isAfter(LocalDate.now()))
                 .map(licenciaActivaMapper::entityToDto)
                 .collect(Collectors.toList());
 
