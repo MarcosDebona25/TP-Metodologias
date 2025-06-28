@@ -142,3 +142,19 @@ Content-Type: application/json
 "clases": "C",
 "observaciones": "Mayor de 65"
 }
+
+### Obtener licencias vencidas entre dos fechas (con resultados)
+GET http://localhost:8080/api/licencias/vencidas?desde=2024-01-01&hasta=2024-01-31
+Accept: application/json
+
+###
+
+### Obtener licencias vencidas entre dos fechas (sin resultados)
+GET http://localhost:8080/api/licencias/vencidas?desde=2030-05-05&hasta=2030-05-20
+Accept: application/json
+
+###
+
+### Obtener licencias vencidas entre hoy y hace 5 días
+GET http://localhost:8080/api/licencias/vencidas?desde={{hoy-5}}&hasta={{hoy}}
+Accept: application/json

@@ -57,4 +57,14 @@ public class LicenciaController {
         LicenciasVencidasDTO lista = licenciaService.obtenerLicenciasVencidasEntre(desde, hasta);
         return new ResponseEntity<>(lista, HttpStatus.OK);
     }
+
+    @GetMapping("/vigentes/filtradas")
+    public ResponseEntity<List<LicenciaActivaDTO>> getLicenciasVigentesPorCriterios(
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) String apellido,
+            @RequestParam(required = false) String grupoFactor,
+            @RequestParam(required = false) Boolean esDonante) {
+        List<LicenciaActivaDTO> licencias = licenciaService.buscarLicenciasPorCriterios(nombre, apellido, grupoFactor, esDonante);
+        return new ResponseEntity<>(licencias, HttpStatus.OK);
+    }
 }

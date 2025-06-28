@@ -10,6 +10,6 @@ public interface LicenciaService {
     LicenciaActivaDTO buscarLicenciaActivaPorDni(String numeroDocumento);
     ComprobanteDTO devolverComprobanteLicenciaPorDni(String numeroDocumento);
     LicenciaEmitidaDTO renovarLicencia(LicenciaFormDTO licenciaFormDTO, String motivo);
-
     LicenciasVencidasDTO obtenerLicenciasVencidasEntre(LocalDate desde, LocalDate hasta);
+    List<LicenciaActivaDTO> buscarLicenciasPorCriterios(String nombre, String apellido, String grupoFactor, Boolean esDonante);
 }

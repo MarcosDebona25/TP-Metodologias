@@ -1,5 +1,6 @@
 package tp.agil.backend.services;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import tp.agil.backend.dtos.*;
 import tp.agil.backend.entities.LicenciaActiva;
@@ -361,5 +362,28 @@ public class LicenciaServiceImpl implements LicenciaService {
                     throw new IllegalArgumentException("Debe tener al menos 17 años para clase " + clase + ".");
             }
         }
+    }
+
+    @Override
+    public List<LicenciaActivaDTO> buscarLicenciasPorCriterios(String nombre, String apellido, String grupoFactor, Boolean esDonante) {
+        Specification<LicenciaActiva> spec = null;
+
+        if (nombre != null && !nombre.isEmpty()) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("titular").get("nombre"), nombre));
+        }
+        if (apellido != null && !apellido.isEmpty()) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("titular").get("apellido"), apellido));
+        }
+        if (grupoFactor != null && !grupoFactor.isEmpty()) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("titular").get("grupoFactor"), grupoFactor));
+        }
+        if (esDonante != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("titular").get("donanteOrganos"), esDonante));
+        }
+
+        List<LicenciaActiva> licencias = licenciaActivaRepository.findAll(spec);
+        return licencias.stream()
+                .map(licenciaActivaMapper::entityToDto)
+                .collect(Collectors.toList());
     }
 }
