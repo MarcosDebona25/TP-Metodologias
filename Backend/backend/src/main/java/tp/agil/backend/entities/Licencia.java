@@ -30,6 +30,6 @@ public abstract class Licencia {
     private LocalDate fechaVencimiento;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_numeroDocumento")
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 }

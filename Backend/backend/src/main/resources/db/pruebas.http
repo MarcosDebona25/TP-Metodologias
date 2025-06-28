@@ -143,6 +143,7 @@ Content-Type: application/json
 "observaciones": "Mayor de 65"
 }
 
+<<<<<<< HEAD
 ### Obtener licencias vencidas entre dos fechas (con resultados)
 GET http://localhost:8080/api/licencias/vencidas?desde=2024-01-01&hasta=2024-01-31
 Accept: application/json
@@ -158,3 +159,38 @@ Accept: application/json
 ### Obtener licencias vencidas entre hoy y hace 5 días
 GET http://localhost:8080/api/licencias/vencidas?desde={{hoy-5}}&hasta={{hoy}}
 Accept: application/json
+=======
+
+### Crear titular
+POST http://localhost:8080/api/titulares
+Content-Type: application/json
+
+{
+  "numeroDocumento": "99999999",
+  "nombre": "Test",
+  "apellido": "Licencia",
+  "fechaNacimiento": "1990-01-01",
+  "domicilio": "Calle Test 1",
+  "grupoFactor": "A+",
+  "donanteOrganos": true
+}
+
+### Emitir licencia (vence en 2030)
+POST http://localhost:8080/api/licencias
+Content-Type: application/json
+
+{
+  "documentoTitular": "99999999",
+  "clases": "B",
+  "observaciones": "Prueba vencimiento"
+}
+
+### Consultar licencias vencidas antes de 2030
+GET http://localhost:8080/api/licencias/vencidas?desde=2029-01-01&hasta=2029-12-31
+
+### Consultar licencias vencidas después de 2030
+GET http://localhost:8080/api/licencias/vencidas?desde=2030-05-01&hasta=2031-01-01
+
+### Consultar licencias vencidas en el rango donde la licencia ya venció
+GET http://localhost:8080/api/licencias/vencidas?desde=2030-04-01&hasta=2030-05-01
+>>>>>>> 54396d4719ba8ba4f91a0ca774f7b086cc734f87

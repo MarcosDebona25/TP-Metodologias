@@ -11,7 +11,7 @@ import lombok.*;
 public class LicenciaActiva extends Licencia {
 
     @OneToOne
-    @JoinColumn(name = "titular_numeroDocumento")
+    @JoinColumn(name = "titular_id")
     private Titular titular;
 
 }
