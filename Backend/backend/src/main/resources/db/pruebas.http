@@ -142,3 +142,37 @@ Content-Type: application/json
 "clases": "C",
 "observaciones": "Mayor de 65"
 }
+
+
+### Crear titular
+POST http://localhost:8080/api/titulares
+Content-Type: application/json
+
+{
+  "numeroDocumento": "99999999",
+  "nombre": "Test",
+  "apellido": "Licencia",
+  "fechaNacimiento": "1990-01-01",
+  "domicilio": "Calle Test 1",
+  "grupoFactor": "A+",
+  "donanteOrganos": true
+}
+
+### Emitir licencia (vence en 2030)
+POST http://localhost:8080/api/licencias
+Content-Type: application/json
+
+{
+  "documentoTitular": "99999999",
+  "clases": "B",
+  "observaciones": "Prueba vencimiento"
+}
+
+### Consultar licencias vencidas antes de 2030
+GET http://localhost:8080/api/licencias/vencidas?desde=2029-01-01&hasta=2029-12-31
+
+### Consultar licencias vencidas después de 2030
+GET http://localhost:8080/api/licencias/vencidas?desde=2030-05-01&hasta=2031-01-01
+
+### Consultar licencias vencidas en el rango donde la licencia ya venció
+GET http://localhost:8080/api/licencias/vencidas?desde=2030-04-01&hasta=2030-05-01
