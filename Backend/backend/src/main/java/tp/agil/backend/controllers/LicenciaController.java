@@ -38,6 +38,7 @@ public class LicenciaController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+
     @GetMapping("/comprobante/{numeroDocumento}")
     public ResponseEntity<ComprobanteDTO> devolverComprobanteLicenciaPorDni(@PathVariable String numeroDocumento) {
         ComprobanteDTO dto = licenciaService.devolverComprobanteLicenciaPorDni(numeroDocumento);
@@ -49,6 +50,9 @@ public class LicenciaController {
         LicenciaEmitidaDTO renovada = licenciaService.renovarLicencia(licenciaFormDTO, motivo);
         return new ResponseEntity<>(renovada, HttpStatus.OK);
     }
+
+
+
 
     @GetMapping("/vencidas")
     public ResponseEntity<LicenciasVencidasDTO> obtenerLicenciasVencidasEntre(
