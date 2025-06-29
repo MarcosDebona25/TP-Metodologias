@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class LicenciaExpiradaDTO {
-    //private Long numero;
+    private Long numero;
     private String documentoTitular;
     private String nombreTitular;
     private String apellidoTitular;

@@ -11,7 +11,6 @@ import tp.agil.backend.repositories.TitularRepository;
 
 @Service
 public class TitularServiceImpl implements TitularService {
-
     private final TitularRepository titularRepository;
     private final TitularMapper titularMapper;
 
@@ -21,7 +20,7 @@ public class TitularServiceImpl implements TitularService {
     }
 
     @Override
-    public TitularDTO getTitularById(String numeroDocumento) {
+    public TitularDTO getTitularByNumeroDocumento(String numeroDocumento) {
         Titular titular = titularRepository.findByNumeroDocumento(numeroDocumento);
         if (titular == null) {
             throw new TitularNoEncontradoException("No se encontró un titular con el número de documento: " + numeroDocumento);
@@ -35,6 +34,7 @@ public class TitularServiceImpl implements TitularService {
         if (existente != null) {
             throw new TitularExistenteException("Ya existe un titular con el número de documento proporcionado.");
         }
+
         Titular titularGuardado = titularRepository.save(titularMapper.dtoToEntity(titularDTO));
         return titularMapper.entityToDto(titularGuardado);
     }

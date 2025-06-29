@@ -80,20 +80,20 @@ public class TitularServiceImplTest {
     }
 
     @Test
-    void testGetTitularById_ok() {
+    void testGetTitularByNumeroDocumento_ok() {
         when(titularRepository.findByNumeroDocumento("12345678")).thenReturn(sampleEntity);
         when(titularMapper.entityToDto(sampleEntity)).thenReturn(sampleDTO);
 
-        TitularDTO result = titularService.getTitularById("12345678");
+        TitularDTO result = titularService.getTitularByNumeroDocumento("12345678");
 
         assertEquals("12345678", result.getNumeroDocumento());
     }
 
     @Test
-    void testGetTitularById_noExiste_lanzaExcepcion() {
+    void testGetTitularByNumeroDocumento_noExiste_lanzaExcepcion() {
         when(titularRepository.findByNumeroDocumento("99999999")).thenReturn(null);
 
-        assertThrows(TitularNoEncontradoException.class, () -> titularService.getTitularById("99999999"));
+        assertThrows(TitularNoEncontradoException.class, () -> titularService.getTitularByNumeroDocumento("99999999"));
     }
 
     @Test

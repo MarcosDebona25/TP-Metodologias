@@ -1,0 +1,82 @@
+### ========================== GESTION DE TITULAR ==========================
+
+### Dar de alta un titular nuevo - Lucas Torres
+POST http://localhost:8080/api/titulares
+Content-Type: application/json
+
+{
+  "numeroDocumento": "11223344",
+  "nombre": "Lucas",
+  "apellido": "Torres",
+  "fechaNacimiento": "1985-11-20",
+  "domicilio": "Ruta 40 Km 100",
+  "grupoFactor": "O+",
+  "donanteOrganos": true
+}
+
+### Dar de alta un titular nuevo - María Luna
+POST http://localhost:8080/api/titulares
+Content-Type: application/json
+
+{
+  "numeroDocumento": "55667788",
+  "nombre": "María",
+  "apellido": "Luna",
+  "fechaNacimiento": "1995-03-01",
+  "domicilio": "Calle del Sol 25",
+  "grupoFactor": "B-",
+  "donanteOrganos": false
+}
+
+### Intentar dar de alta un titular ya existente - Lucas Torres
+POST http://localhost:8080/api/titulares
+Content-Type: application/json
+
+{
+  "numeroDocumento": "11223344",
+  "nombre": "Lucas",
+  "apellido": "Torres",
+  "fechaNacimiento": "1985-11-20",
+  "domicilio": "Ruta 40 Km 100",
+  "grupoFactor": "O+",
+  "donanteOrganos": true
+}
+
+### Obtener titular por número de documento - Juan Pérez (Ya creado por BD)
+GET http://localhost:8080/api/titulares/id/12345678
+
+### Obtener titular por número de documento - Elber Galarza (Ya creado por BD)
+GET http://localhost:8080/api/titulares/id/98765321
+
+### Obtener titular por número de documento - Lucas Torres (recién creado por POST)
+GET http://localhost:8080/api/titulares/id/11223344
+
+
+### =========================================================================================================
+### Este titular debería calificar solo para las clases A, B, F, G, ya que cumple el requisito de edad para licencias básicas pero no tiene una licencia 'B' para calificar para las profesionales.
+### Obtener titular por número de documento - Ana Gómez (17 años, sin licencia B) (Ya creado por BD)
+GET http://localhost:8080/api/titulares/id/17000000
+
+
+### =========================================================================================================
+### Este titular debería calificar solo para las clases A, B, F, G. Aún no tiene 21 años, y aunque tiene una licencia 'B', no ha estado activa por más de un año, lo que le impide obtener categorías profesionales.
+### Obtener titular por número de documento - Roberto Flores (20 años, con licencia B reciente) (Ya creado por BD, con licencia asociada en BD)
+GET http://localhost:8080/api/titulares/id/20000000
+
+
+### =========================================================================================================
+### Este titular debería calificar para las clases A, B, F, G, C, D, E, ya que cumple todos los criterios para licencias profesionales: más de 21 años y una licencia 'B' con más de un año de antigüedad.
+### Obtener titular por número de documento - Carla Diaz (21 años, con licencia B antigua) (Ya creado por BD, con licencia asociada en BD)
+GET http://localhost:8080/api/titulares/id/21000000
+
+
+### =========================================================================================================
+### Este titular debería calificar para las clases A, B, F, G. Aunque cumple el requisito de duración de la licencia 'B', su edad (más de 65 años) le impide obtener categorías profesionales.
+### Obtener titular por número de documento - Pedro García (66 años, con licencia B antigua) (Ya creado por BD, con licencia asociada en BD)
+GET http://localhost:8080/api/titulares/id/66000000
+
+
+### =========================================================================================================
+### Este titular no debería calificar para ninguna clase ya que no cumple el requisito de edad mínima de 17 años.
+### Obtener titular por número de documento - Sofía Rodríguez (16 años) (Ya creado por BD)
+GET http://localhost:8080/api/titulares/id/16000000

@@ -18,7 +18,7 @@ public class TitularController {
     }
 
     @GetMapping("/id/{numeroDocumento}")
-    public TitularClasesDTO getTitularById(@PathVariable String numeroDocumento) {
+    public TitularClasesDTO getTitularByNumeroDocumento(@PathVariable String numeroDocumento) {
         return titularService.getTitularConClases(numeroDocumento);
     }
 

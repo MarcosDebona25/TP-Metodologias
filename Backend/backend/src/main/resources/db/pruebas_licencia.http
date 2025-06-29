@@ -1,0 +1,166 @@
+#### ========================== GESTION DE LICENCIAS ==========================
+#
+#### Emitir una licencia por primera vez (POST /api/licencias)
+#POST http://localhost:8080/api/licencias
+#Content-Type: application/json
+#
+#{
+#  "documentoTitular": "12345678",
+#  "clases": "A",
+#  "observaciones": "Conduce con lentes de contacto"
+#}
+#
+#### Emitir otra licencia para un mismo titular, sumando una clase (POST /api/licencias)
+#POST http://localhost:8080/api/licencias
+#Content-Type: application/json
+#
+#{
+#  "documentoTitular": "12345678",
+#  "clases": "A B",
+#  "observaciones": "No conduce más con lentes de contacto, se curó"
+#}
+#
+#### Buscar licencia activa por DNI (GET /api/licencias/{numeroDocumento})
+#GET http://localhost:8080/api/licencias/12345678
+#
+#### Obtener comprobante de licencia por DNI (GET /api/licencias/comprobante/{numeroDocumento})
+#GET http://localhost:8080/api/licencias/comprobante/12345678
+#
+#### Intentar emitir licencia profesional (debe fallar si no tiene B o si tiene menos de 1 año de emision)
+#POST http://localhost:8080/api/licencias
+#Content-Type: application/json
+#
+#{
+#  "documentoTitular": "12345678",
+#  "clases": "C",
+#  "observaciones": "Tiene B?"
+#}
+#
+#### Intentar emitir licencia con edad insuficiente (debe fallar)
+#POST http://localhost:8080/api/titulares
+#Content-Type: application/json
+#
+#{
+#  "numeroDocumento": "22222222",
+#  "nombre": "Pedro",
+#  "apellido": "Joven",
+#  "fechaNacimiento": "2010-01-01",
+#  "domicilio": "Calle Nueva 456",
+#  "grupoFactor": "O-",
+#  "donanteOrganos": false
+#}
+#
+####
+#POST http://localhost:8080/api/licencias
+#Content-Type: application/json
+#
+#{
+#  "documentoTitular": "22222222",
+#  "clases": "A",
+#  "observaciones": "Menor de edad"
+#}
+#
+#### Emitir licencia profesional correctamente (ya tiene B y más de 1 año para que funcione)
+#POST http://localhost:8080/api/licencias
+#Content-Type: application/json
+#
+#{
+#  "documentoTitular": "12345678",
+#  "clases": "A B C",
+#  "observaciones": "Solicita profesional"
+#}
+#
+#### Renovar licencia por vencimiento (POST /api/licencias/renovar)
+#POST http://localhost:8080/api/licencias/renovar/vencimiento
+#Content-Type: application/json
+#
+#{
+#  "documentoTitular": "12345678",
+#  "clases": "A B C",
+#  "observaciones": "Renovación por vencimiento"
+#}
+#
+#### Renovar licencia modificando datos (observaciones) (debe fallar, solo se permite por vencimiento en este sprint)
+#POST http://localhost:8080/api/licencias/renovar/modificacion
+#Content-Type: application/json
+#
+#{
+#  "documentoTitular": "12345678",
+#  "clases": "A B C",
+#  "observaciones": "Renovación por cambio de datos"
+#}
+#
+#### Intentar emitir licencia profesional por primera vez con más de 65 años (debe fallar)
+#POST http://localhost:8080/api/titulares
+#Content-Type: application/json
+#
+#{
+#  "numeroDocumento": "33333333",
+#  "nombre": "Carlos",
+#  "apellido": "Mayor",
+#  "fechaNacimiento": "1950-01-01",
+#  "domicilio": "Calle Mayor 789",
+#  "grupoFactor": "B+",
+#  "donanteOrganos": false
+#}
+#
+####
+#POST http://localhost:8080/api/licencias
+#Content-Type: application/json
+#
+#{
+#  "documentoTitular": "33333333",
+#  "clases": "C",
+#  "observaciones": "Mayor de 65"
+#}
+#
+#### Obtener licencias vencidas entre dos fechas (con resultados)
+#GET http://localhost:8080/api/licencias/vencidas?desde=2024-01-01&hasta=2024-01-31
+#Accept: application/json
+#
+####
+#
+#### Obtener licencias vencidas entre dos fechas (sin resultados)
+#GET http://localhost:8080/api/licencias/vencidas?desde=2030-05-05&hasta=2030-05-20
+#Accept: application/json
+#
+####
+#
+#### Obtener licencias vencidas entre hoy y hace 5 días
+#GET http://localhost:8080/api/licencias/vencidas?desde={{hoy-5}}&hasta={{hoy}}
+#Accept: application/json
+#=======
+#
+#### Crear titular
+#POST http://localhost:8080/api/titulares
+#Content-Type: application/json
+#
+#{
+#  "numeroDocumento": "99999999",
+#  "nombre": "Test",
+#  "apellido": "Licencia",
+#  "fechaNacimiento": "1990-01-01",
+#  "domicilio": "Calle Test 1",
+#  "grupoFactor": "A+",
+#  "donanteOrganos": true
+#}
+#
+#### Emitir licencia (vence en 2030)
+#POST http://localhost:8080/api/licencias
+#Content-Type: application/json
+#
+#{
+#  "documentoTitular": "99999999",
+#  "clases": "B",
+#  "observaciones": "Prueba vencimiento"
+#}
+#
+#### Consultar licencias vencidas antes de 2030
+#GET http://localhost:8080/api/licencias/vencidas?desde=2029-01-01&hasta=2029-12-31
+#
+#### Consultar licencias vencidas después de 2030
+#GET http://localhost:8080/api/licencias/vencidas?desde=2030-05-01&hasta=2031-01-01
+#
+#### Consultar licencias vencidas en el rango donde la licencia ya venció
+#GET http://localhost:8080/api/licencias/vencidas?desde=2030-04-01&hasta=2030-05-01
+#>>>>>>> 54396d4719ba8ba4f91a0ca774f7b086cc734f87
