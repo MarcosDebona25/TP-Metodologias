@@ -86,4 +86,22 @@ public class TitularServiceImpl implements TitularService {
 
         return clases.toString().trim();
     }
+
+    @Override
+    public TitularDTO modificarTitular(TitularDTO titularDTO) {
+        Titular titular = titularRepository.findByNumeroDocumento(titularDTO.getNumeroDocumento());
+        if (titular == null) {
+            throw new TitularNoEncontradoException("No se encontró un titular con el número de documento: " + titularDTO.getNumeroDocumento());
+        }
+
+        titular.setNombre(titularDTO.getNombre());
+        titular.setApellido(titularDTO.getApellido());
+        titular.setFechaNacimiento(titularDTO.getFechaNacimiento());
+        titular.setDomicilio(titularDTO.getDomicilio());
+        titular.setGrupoFactor(titularDTO.getGrupoFactor());
+        titular.setDonanteOrganos(titularDTO.isDonanteOrganos());
+
+        Titular actualizado = titularRepository.save(titular);
+        return titularMapper.entityToDto(actualizado);
+    }
 }

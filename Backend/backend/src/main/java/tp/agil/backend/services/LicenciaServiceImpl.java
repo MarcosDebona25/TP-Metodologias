@@ -222,7 +222,7 @@ public class LicenciaServiceImpl implements LicenciaService {
 
     @Override
     public List<LicenciaActivaDTO> buscarLicenciasPorCriterios(String nombre, String apellido, String grupoFactor, Boolean esDonante) {
-        Specification<LicenciaActiva> spec = null;
+        Specification<LicenciaActiva> spec = (root, query, cb) -> cb.conjunction();
 
         if (nombre != null && !nombre.isEmpty()) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("titular").get("nombre"), nombre));

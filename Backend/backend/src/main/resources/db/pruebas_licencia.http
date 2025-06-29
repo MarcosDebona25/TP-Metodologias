@@ -179,3 +179,26 @@ Content-Type: application/json
 
 ### Consultar licencia de titular que no existe (DEBERÍA RETORNAR 404)
 GET http://localhost:8080/api/licencias/99999999
+
+### ========================== FILTRAR LICENCIAS POR CRITERIOS ==========================
+
+### Buscar licencias activas por nombre
+GET http://localhost:8080/api/licencias/filtros?nombre=Ana
+
+### Buscar licencias activas por apellido
+GET http://localhost:8080/api/licencias/filtros?apellido=Flores
+
+### Buscar licencias activas por grupo sanguíneo
+GET http://localhost:8080/api/licencias/filtros?grupoFactor=B-
+
+### Buscar licencias activas por donante de órganos
+GET http://localhost:8080/api/licencias/filtros?esDonante=true
+
+### Buscar licencias activas por nombre y grupo sanguíneo
+GET http://localhost:8080/api/licencias/filtros?nombre=Ana&grupoFactor=AB%2B
+
+### Buscar licencias activas por apellido y donante
+GET http://localhost:8080/api/licencias/filtros?apellido=Flores&esDonante=false
+
+### Buscar licencias activas por todos los criterios
+GET http://localhost:8080/api/licencias/filtros?nombre=Ana&apellido=Gómez&grupoFactor=AB%2B&esDonante=true

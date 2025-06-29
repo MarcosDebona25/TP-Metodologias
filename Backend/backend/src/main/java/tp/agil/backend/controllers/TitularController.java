@@ -27,4 +27,11 @@ public class TitularController {
         TitularDTO titularCreado = titularService.crearTitular(titularDTO);
         return new ResponseEntity<>(titularCreado, HttpStatus.OK);
     }
+
+    @PutMapping("/{numeroDocumento}")
+    public ResponseEntity<TitularDTO> modificarTitular(@PathVariable String numeroDocumento, @RequestBody TitularDTO titularDTO) {
+        TitularDTO titularActualizado = titularService.modificarTitular(titularDTO);
+        return new ResponseEntity<>(titularActualizado, HttpStatus.OK);
+    }
+
 }

@@ -80,3 +80,53 @@ GET http://localhost:8080/api/titulares/id/66000000
 ### Este titular no debería calificar para ninguna clase ya que no cumple el requisito de edad mínima de 17 años.
 ### Obtener titular por número de documento - Sofía Rodríguez (16 años) (Ya creado por BD)
 GET http://localhost:8080/api/titulares/id/16000000
+
+### ========================== MODIFICAR TITULAR ==========================
+
+### Modificar titular existente - Lucas Torres (cambia domicilio y grupo sanguíneo)
+PUT http://localhost:8080/api/titulares/11223344
+Content-Type: application/json
+
+{
+  "numeroDocumento": "11223344",
+  "nombre": "Lucas",
+  "apellido": "Torres",
+  "fechaNacimiento": "1985-11-20",
+  "domicilio": "Ruta 40 Km 200",
+  "grupoFactor": "A+",
+  "donanteOrganos": false
+}
+
+### Verificar modificación de Lucas Torres
+GET http://localhost:8080/api/titulares/id/11223344
+
+### Modificar titular existente - María Luna (cambia nombre y donante)
+PUT http://localhost:8080/api/titulares/55667788
+Content-Type: application/json
+
+{
+  "numeroDocumento": "55667788",
+  "nombre": "María Fernanda",
+  "apellido": "Luna",
+  "fechaNacimiento": "1995-03-01",
+  "domicilio": "Calle del Sol 25",
+  "grupoFactor": "B-",
+  "donanteOrganos": true
+}
+
+### Verificar modificación de María Luna
+GET http://localhost:8080/api/titulares/id/55667788
+
+### Modificar titular inexistente (debería fallar)
+PUT http://localhost:8080/api/titulares/99999999
+Content-Type: application/json
+
+{
+  "numeroDocumento": "99999999",
+  "nombre": "No Existe",
+  "apellido": "Prueba",
+  "fechaNacimiento": "1990-01-01",
+  "domicilio": "Calle Falsa 123",
+  "grupoFactor": "O-",
+  "donanteOrganos": false
+}

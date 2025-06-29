@@ -7,4 +7,5 @@ public interface TitularService {
     TitularDTO getTitularByNumeroDocumento(String numeroDocumento);
     TitularDTO crearTitular(TitularDTO titularDTO);
     TitularClasesDTO getTitularConClases(String numeroDocumento);
+    TitularDTO modificarTitular(TitularDTO titularDTO);
 }
