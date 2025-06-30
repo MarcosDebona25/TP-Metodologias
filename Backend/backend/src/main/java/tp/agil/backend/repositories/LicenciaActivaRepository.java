@@ -7,10 +7,7 @@ import tp.agil.backend.entities.Titular;
 import java.time.LocalDate;
 import java.util.List;
 
-
 public interface LicenciaActivaRepository extends JpaRepository<LicenciaActiva, Long>, JpaSpecificationExecutor<LicenciaActiva> {
-    LicenciaActiva findByTitular(Titular titular);
     LicenciaActiva findByTitular_NumeroDocumento(String titular_numeroDocumento);
     List<LicenciaActiva> findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(LocalDate desde, LocalDate hasta);
-
 }

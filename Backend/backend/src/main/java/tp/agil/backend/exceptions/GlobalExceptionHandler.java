@@ -15,9 +15,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TitularExistenteException.class)
     public ResponseEntity<String> handleTitularExistenteException(TitularExistenteException ex) {
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
     @ExceptionHandler(LicenciaNoEncontradaException.class)
@@ -27,6 +25,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TitularNoEncontradoException.class)
     public ResponseEntity<String> handleTitularNoEncontradoException(TitularNoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UsuarioExistenteException.class)
+    public ResponseEntity<String> handleUsuarioExistenteException(UsuarioExistenteException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UsuarioNoEncontradoException.class)
+    public ResponseEntity<String> handleUsuarioNoEncontradoException(UsuarioNoEncontradoException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 }

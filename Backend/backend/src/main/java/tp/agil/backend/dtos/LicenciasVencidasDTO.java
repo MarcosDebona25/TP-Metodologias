@@ -1,4 +1,3 @@
-// Backend/backend/src/main/java/tp/agil/backend/dtos/LicenciasVencidasDTO.java
 package tp.agil.backend.dtos;
 
 import lombok.Getter;

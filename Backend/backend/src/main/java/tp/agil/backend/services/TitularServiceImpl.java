@@ -31,9 +31,7 @@ public class TitularServiceImpl implements TitularService {
     @Override
     public TitularDTO crearTitular(TitularDTO titularDTO) {
         Titular existente = titularRepository.findByNumeroDocumento(titularDTO.getNumeroDocumento());
-        if (existente != null) {
-            throw new TitularExistenteException("Ya existe un titular con el número de documento proporcionado.");
-        }
+        if (existente != null) throw new TitularExistenteException("Ya existe un titular con el número de documento proporcionado.");
 
         Titular titularGuardado = titularRepository.save(titularMapper.dtoToEntity(titularDTO));
         return titularMapper.entityToDto(titularGuardado);

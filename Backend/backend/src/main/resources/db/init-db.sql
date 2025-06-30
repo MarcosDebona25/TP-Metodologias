@@ -1,6 +1,11 @@
--- Insertar usuario administrativo
-INSERT INTO usuario (id, numero_documento, nombre, apellido, email)
-VALUES (11999888, '11999888', 'Admin', 'User', 'admin@example.com');
+-- Insertar usuario administrativo con rol y contraseña hasheada
+-- Contraseña: "admin123" hasheada con BCrypt
+INSERT INTO usuario (id, numero_documento, nombre, apellido, email, rol, contrasena)
+VALUES (11999888, '11999888', 'Admin', 'Regular', 'admin@example.com', 'ADMIN', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM5lE9cyn5cyl0OjKvZ2');
+
+-- OPCIONAL: Agregar un usuario adicional con rol USER para pruebas
+INSERT INTO usuario (id, numero_documento, nombre, apellido, email, rol, contrasena)
+VALUES (22000111, '22000111', 'Usuario', 'Regular', 'user@example.com', 'USER', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM5lE9cyn5cyl0OjKvZ2');
 
 -- Insertar titulares iniciales
 INSERT INTO titular (numero_documento, nombre, apellido, fecha_nacimiento, domicilio, grupo_factor, donante_organos)

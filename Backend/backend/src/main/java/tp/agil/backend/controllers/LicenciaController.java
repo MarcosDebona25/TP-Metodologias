@@ -37,35 +37,30 @@ public class LicenciaController {
         return new ResponseEntity<>(licencias, HttpStatus.OK);
     }
 
-    // POST /api/licencias
     @PostMapping()
     public ResponseEntity<LicenciaEmitidaDTO> emitirLicencia(@RequestBody LicenciaFormDTO licenciaform) {
         LicenciaEmitidaDTO licenciaCreada = licenciaService.emitirLicencia(licenciaform);
         return new ResponseEntity<>(licenciaCreada, HttpStatus.OK);
     }
 
-    // GET /api/licencias/{numeroDocumento} - solo si es numérico
     @GetMapping("/{numeroDocumento:\\d+}")
     public ResponseEntity<LicenciaActivaDTO> buscarLicenciaActivaPorDni(@PathVariable String numeroDocumento) {
         LicenciaActivaDTO dto = licenciaService.buscarLicenciaActivaPorDni(numeroDocumento);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    // GET /api/licencias/comprobante/{numeroDocumento}
     @GetMapping("/comprobante/{numeroDocumento}")
     public ResponseEntity<ComprobanteDTO> devolverComprobanteLicenciaPorDni(@PathVariable String numeroDocumento) {
         ComprobanteDTO dto = licenciaService.devolverComprobanteLicenciaPorDni(numeroDocumento);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    // POST /api/licencias/renovar/{motivo}
     @PostMapping("/renovar/{motivo}")
     public ResponseEntity<LicenciaEmitidaDTO> renovarLicencia(@RequestBody LicenciaFormDTO licenciaFormDTO, @PathVariable String motivo) {
         LicenciaEmitidaDTO renovada = licenciaService.renovarLicencia(licenciaFormDTO, motivo);
         return new ResponseEntity<>(renovada, HttpStatus.OK);
     }
 
-    // GET /api/licencias/vencidas?desde=...&hasta=...
     @GetMapping("/vencidas")
     public ResponseEntity<LicenciasVencidasDTO> obtenerLicenciasVencidasEntre(
             @RequestParam("desde") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
@@ -73,6 +68,4 @@ public class LicenciaController {
         LicenciasVencidasDTO lista = licenciaService.obtenerLicenciasVencidasEntre(desde, hasta);
         return new ResponseEntity<>(lista, HttpStatus.OK);
     }
-
-
 }
