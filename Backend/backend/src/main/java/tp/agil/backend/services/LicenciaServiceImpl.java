@@ -2,6 +2,8 @@ package tp.agil.backend.services;
 
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import tp.agil.backend.dtos.*;
 import tp.agil.backend.entities.LicenciaActiva;
@@ -51,6 +53,9 @@ public class LicenciaServiceImpl implements LicenciaService {
     @Override
     public LicenciaEmitidaDTO emitirLicencia(LicenciaFormDTO licenciaFormDTO) {
         validarFormularioLicencia(licenciaFormDTO);
+
+        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //String documentoUsuario = authentication.getName();
         String documentoUsuario = "11999888"; //esto se debería saber con el inicio de sesión, se implementará luego
 
         Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getDocumentoTitular());
@@ -80,6 +85,8 @@ public class LicenciaServiceImpl implements LicenciaService {
         if (licenciaAnterior == null) throw new LicenciaNoEncontradaException("No hay licencia activa para renovar");
         if (licenciaAnterior.getFechaVencimiento().isAfter(LocalDate.now()) && "vencimiento".equalsIgnoreCase(motivo)) throw new IllegalArgumentException("La licencia aún no está vencida, no se puede renovar");
 
+       //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+       //String documentoUsuario = authentication.getName();
         Usuario usuario = usuarioRepository.findByNumeroDocumento("11999888");
         if (usuario == null) throw new UsuarioNoEncontradoException("No se encontró un usuario con el número de documento: 11999888");
 
