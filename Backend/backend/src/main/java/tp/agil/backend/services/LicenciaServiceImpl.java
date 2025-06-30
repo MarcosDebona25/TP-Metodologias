@@ -51,7 +51,7 @@ public class LicenciaServiceImpl implements LicenciaService {
     @Override
     public LicenciaEmitidaDTO emitirLicencia(LicenciaFormDTO licenciaFormDTO) {
         validarFormularioLicencia(licenciaFormDTO);
-        String documentoUsuario = "11999888";
+        String documentoUsuario = "11999888"; //esto se debería saber con el inicio de sesión, se implementará luego
 
         Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getDocumentoTitular());
         if (titular == null) throw new TitularNoEncontradoException("No se encontró un titular con el número de documento: " + licenciaFormDTO.getDocumentoTitular());
@@ -59,39 +59,33 @@ public class LicenciaServiceImpl implements LicenciaService {
         Usuario usuario = usuarioRepository.findByNumeroDocumento(documentoUsuario);
         LocalDate fechaEmision = LocalDate.now();
         LocalDate fechaVencimiento = calcularFechaVencimiento(titular);
+        LicenciaActiva nuevaLicencia = expirarYCrearNuevaLicenciaActiva(titular, usuario, licenciaFormDTO, fechaEmision, fechaVencimiento);
+
+        LicenciaEmitidaDTO dto = licenciaEmitidaMapper.entityToDto(nuevaLicencia);
+        dto.setDocumentoTitular(titular.getNumeroDocumento());
+        dto.setDocumentoUsuario(usuario.getNumeroDocumento());
+        return dto;
+    }
+
+    @Transactional
+    @Override
+    public LicenciaEmitidaDTO renovarLicencia(LicenciaFormDTO licenciaFormDTO, String motivo) {
+        if (!"vencimiento".equalsIgnoreCase(motivo) && !"modificacion".equalsIgnoreCase(motivo)) throw new IllegalArgumentException("El motivo debe ser 'vencimiento' o 'modificacion'");
+        if (!"vencimiento".equalsIgnoreCase(motivo)) throw new IllegalArgumentException("La renovación solo está permitida por vencimiento en esta versión");
+
+        Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getDocumentoTitular());
+        if (titular == null) throw new TitularNoEncontradoException("No se encontró un titular con el número de documento: " + licenciaFormDTO.getDocumentoTitular());
 
         LicenciaActiva licenciaAnterior = titular.getLicenciaActiva();
-        if (licenciaAnterior != null) {
-            LicenciaExpirada expirada = new LicenciaExpirada();
-            expirada.setTitular(titular);
-            expirada.setUsuario(licenciaAnterior.getUsuario());
-            expirada.setObservaciones(licenciaAnterior.getObservaciones());
-            expirada.setClases(licenciaAnterior.getClases());
-            expirada.setFechaEmision(licenciaAnterior.getFechaEmision());
-            expirada.setFechaVencimiento(licenciaAnterior.getFechaVencimiento());
+        if (licenciaAnterior == null) throw new LicenciaNoEncontradaException("No hay licencia activa para renovar");
+        if (licenciaAnterior.getFechaVencimiento().isAfter(LocalDate.now()) && "vencimiento".equalsIgnoreCase(motivo)) throw new IllegalArgumentException("La licencia aún no está vencida, no se puede renovar");
 
-            titular.setLicenciaActiva(null);
-            licenciaAnterior.setTitular(null);
+        Usuario usuario = usuarioRepository.findByNumeroDocumento("11999888");
+        if (usuario == null) throw new UsuarioNoEncontradoException("No se encontró un usuario con el número de documento: 11999888");
 
-            licenciaExpiradaRepository.save(expirada);
-
-            licenciaActivaRepository.delete(licenciaAnterior);
-
-            licenciaActivaRepository.flush();
-        }
-
-        LicenciaActiva nuevaLicencia = new LicenciaActiva();
-        nuevaLicencia.setTitular(titular);
-        nuevaLicencia.setUsuario(usuario);
-        nuevaLicencia.setObservaciones(licenciaFormDTO.getObservaciones());
-        nuevaLicencia.setClases(licenciaFormDTO.getClases());
-        nuevaLicencia.setFechaEmision(fechaEmision);
-        nuevaLicencia.setFechaVencimiento(fechaVencimiento);
-
-        titular.setLicenciaActiva(nuevaLicencia);
-
-        licenciaActivaRepository.save(nuevaLicencia);
-        titularRepository.save(titular);
+        LocalDate fechaEmision = LocalDate.now();
+        LocalDate fechaVencimiento = calcularFechaVencimiento(titular);
+        LicenciaActiva nuevaLicencia = expirarYCrearNuevaLicenciaActiva(titular, usuario, licenciaFormDTO, fechaEmision, fechaVencimiento);
 
         LicenciaEmitidaDTO dto = licenciaEmitidaMapper.entityToDto(nuevaLicencia);
         dto.setDocumentoTitular(titular.getNumeroDocumento());
@@ -134,69 +128,6 @@ public class LicenciaServiceImpl implements LicenciaService {
         dto.setCostosEmision(calcularCostoEmision(licencia.getClases(), titular));
         dto.setFechaEmisionComprobante(licencia.getFechaEmision());
         dto.setCostosAdministrativos(GASTOS_ADMINISTRATIVOS);
-        return dto;
-    }
-
-    @Transactional
-    @Override
-    public LicenciaEmitidaDTO renovarLicencia(LicenciaFormDTO licenciaFormDTO, String motivo) {
-        if (!"vencimiento".equalsIgnoreCase(motivo) && !"modificacion".equalsIgnoreCase(motivo)) {
-            throw new IllegalArgumentException("El motivo debe ser 'vencimiento' o 'modificacion'.");
-        }
-        if (!"vencimiento".equalsIgnoreCase(motivo)) {
-            throw new IllegalArgumentException("La renovación solo está permitida por vencimiento en esta versión.");
-        }
-
-        Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getDocumentoTitular());
-        if (titular == null)
-            throw new TitularNoEncontradoException("No se encontró un titular con el número de documento: " + licenciaFormDTO.getDocumentoTitular());
-
-        LicenciaActiva licenciaAnterior = titular.getLicenciaActiva();
-        if (licenciaAnterior == null) throw new LicenciaNoEncontradaException("No hay licencia activa para renovar.");
-        if (licenciaAnterior.getFechaVencimiento().isAfter(LocalDate.now()) && "vencimiento".equalsIgnoreCase(motivo))
-            throw new IllegalArgumentException("La licencia aún no está vencida, no se puede renovar.");
-
-        Usuario usuario = usuarioRepository.findByNumeroDocumento("11999888");
-        if (usuario == null) {
-            throw new UsuarioNoEncontradoException("No se encontró un usuario con el número de documento: 11999888");
-        }
-
-        LicenciaExpirada expirada = new LicenciaExpirada();
-        expirada.setTitular(titular);
-        expirada.setUsuario(licenciaAnterior.getUsuario());
-        expirada.setObservaciones(licenciaAnterior.getObservaciones());
-        expirada.setClases(licenciaAnterior.getClases());
-        expirada.setFechaEmision(licenciaAnterior.getFechaEmision());
-        expirada.setFechaVencimiento(licenciaAnterior.getFechaVencimiento());
-
-        titular.setLicenciaActiva(null);
-        licenciaAnterior.setTitular(null);
-
-        licenciaExpiradaRepository.save(expirada);
-
-        licenciaActivaRepository.delete(licenciaAnterior);
-
-        licenciaActivaRepository.flush();
-
-        LocalDate fechaEmision = LocalDate.now();
-        LocalDate fechaVencimiento = calcularFechaVencimiento(titular);
-
-        LicenciaActiva nuevaLicencia = new LicenciaActiva();
-        nuevaLicencia.setTitular(titular);
-        nuevaLicencia.setUsuario(usuario);
-        nuevaLicencia.setObservaciones(licenciaFormDTO.getObservaciones());
-        nuevaLicencia.setClases(licenciaFormDTO.getClases());
-        nuevaLicencia.setFechaEmision(fechaEmision);
-        nuevaLicencia.setFechaVencimiento(fechaVencimiento);
-
-        titular.setLicenciaActiva(nuevaLicencia);
-
-        licenciaActivaRepository.save(nuevaLicencia);
-        titularRepository.save(titular);
-
-        LicenciaEmitidaDTO dto = licenciaEmitidaMapper.entityToDto(nuevaLicencia);
-        dto.setDocumentoTitular(titular.getNumeroDocumento());
-        dto.setDocumentoUsuario(usuario.getNumeroDocumento());
         return dto;
     }
 
@@ -405,5 +336,40 @@ public class LicenciaServiceImpl implements LicenciaService {
                 if (edad < 17) throw new IllegalArgumentException("Debe tener al menos 17 años para clase " + clase);
             }
         }
+    }
+
+    private LicenciaActiva expirarYCrearNuevaLicenciaActiva(Titular titular, Usuario usuario, LicenciaFormDTO licenciaFormDTO, LocalDate fechaEmision, LocalDate fechaVencimiento) {
+        LicenciaActiva licenciaAnterior = titular.getLicenciaActiva();
+        if (licenciaAnterior != null) {
+            LicenciaExpirada expirada = new LicenciaExpirada();
+            expirada.setTitular(titular);
+            expirada.setUsuario(licenciaAnterior.getUsuario());
+            expirada.setObservaciones(licenciaAnterior.getObservaciones());
+            expirada.setClases(licenciaAnterior.getClases());
+            expirada.setFechaEmision(licenciaAnterior.getFechaEmision());
+            expirada.setFechaVencimiento(licenciaAnterior.getFechaVencimiento());
+
+            titular.setLicenciaActiva(null);
+            licenciaAnterior.setTitular(null);
+
+            licenciaExpiradaRepository.save(expirada);
+            licenciaActivaRepository.delete(licenciaAnterior);
+            licenciaActivaRepository.flush();
+        }
+
+        LicenciaActiva nuevaLicencia = new LicenciaActiva();
+        nuevaLicencia.setTitular(titular);
+        nuevaLicencia.setUsuario(usuario);
+        nuevaLicencia.setObservaciones(licenciaFormDTO.getObservaciones());
+        nuevaLicencia.setClases(licenciaFormDTO.getClases());
+        nuevaLicencia.setFechaEmision(fechaEmision);
+        nuevaLicencia.setFechaVencimiento(fechaVencimiento);
+
+        titular.setLicenciaActiva(nuevaLicencia);
+
+        licenciaActivaRepository.save(nuevaLicencia);
+        titularRepository.save(titular);
+
+        return nuevaLicencia;
     }
 }
