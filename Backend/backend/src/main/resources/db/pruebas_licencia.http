@@ -183,22 +183,54 @@ GET http://localhost:8080/api/licencias/99999999
 ### ========================== FILTRAR LICENCIAS POR CRITERIOS ==========================
 
 ### Buscar licencias activas por nombre
-GET http://localhost:8080/api/licencias/filtros?nombre=Ana
+GET http://localhost:8080/api/licencias/filtros?nombre=Roberto
 
 ### Buscar licencias activas por apellido
-GET http://localhost:8080/api/licencias/filtros?apellido=Flores
+GET http://localhost:8080/api/licencias/filtros?apellido=Vega
 
 ### Buscar licencias activas por grupo sanguíneo
-GET http://localhost:8080/api/licencias/filtros?grupoFactor=B-
+GET http://localhost:8080/api/licencias/filtros?grupoFactor=A-
 
 ### Buscar licencias activas por donante de órganos
 GET http://localhost:8080/api/licencias/filtros?esDonante=true
 
 ### Buscar licencias activas por nombre y grupo sanguíneo
-GET http://localhost:8080/api/licencias/filtros?nombre=Ana&grupoFactor=AB%2B
+GET http://localhost:8080/api/licencias/filtros?nombre=Pedro&grupoFactor=A-
 
 ### Buscar licencias activas por apellido y donante
 GET http://localhost:8080/api/licencias/filtros?apellido=Flores&esDonante=false
 
 ### Buscar licencias activas por todos los criterios
-GET http://localhost:8080/api/licencias/filtros?nombre=Ana&apellido=Gómez&grupoFactor=AB%2B&esDonante=true
+GET http://localhost:8080/api/licencias/filtros?nombre=Fernando&apellido=Ruiz&grupoFactor=B+&esDonante=false
+
+### ========================== FILTRAR LICENCIAS POR FECHAS ==========================
+
+### Buscar licencia de María Vencida (vencida ayer)
+GET http://localhost:8080/api/licencias/vencidas?desde=2025-06-28&hasta=2025-06-28
+
+### Buscar licencias expiradas históricas de Juan Pérez (2015)
+GET http://localhost:8080/api/licencias/vencidas?desde=2015-01-01&hasta=2015-12-31
+
+### Buscar licencias expiradas históricas de Juan Pérez (2021)
+GET http://localhost:8080/api/licencias/vencidas?desde=2021-03-01&hasta=2021-03-31
+
+### Buscar licencias que vencerán en 2027 (Fernando Ruiz)
+GET http://localhost:8080/api/licencias/vencidas?desde=2027-06-01&hasta=2027-12-31
+
+### Buscar licencias que vencerán en 2028 (Carla, Pedro, Carlos)
+GET http://localhost:8080/api/licencias/vencidas?desde=2028-01-01&hasta=2028-12-31
+
+### Buscar licencias que vencerán en 2030 (Roberto Flores)
+GET http://localhost:8080/api/licencias/vencidas?desde=2030-06-01&hasta=2030-12-31
+
+### Buscar todas las licencias vencidas (rango amplio 2015-2030)
+GET http://localhost:8080/api/licencias/vencidas?desde=2015-01-01&hasta=2030-12-31
+
+### Buscar en rango sin licencias vencidas (2026)
+GET http://localhost:8080/api/licencias/vencidas?desde=2026-01-01&hasta=2026-12-31
+
+### Buscar en fecha específica de vencimiento de Carlos Vega
+GET http://localhost:8080/api/licencias/vencidas?desde=2028-01-01&hasta=2028-01-01
+
+### Buscar en fecha muy amplia
+GET http://localhost:8080/api/licencias/vencidas?desde=2000-01-01&hasta=2050-01-01
