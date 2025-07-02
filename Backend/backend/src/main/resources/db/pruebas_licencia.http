@@ -108,16 +108,6 @@ Content-Type: application/json
   "observaciones": "Intento con motivo incorrecto"
 }
 
-### Renovar Licencia - Intento con motivo modificacion (DEBERÍA FALLAR - no implementado)
-POST http://localhost:8080/api/licencias/renovar/modificacion
-Content-Type: application/json
-
-{
-  "documentoTitular": "30000000",
-  "clases": "B",
-  "observaciones": "Intento con motivo modificacion"
-}
-
 ### Renovar Licencia - Fernando Ruiz (licencia no vencida - DEBERÍA FALLAR)
 POST http://localhost:8080/api/licencias/renovar/vencimiento
 Content-Type: application/json
@@ -137,6 +127,39 @@ Content-Type: application/json
   "clases": "A",
   "observaciones": "Intento de renovar sin licencia activa"
 }
+
+### ========================== MODIFICAR TITULAR Y RENOVAR POR MODIFICACION ==========================
+
+### Modificar titular existente - Roberto Flores (cambia domicilio y grupo sanguíneo)
+PUT http://localhost:8080/api/titulares/30000000
+Content-Type: application/json
+
+{
+  "numeroDocumento": "20000000",
+  "nombre": "Roberto",
+  "apellido": "Flores",
+  "fechaNacimiento": "2005-06-28",
+  "domicilio": "Calle Nueva 101 Modif!",
+  "grupoFactor": "A+",
+  "donanteOrganos": true
+}
+
+### Verificar modificación de Roberto Flores
+GET http://localhost:8080/api/titulares/id/20000000
+
+### Renovar Licencia - Roberto Flores por modificación de datos
+POST http://localhost:8080/api/licencias/renovar/modificacion
+Content-Type: application/json
+
+{
+  "documentoTitular": "20000000",
+  "clases": "B",
+  "observaciones": "Renovación por modificación de datos del titular"
+}
+
+### Verificar la nueva licencia activa de Roberto Flores (debería reflejar los datos modificados)
+GET http://localhost:8080/api/licencias/20000000
+
 
 ### ========================== CONSULTAS DE VERIFICACIÓN ==========================
 

@@ -39,7 +39,14 @@ public class LicenciaServiceImpl implements LicenciaService {
 
     private static final double GASTOS_ADMINISTRATIVOS = 8.0;
 
-    public LicenciaServiceImpl(LicenciaActivaRepository licenciaActivaRepository, LicenciaExpiradaRepository licenciaExpiradaRepository, TitularRepository titularRepository, UsuarioRepository usuarioRepository, LicenciaActivaMapper licenciaActivaMapper, LicenciaEmitidaMapper licenciaEmitidaMapper, LicenciaExpiradaMapper licenciaExpiradaMapper) {
+    public LicenciaServiceImpl(
+            LicenciaActivaRepository licenciaActivaRepository,
+            LicenciaExpiradaRepository licenciaExpiradaRepository,
+            TitularRepository titularRepository,
+            UsuarioRepository usuarioRepository,
+            LicenciaActivaMapper licenciaActivaMapper,
+            LicenciaEmitidaMapper licenciaEmitidaMapper,
+            LicenciaExpiradaMapper licenciaExpiradaMapper) {
         this.licenciaActivaRepository = licenciaActivaRepository;
         this.licenciaExpiradaRepository = licenciaExpiradaRepository;
         this.titularRepository = titularRepository;
@@ -72,21 +79,26 @@ public class LicenciaServiceImpl implements LicenciaService {
         return dto;
     }
 
-    @Transactional
     @Override
+    @Transactional
     public LicenciaEmitidaDTO renovarLicencia(LicenciaFormDTO licenciaFormDTO, String motivo) {
-        if (!"vencimiento".equalsIgnoreCase(motivo) && !"modificacion".equalsIgnoreCase(motivo)) throw new IllegalArgumentException("El motivo debe ser 'vencimiento' o 'modificacion'");
-        if (!"vencimiento".equalsIgnoreCase(motivo)) throw new IllegalArgumentException("La renovación solo está permitida por vencimiento en esta versión");
+        if (!"vencimiento".equalsIgnoreCase(motivo) && !"modificacion".equalsIgnoreCase(motivo)) {
+            throw new IllegalArgumentException("El motivo debe ser 'vencimiento' o 'modificacion'");
+        }
 
         Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getDocumentoTitular());
         if (titular == null) throw new TitularNoEncontradoException("No se encontró un titular con el número de documento: " + licenciaFormDTO.getDocumentoTitular());
 
         LicenciaActiva licenciaAnterior = titular.getLicenciaActiva();
         if (licenciaAnterior == null) throw new LicenciaNoEncontradaException("No hay licencia activa para renovar");
-        if (licenciaAnterior.getFechaVencimiento().isAfter(LocalDate.now()) && "vencimiento".equalsIgnoreCase(motivo)) throw new IllegalArgumentException("La licencia aún no está vencida, no se puede renovar");
 
-       //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-       //String documentoUsuario = authentication.getName();
+        if ("vencimiento".equalsIgnoreCase(motivo) && licenciaAnterior.getFechaVencimiento().isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("La licencia aún no está vencida, no se puede renovar");
+        }
+        // Si el motivo es 'modificacion', no se valida el vencimiento
+
+        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //String documentoUsuario = authentication.getName();
         Usuario usuario = usuarioRepository.findByNumeroDocumento("11999888");
         if (usuario == null) throw new UsuarioNoEncontradoException("No se encontró un usuario con el número de documento: 11999888");
 
