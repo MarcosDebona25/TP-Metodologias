@@ -43,6 +43,13 @@ export default function Sidebar() {
         <Link href="/user/new" className="block hover:bg-gray-700 p-2 rounded">
           Registrar Usuario
         </Link>
+
+        <Link
+          href="/user/update"
+          className="block hover:bg-gray-700 p-2 rounded"
+        >
+          Modificar Usuario
+        </Link>
       </nav>
     </aside>
   );
