@@ -6,7 +6,7 @@ export type Person = {
   fechaNacimiento: string;
   domicilio: string;
   grupoFactor: string;
-  donanteOrganos: string;
+  donanteOrganos: boolean;
   allowedLicenseTypes: string[];
 };
 

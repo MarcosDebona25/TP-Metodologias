@@ -156,7 +156,7 @@ export default function RenewLicenseForm() {
                 <input
                   className="w-full rounded text-gray-800 border-gray-300 border-1 bg-gray-300"
                   disabled
-                  value={person.donanteOrganos}
+                  value={person.donanteOrganos ? "Sí" : "No"}
                 />
               </div>
 

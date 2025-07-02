@@ -74,6 +74,23 @@ export async function getPersonWithLicenseByIdNumber(
       : [],
   };
 }
+
+export async function updatePerson(data: PersonFormSchema): Promise<void> {
+  const response = await fetch(
+    `http://localhost:8080/api/titulares/${data.numeroDocumento}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    }
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Error al actualizar persona");
+  }
+}
+
 export async function submitPerson(data: PersonFormSchema): Promise<void> {
   const response = await fetch(`http://localhost:8080/api/titulares`, {
     method: "POST",

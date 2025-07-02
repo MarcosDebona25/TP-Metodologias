@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { z } from "zod";
-import { PersonWithLicense } from "../types/Person";
+import { Person } from "../types/Person";
 
-type Props = {
-  onPersonFound: (person: PersonWithLicense) => void;
-  getPersonByIdNumber: (id: string) => Promise<PersonWithLicense>;
+type Props<T extends Person = Person> = {
+  onPersonFound: (person: T) => void;
+  getPersonByIdNumber: (id: string) => Promise<T>;
 };
 
 const idSchema = z
@@ -17,7 +17,7 @@ const idSchema = z
 export default function PersonSearchField({
   onPersonFound,
   getPersonByIdNumber,
-}: Props) {
+}: Props<T>) {
   const [idNumber, setIdNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
