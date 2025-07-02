@@ -6,6 +6,7 @@ import tp.agil.backend.dtos.UsuarioDTO;
 import tp.agil.backend.dtos.UsuarioFormDTO;
 import tp.agil.backend.entities.Usuario;
 import tp.agil.backend.exceptions.UsuarioExistenteException;
+import tp.agil.backend.exceptions.UsuarioNoEncontradoException;
 import tp.agil.backend.mappers.UsuarioMapper;
 import tp.agil.backend.repositories.UsuarioRepository;
 
@@ -30,6 +31,18 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UsuarioDTO actualizarUsuario(UsuarioFormDTO usuarioFormDTO) {
-        return null; //TAREA DE GONZA ...
+        Usuario usuario = usuarioRepository.findByNumeroDocumento(usuarioFormDTO.getNumeroDocumento());
+        if (usuario == null) {
+            throw new UsuarioNoEncontradoException("No se encontró un usuario con el número de documento: " + usuarioFormDTO.getNumeroDocumento());
+        }
+
+        usuario.setNombre(usuarioFormDTO.getNombre());
+        usuario.setApellido(usuarioFormDTO.getApellido());
+        usuario.setEmail(usuarioFormDTO.getEmail());
+        usuario.setRol(usuarioFormDTO.getRol());
+        // No modificar la contraseña
+
+        Usuario actualizado = usuarioRepository.save(usuario);
+        return UsuarioMapper.usuarioAusuarioDTO(actualizado);
     }
 }
