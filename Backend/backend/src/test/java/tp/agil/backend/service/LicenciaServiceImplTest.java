@@ -5,9 +5,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.jpa.domain.Specification;
+import tp.agil.backend.dtos.LicenciaActivaDTO;
 import tp.agil.backend.dtos.LicenciaEmitidaDTO;
 import tp.agil.backend.dtos.LicenciaFormDTO;
 import tp.agil.backend.entities.*;
+import tp.agil.backend.exceptions.TitularNoEncontradoException;
 import tp.agil.backend.mappers.LicenciaEmitidaMapper;
 import tp.agil.backend.repositories.*;
 import tp.agil.backend.services.LicenciaServiceImpl;
@@ -137,8 +140,8 @@ public class LicenciaServiceImplTest {
     void testTitularNoExiste_lanzaExcepcion() {
         when(titularRepository.findByNumeroDocumento("12345678")).thenReturn(null);
         LicenciaFormDTO form = buildForm("12345678", "B");
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> licenciaService.emitirLicencia(form));
-        assertTrue(ex.getMessage().contains("No existe titular"));
+        Exception ex = assertThrows(TitularNoEncontradoException.class, () -> licenciaService.emitirLicencia(form));
+        assertTrue(ex.getMessage().contains("No se encontró un titular"));
     }
 
     @Test
@@ -199,15 +202,16 @@ public class LicenciaServiceImplTest {
         assertTrue(ex.getMessage().contains("'vencimiento' o 'modificacion'"));
     }
 
-    @Test
-    void testRenovarLicencia_conMotivoModificacion_lanzaExcepcion_Sprint1() {
-        LicenciaFormDTO form = buildForm("12345678", "B");
-
-        Exception ex = assertThrows(IllegalArgumentException.class, () ->
-                licenciaService.renovarLicencia(form, "modificacion")
-        );
-        assertTrue(ex.getMessage().contains("solo está permitida por vencimiento"));
-    }
+// TEST DEL SPRINT 1, AHORA YA SE IMPLEMENTÓ LA RENOVACIÓN POR MODIFICACIÓN
+//    @Test
+//    void testRenovarLicencia_conMotivoModificacion_lanzaExcepcion_Sprint1() {
+//        LicenciaFormDTO form = buildForm("12345678", "B");
+//
+//        Exception ex = assertThrows(IllegalArgumentException.class, () ->
+//                licenciaService.renovarLicencia(form, "modificacion")
+//        );
+//        assertTrue(ex.getMessage().contains("solo está permitida por vencimiento"));
+//    }
 
     @Test
     void testRenovarLicencia_titularNoExiste_lanzaExcepcion() {
@@ -489,152 +493,270 @@ public class LicenciaServiceImplTest {
     }
 
     // =========================
-// === TESTS OBTENCIÓN DE LICENCIAS EXPIRADAS
-// =========================
+    // === TESTS OBTENCIÓN DE LICENCIAS EXPIRADAS
+    // =========================
 
-//    @Test
-//    void testObtenerLicenciasExpiradas_filtradoYOrden() {
-//        LocalDate hoy = LocalDate.now();
-//        LicenciaExpirada lic1 = new LicenciaExpirada();
-//        lic1.setNumero(1L);
-//        lic1.setFechaVencimiento(hoy.minusDays(2));
-//        LicenciaExpirada lic2 = new LicenciaExpirada();
-//        lic2.setNumero(2L);
-//        lic2.setFechaVencimiento(hoy.minusDays(1));
-//        LicenciaExpirada lic3 = new LicenciaExpirada();
-//        lic3.setNumero(3L);
-//        lic3.setFechaVencimiento(hoy.minusDays(3));
-//
-//        when(licenciaExpiradaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(
-//                hoy.minusDays(5), hoy)).thenReturn(List.of(lic2, lic1, lic3));
-//        when(licenciaExpiradaMapper.entityToDto(any())).thenAnswer(inv -> {
-//            LicenciaExpirada l = inv.getArgument(0);
-//            var dto = new tp.agil.backend.dtos.LicenciaExpiradaDTO();
-//            dto.setNumero(l.getNumero());
-//            dto.setFechaVencimientoLicencia(l.getFechaVencimiento());
-//            return dto;
-//        });
-//        when(licenciaActivaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(any(), any()))
-//                .thenReturn(Collections.emptyList());
-//
-//        var result = licenciaService.obtenerLicenciasVencidasEntre(hoy.minusDays(5), hoy);
-//
-//        assertEquals(3, result.getExpiradas().size());
-//        assertEquals(2L, result.getExpiradas().get(0).getNumero()); // más reciente
-//        assertEquals(1L, result.getExpiradas().get(1).getNumero());
-//        assertEquals(3L, result.getExpiradas().get(2).getNumero()); // más antigua
-//    }
-//
-//    @Test
-//    void testObtenerLicenciasExpiradas_sinResultados() {
-//        LocalDate hoy = LocalDate.now();
-//        when(licenciaExpiradaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(
-//                hoy.minusDays(10), hoy.minusDays(5))).thenReturn(Collections.emptyList());
-//        when(licenciaActivaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(any(), any()))
-//                .thenReturn(Collections.emptyList());
-//
-//        var result = licenciaService.obtenerLicenciasVencidasEntre(hoy.minusDays(10), hoy.minusDays(5));
-//        assertNotNull(result.getExpiradas());
-//        assertTrue(result.getExpiradas().isEmpty());
-//    }
-//
-//    @Test
-//    void testObtenerLicenciasExpiradas_conActivasVencidasYExpiradas() {
-//        LocalDate hoy = LocalDate.now();
-//        // Expirada
-//        LicenciaExpirada exp1 = new LicenciaExpirada();
-//        exp1.setNumero(1L);
-//        exp1.setFechaVencimiento(hoy.minusDays(2));
-//        // Activa vencida
-//        LicenciaActiva act1 = new LicenciaActiva();
-//        act1.setNumero(10L);
-//        act1.setFechaVencimiento(hoy.minusDays(1));
-//
-//        when(licenciaExpiradaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(hoy.minusDays(5), hoy))
-//                .thenReturn(List.of(exp1));
-//        when(licenciaActivaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(hoy.minusDays(5), hoy))
-//                .thenReturn(List.of(act1));
-//        when(licenciaExpiradaMapper.entityToDto(any())).thenAnswer(inv -> {
-//            LicenciaExpirada l = inv.getArgument(0);
-//            var dto = new tp.agil.backend.dtos.LicenciaExpiradaDTO();
-//            dto.setNumero(l.getNumero());
-//            dto.setFechaVencimientoLicencia(l.getFechaVencimiento());
-//            return dto;
-//        });
-//        when(licenciaActivaMapper.entityToDto(any())).thenAnswer(inv -> {
-//            LicenciaActiva l = inv.getArgument(0);
-//            var dto = new tp.agil.backend.dtos.LicenciaActivaDTO();
-//            dto.setNumero(l.getNumero());
-//            dto.setFechaVencimientoLicencia(l.getFechaVencimiento());
-//            return dto;
-//        });
-//
-//        var result = licenciaService.obtenerLicenciasVencidasEntre(hoy.minusDays(5), hoy);
-//
-//        assertEquals(1, result.getExpiradas().size());
-//        assertEquals(1L, result.getExpiradas().get(0).getNumero());
-//        assertEquals(1, result.getActivasVencidas().size());
-//        assertEquals(10L, result.getActivasVencidas().get(0).getNumero());
-//    }
-//
-//    @Test
-//    void testObtenerLicenciasExpiradas_fronterasDeFechas() {
-//        LocalDate desde = LocalDate.of(2024, 1, 1);
-//        LocalDate hasta = LocalDate.of(2024, 1, 31);
-//
-//        LicenciaExpirada lic = new LicenciaExpirada();
-//        lic.setNumero(5L);
-//        lic.setFechaVencimiento(desde);
-//
-//        when(licenciaExpiradaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(desde, hasta))
-//                .thenReturn(List.of(lic));
-//        when(licenciaExpiradaMapper.entityToDto(any())).thenAnswer(inv -> {
-//            LicenciaExpirada l = inv.getArgument(0);
-//            var dto = new tp.agil.backend.dtos.LicenciaExpiradaDTO();
-//            dto.setNumero(l.getNumero());
-//            dto.setFechaVencimientoLicencia(l.getFechaVencimiento());
-//            return dto;
-//        });
-//        when(licenciaActivaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(desde, hasta))
-//                .thenReturn(Collections.emptyList());
-//
-//        var result = licenciaService.obtenerLicenciasVencidasEntre(desde, hasta);
-//
-//        assertEquals(1, result.getExpiradas().size());
-//        assertEquals(desde, result.getExpiradas().get(0).getFechaVencimientoLicencia());
-//    }
-//
-//    @Test
-//    void testObtenerLicenciasExpiradas_mapeoCompletoDatos() {
-//        LocalDate hoy = LocalDate.now();
-//        LicenciaExpirada lic = new LicenciaExpirada();
-//        lic.setNumero(7L);
-//        lic.setFechaVencimiento(hoy.minusDays(1));
-//        Titular titular = new Titular();
-//        titular.setNumeroDocumento("123");
-//        titular.setNombre("Ana");
-//        titular.setApellido("García");
-//        lic.setTitular(titular);
-//
-//        when(licenciaExpiradaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(any(), any()))
-//                .thenReturn(List.of(lic));
-//        when(licenciaExpiradaMapper.entityToDto(any())).thenAnswer(inv -> {
-//            LicenciaExpirada l = inv.getArgument(0);
-//            var dto = new tp.agil.backend.dtos.LicenciaExpiradaDTO();
-//            dto.setNumero(l.getNumero());
-//            dto.setDocumentoTitular(l.getTitular().getNumeroDocumento());
-//            dto.setNombreTitular(l.getTitular().getNombre());
-//            dto.setApellidoTitular(l.getTitular().getApellido());
-//            return dto;
-//        });
-//        when(licenciaActivaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(any(), any()))
-//                .thenReturn(Collections.emptyList());
-//
-//        var result = licenciaService.obtenerLicenciasVencidasEntre(hoy.minusDays(5), hoy);
-//
-//        assertEquals("123", result.getExpiradas().get(0).getDocumentoTitular());
-//        assertEquals("Ana", result.getExpiradas().get(0).getNombreTitular());
-//        assertEquals("García", result.getExpiradas().get(0).getApellidoTitular());
-//    }
-    
+    @Test
+    void testObtenerLicenciasExpiradas_filtradoYOrden() {
+        LocalDate hoy = LocalDate.now();
+        LicenciaExpirada lic1 = new LicenciaExpirada();
+        lic1.setFechaVencimiento(hoy.minusDays(2));
+        Titular t1 = new Titular();
+        t1.setNumeroDocumento("1");
+        lic1.setTitular(t1);
+
+        LicenciaExpirada lic2 = new LicenciaExpirada();
+        lic2.setFechaVencimiento(hoy.minusDays(1));
+        Titular t2 = new Titular();
+        t2.setNumeroDocumento("2");
+        lic2.setTitular(t2);
+
+        LicenciaExpirada lic3 = new LicenciaExpirada();
+        lic3.setFechaVencimiento(hoy.minusDays(3));
+        Titular t3 = new Titular();
+        t3.setNumeroDocumento("3");
+        lic3.setTitular(t3);
+
+        when(licenciaExpiradaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(
+                hoy.minusDays(5), hoy)).thenReturn(List.of(lic2, lic1, lic3));
+        when(licenciaExpiradaMapper.entityToDto(any())).thenAnswer(inv -> {
+            LicenciaExpirada l = inv.getArgument(0);
+            var dto = new tp.agil.backend.dtos.LicenciaExpiradaDTO();
+            dto.setDocumentoTitular(l.getTitular().getNumeroDocumento());
+            dto.setFechaVencimientoLicencia(l.getFechaVencimiento());
+            return dto;
+        });
+        when(licenciaActivaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(any(), any()))
+                .thenReturn(Collections.emptyList());
+
+        var result = licenciaService.obtenerLicenciasVencidasEntre(hoy.minusDays(5), hoy);
+
+        assertEquals(3, result.getExpiradas().size());
+        assertEquals("2", result.getExpiradas().get(0).getDocumentoTitular()); // más reciente
+        assertEquals("1", result.getExpiradas().get(1).getDocumentoTitular());
+        assertEquals("3", result.getExpiradas().get(2).getDocumentoTitular()); // más antigua
+    }
+
+    @Test
+    void testObtenerLicenciasExpiradas_sinResultados() {
+        LocalDate hoy = LocalDate.now();
+        when(licenciaExpiradaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(
+                hoy.minusDays(10), hoy.minusDays(5))).thenReturn(Collections.emptyList());
+        when(licenciaActivaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(any(), any()))
+                .thenReturn(Collections.emptyList());
+
+        var result = licenciaService.obtenerLicenciasVencidasEntre(hoy.minusDays(10), hoy.minusDays(5));
+        assertNotNull(result.getExpiradas());
+        assertTrue(result.getExpiradas().isEmpty());
+    }
+
+    @Test
+    void testObtenerLicenciasExpiradas_conActivasVencidasYExpiradas() {
+        LocalDate hoy = LocalDate.now();
+        // Expirada
+        LicenciaExpirada exp1 = new LicenciaExpirada();
+        exp1.setFechaVencimiento(hoy.minusDays(2));
+        Titular t1 = new Titular();
+        t1.setNumeroDocumento("1");
+        exp1.setTitular(t1);
+        // Activa vencida
+        LicenciaActiva act1 = new LicenciaActiva();
+        act1.setFechaVencimiento(hoy.minusDays(1));
+        Titular t2 = new Titular();
+        t2.setNumeroDocumento("10");
+        act1.setTitular(t2);
+
+        when(licenciaExpiradaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(hoy.minusDays(5), hoy))
+                .thenReturn(List.of(exp1));
+        when(licenciaActivaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(hoy.minusDays(5), hoy))
+                .thenReturn(List.of(act1));
+        when(licenciaExpiradaMapper.entityToDto(any())).thenAnswer(inv -> {
+            LicenciaExpirada l = inv.getArgument(0);
+            var dto = new tp.agil.backend.dtos.LicenciaExpiradaDTO();
+            dto.setDocumentoTitular(l.getTitular().getNumeroDocumento());
+            dto.setFechaVencimientoLicencia(l.getFechaVencimiento());
+            return dto;
+        });
+        when(licenciaActivaMapper.entityToDto(any())).thenAnswer(inv -> {
+            LicenciaActiva l = inv.getArgument(0);
+            var dto = new tp.agil.backend.dtos.LicenciaActivaDTO();
+            dto.setDocumentoTitular(l.getTitular().getNumeroDocumento());
+            dto.setFechaVencimientoLicencia(l.getFechaVencimiento());
+            return dto;
+        });
+
+        var result = licenciaService.obtenerLicenciasVencidasEntre(hoy.minusDays(5), hoy);
+
+        assertEquals(1, result.getExpiradas().size());
+        assertEquals("1", result.getExpiradas().get(0).getDocumentoTitular());
+        assertEquals(1, result.getActivasVencidas().size());
+        assertEquals("10", result.getActivasVencidas().get(0).getDocumentoTitular());
+    }
+
+    @Test
+    void testObtenerLicenciasExpiradas_fronterasDeFechas() {
+        LocalDate desde = LocalDate.of(2024, 1, 1);
+        LocalDate hasta = LocalDate.of(2024, 1, 31);
+
+        LicenciaExpirada lic = new LicenciaExpirada();
+        lic.setFechaVencimiento(desde);
+        Titular t = new Titular();
+        t.setNumeroDocumento("5");
+        lic.setTitular(t);
+
+        when(licenciaExpiradaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(desde, hasta))
+                .thenReturn(List.of(lic));
+        when(licenciaExpiradaMapper.entityToDto(any())).thenAnswer(inv -> {
+            LicenciaExpirada l = inv.getArgument(0);
+            var dto = new tp.agil.backend.dtos.LicenciaExpiradaDTO();
+            dto.setDocumentoTitular(l.getTitular().getNumeroDocumento());
+            dto.setFechaVencimientoLicencia(l.getFechaVencimiento());
+            return dto;
+        });
+        when(licenciaActivaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(desde, hasta))
+                .thenReturn(Collections.emptyList());
+
+        var result = licenciaService.obtenerLicenciasVencidasEntre(desde, hasta);
+
+        assertEquals(1, result.getExpiradas().size());
+        assertEquals(desde, result.getExpiradas().get(0).getFechaVencimientoLicencia());
+    }
+
+    @Test
+    void testObtenerLicenciasExpiradas_mapeoCompletoDatos() {
+        LocalDate hoy = LocalDate.now();
+        LicenciaExpirada lic = new LicenciaExpirada();
+        lic.setFechaVencimiento(hoy.minusDays(1));
+        Titular titular = new Titular();
+        titular.setNumeroDocumento("123");
+        titular.setNombre("Ana");
+        titular.setApellido("García");
+        lic.setTitular(titular);
+
+        when(licenciaExpiradaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(any(), any()))
+                .thenReturn(List.of(lic));
+        when(licenciaExpiradaMapper.entityToDto(any())).thenAnswer(inv -> {
+            LicenciaExpirada l = inv.getArgument(0);
+            var dto = new tp.agil.backend.dtos.LicenciaExpiradaDTO();
+            dto.setDocumentoTitular(l.getTitular().getNumeroDocumento());
+            dto.setNombreTitular(l.getTitular().getNombre());
+            dto.setApellidoTitular(l.getTitular().getApellido());
+            return dto;
+        });
+        when(licenciaActivaRepository.findByFechaVencimientoBetweenOrderByFechaVencimientoDesc(any(), any()))
+                .thenReturn(Collections.emptyList());
+
+        var result = licenciaService.obtenerLicenciasVencidasEntre(hoy.minusDays(5), hoy);
+
+        assertEquals("123", result.getExpiradas().get(0).getDocumentoTitular());
+        assertEquals("Ana", result.getExpiradas().get(0).getNombreTitular());
+        assertEquals("García", result.getExpiradas().get(0).getApellidoTitular());
+    }
+
+    // ========================= TEST LICENCIAS POR CRITERIOS
+
+    @Test
+    void testBuscarLicenciasPorCriterios_soloNombre() {
+        LicenciaActiva lic = new LicenciaActiva();
+        Titular titular = new Titular();
+        titular.setNombre("Juan");
+        lic.setTitular(titular);
+
+        when(licenciaActivaRepository.findAll(org.mockito.ArgumentMatchers.<Specification<LicenciaActiva>>any()))
+                .thenReturn(List.of(lic));
+        when(licenciaActivaMapper.entityToDto(any())).thenAnswer(inv -> {
+            LicenciaActiva l = inv.getArgument(0);
+            LicenciaActivaDTO dto = new LicenciaActivaDTO();
+            dto.setNombreTitular(l.getTitular().getNombre());
+            return dto;
+        });
+
+        var result = licenciaService.buscarLicenciasPorCriterios("Juan", null, null, null);
+
+        assertEquals(1, result.size());
+        assertEquals("Juan", result.get(0).getNombreTitular());
+    }
+
+    @Test
+    void testBuscarLicenciasPorCriterios_nombreYApellido() {
+        LicenciaActiva lic = new LicenciaActiva();
+        Titular titular = new Titular();
+        titular.setNombre("Ana");
+        titular.setApellido("García");
+        lic.setTitular(titular);
+
+        when(licenciaActivaRepository.findAll(org.mockito.ArgumentMatchers.<Specification<LicenciaActiva>>any()))
+                .thenReturn(List.of(lic));
+        when(licenciaActivaMapper.entityToDto(any())).thenAnswer(inv -> {
+            LicenciaActiva l = inv.getArgument(0);
+            LicenciaActivaDTO dto = new LicenciaActivaDTO();
+            dto.setNombreTitular(l.getTitular().getNombre());
+            dto.setApellidoTitular(l.getTitular().getApellido());
+            return dto;
+        });
+
+        var result = licenciaService.buscarLicenciasPorCriterios("Ana", "García", null, null);
+
+        assertEquals(1, result.size());
+        assertEquals("Ana", result.get(0).getNombreTitular());
+        assertEquals("García", result.get(0).getApellidoTitular());
+    }
+
+    @Test
+    void testBuscarLicenciasPorCriterios_grupoFactorYDonante() {
+        LicenciaActiva lic = new LicenciaActiva();
+        Titular titular = new Titular();
+        titular.setGrupoFactor("A+");
+        titular.setDonanteOrganos(true);
+        lic.setTitular(titular);
+
+        when(licenciaActivaRepository.findAll(org.mockito.ArgumentMatchers.<Specification<LicenciaActiva>>any()))
+                .thenReturn(List.of(lic));
+        when(licenciaActivaMapper.entityToDto(any())).thenAnswer(inv -> {
+            LicenciaActiva l = inv.getArgument(0);
+            LicenciaActivaDTO dto = new LicenciaActivaDTO();
+            dto.setGrupoFactor(l.getTitular().getGrupoFactor());
+            dto.setDonanteOrganos(l.getTitular().isDonanteOrganos() ? "Si" : "No");
+            return dto;
+        });
+
+        var result = licenciaService.buscarLicenciasPorCriterios(null, null, "A+", true);
+
+        assertEquals(1, result.size());
+        assertEquals("A+", result.get(0).getGrupoFactor());
+        assertEquals("Si", result.get(0).getDonanteOrganos());
+    }
+
+    @Test
+    void testBuscarLicenciasPorCriterios_sinResultados() {
+        when(licenciaActivaRepository.findAll(org.mockito.ArgumentMatchers.<Specification<LicenciaActiva>>any()))
+                .thenReturn(Collections.emptyList());
+
+        var result = licenciaService.buscarLicenciasPorCriterios("NoExiste", null, null, null);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testBuscarLicenciasPorCriterios_todosNulos() {
+        LicenciaActiva lic = new LicenciaActiva();
+        Titular titular = new Titular();
+        titular.setNombre("Pedro");
+        lic.setTitular(titular);
+
+        when(licenciaActivaRepository.findAll(org.mockito.ArgumentMatchers.<Specification<LicenciaActiva>>any()))
+                .thenReturn(List.of(lic));
+        when(licenciaActivaMapper.entityToDto(any())).thenAnswer(inv -> {
+            LicenciaActiva l = inv.getArgument(0);
+            LicenciaActivaDTO dto = new LicenciaActivaDTO();
+            dto.setNombreTitular(l.getTitular().getNombre());
+            return dto;
+        });
+
+        var result = licenciaService.buscarLicenciasPorCriterios(null, null, null, null);
+
+        assertEquals(1, result.size());
+        assertEquals("Pedro", result.get(0).getNombreTitular());
+    }
 }
