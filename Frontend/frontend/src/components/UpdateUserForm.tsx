@@ -40,12 +40,14 @@ export default function UpdateUserForm() {
         nombre: data.nombre,
         apellido: data.apellido,
         email: data.email,
-        rol: data.rol,
+        rol: "USER",
         contrasena: "",
         confirmPassword: "",
       });
-    } catch (err: any) {
-      setError("Usuario no encontrado");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError("Usuario no encontrado");
+      }
     }
   };
 
@@ -55,8 +57,10 @@ export default function UpdateUserForm() {
       alert("Usuario actualizado exitosamente");
       setUserFound(null);
       reset();
-    } catch (err: any) {
-      alert(err.message || "Error al actualizar usuario");
+    } catch (err) {
+      if (err instanceof Error) {
+        alert(err.message || "Error al actualizar usuario");
+      }
     }
   };
 

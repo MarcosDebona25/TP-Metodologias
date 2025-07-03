@@ -38,8 +38,10 @@ export default function PersonSearchField({
       const data = await getPersonByIdNumber(idNumber);
       console.log(data);
       onPersonFound(data);
-    } catch (err: any) {
-      setError(err.message || "Error al buscar persona");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message || "Error al buscar persona");
+      }
     } finally {
       setLoading(false);
     }
