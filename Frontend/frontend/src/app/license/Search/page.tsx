@@ -117,7 +117,7 @@ export default function BuscarLicencias() {
                                 <td className="p-2 border">{licencia.apellidoTitular}</td>
                                 <td className="p-2 border">{licencia.documentoTitular}</td>
                                 <td className="p-2 border">{licencia.grupoFactor}</td>
-                                <td className="p-2 border">{licencia.donanteOrganos ? "Sí" : "No"}</td>
+                                <td className="p-2 border">{licencia.donanteOrganos === true || licencia.donanteOrganos === "true" ? "Sí" : "No"}</td>
                                 <td className="p-2 border">{licencia.clases}</td>
                                 <td className="p-2 border">{licencia.fechaEmisionLicencia}</td>
                                 <td className="p-2 border">{licencia.fechaVencimientoLicencia}</td>
