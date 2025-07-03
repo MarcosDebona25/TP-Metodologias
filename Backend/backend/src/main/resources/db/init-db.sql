@@ -1,11 +1,12 @@
 -- Insertar usuario administrativo con rol y contraseña hasheada
--- Contraseña: "admin123" hasheada con BCrypt
+-- Contraseña: "admin123" hasheada con BCrypt: $2a$10$9T5R0sMoQ5iVIRpokZnuIeb7XoV6jewwTk/i8p4xwAxmKkY7p6g4i
 INSERT INTO usuario (id, numero_documento, nombre, apellido, email, rol, contrasena)
-VALUES (11999888, '11999888', 'Admin', 'Regular', 'admin@example.com', 'ADMIN', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM5lE9cyn5cyl0OjKvZ2');
+VALUES (11999888, '11999888', 'Admin', 'Regular', 'admin@example.com', 'ADMIN', '$2a$10$9T5R0sMoQ5iVIRpokZnuIeb7XoV6jewwTk/i8p4xwAxmKkY7p6g4i');
 
 -- OPCIONAL: Agregar un usuario adicional con rol USER para pruebas
+-- Contraseña: "user123" hasheada con BCrypt: $2a$10$J0mLVRrHCbD6Gxr9E8cr/.ZF72EfNmxqYWdV3kEXrRwQsOJ7mUg/e
 INSERT INTO usuario (id, numero_documento, nombre, apellido, email, rol, contrasena)
-VALUES (22000111, '22000111', 'Usuario', 'Regular', 'user@example.com', 'USER', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM5lE9cyn5cyl0OjKvZ2');
+VALUES (22000111, '22000111', 'Usuario', 'Regular', 'user@example.com', 'USER', '$2a$10$J0mLVRrHCbD6Gxr9E8cr/.ZF72EfNmxqYWdV3kEXrRwQsOJ7mUg/e');
 
 -- Insertar titulares iniciales
 INSERT INTO titular (numero_documento, nombre, apellido, fecha_nacimiento, domicilio, grupo_factor, donante_organos)
