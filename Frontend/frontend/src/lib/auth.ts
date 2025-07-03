@@ -8,3 +8,8 @@ export function getTokenData() {
 
   return { token, rol };
 }
+export function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("rol");
+  window.location.href = "/login"; // Redirige al login
+}

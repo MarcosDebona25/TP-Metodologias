@@ -9,7 +9,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className="flex">
+      <body className="flex min-h-screen">
         <SidebarWrapper />
         <main className="flex-1 p-4">{children}</main>
       </body>

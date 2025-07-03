@@ -27,7 +27,7 @@ export default function BuscarLicencias() {
 
     try {
       const res = await fetchWithAuth(
-        `/api/licenses/filters?${params.toString()}`
+        `http://localhost:8080/api/licencias/filtros?${params.toString()}`
       );
       if (!res.ok) throw new Error("Error en la respuesta del servidor");
 

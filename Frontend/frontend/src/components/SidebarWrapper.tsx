@@ -15,6 +15,6 @@ export default function SidebarWrapper() {
   }, []);
 
   if (!role) return null;
-
+  console.log(role);
   return <Sidebar role={role} />;
 }

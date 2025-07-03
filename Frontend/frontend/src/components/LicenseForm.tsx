@@ -14,7 +14,6 @@ import { getPersonWithLicenseByIdNumber } from "@/services/personService";
 export default function LicenseForm() {
   const [person, setPerson] = useState<PersonWithLicense | null>(null);
   const router = useRouter();
-
   const {
     register,
     handleSubmit,
