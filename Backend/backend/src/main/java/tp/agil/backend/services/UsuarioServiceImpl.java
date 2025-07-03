@@ -45,4 +45,13 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario actualizado = usuarioRepository.save(usuario);
         return UsuarioMapper.usuarioAusuarioDTO(actualizado);
     }
+
+    @Override
+    public UsuarioDTO getUsuarioByNumeroDocumento(String numeroDocumento) {
+        Usuario usuario = usuarioRepository.findByNumeroDocumento(numeroDocumento);
+        if (usuario == null) {
+            throw new UsuarioNoEncontradoException("No se encontró un usuario con el número de documento: " + numeroDocumento);
+        }
+        return UsuarioMapper.usuarioAusuarioDTO(usuario);
+    }
 }
