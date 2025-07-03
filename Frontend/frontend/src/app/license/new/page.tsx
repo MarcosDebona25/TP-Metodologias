@@ -1,10 +1,10 @@
-// app/license/new/page.tsx
 import LicenseForm from "@/components/LicenseForm";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
-export default function NewLicensePage() {
+export default function LicensePage() {
   return (
-    <div className="p-6">
+    <ProtectedRoute>
       <LicenseForm />
-    </div>
+    </ProtectedRoute>
   );
 }

@@ -1,56 +1,63 @@
 import Link from "next/link";
 
-export default function Sidebar() {
+type Props = {
+  role: string;
+};
+
+export default function Sidebar({ role }: Props) {
   return (
-    <aside className="w-64 h-screen bg-gray-800 text-white p-4">
-      <h2 className="text-xl font-bold mb-6">Gestor de Licencias</h2>
-      <nav className="space-y-2">
-        <Link
-          href="/license/new"
-          className="block hover:bg-gray-700 p-2 rounded"
-        >
-          Nueva Licencia
-        </Link>
+    <aside className="w-64 bg-gray-800 text-white p-4">
+      <h2 className="text-xl font-bold mb-4">Menú</h2>
+      <ul className="space-y-2">
+        <li>
+          <Link href="/license/new" className="block hover:underline">
+            Nueva Licencia
+          </Link>
+        </li>
+        <li>
+          <Link href="/license/renew" className="block hover:underline">
+            Renovar Licencia
+          </Link>
+        </li>
+        <li>
+          <Link href="/license/list" className="block hover:underline">
+            Listar Licencias
+          </Link>
+        </li>
+        <li>
+          <Link href="/person/new" className="block hover:underline">
+            Registrar Persona
+          </Link>
+        </li>
+        <li>
+          <Link href="/person/edit" className="block hover:underline">
+            Modificar Persona
+          </Link>
+        </li>
 
-        <Link
-          href="/license/renew"
-          className="block hover:bg-gray-700 p-2 rounded"
-        >
-          Renovar Licencia
-        </Link>
+        {role === "ADMIN" && (
+          <>
+            <li>
+              <Link href="/user/new" className="block hover:underline">
+                Registrar Usuario
+              </Link>
+            </li>
+            <li>
+              <Link href="/user/edit" className="block hover:underline">
+                Modificar Usuario
+              </Link>
+            </li>
+          </>
+        )}
 
-        <Link
-          href="/license/expiring"
-          className="block hover:bg-gray-700 p-2 rounded"
-        >
-          Licencias a Expirar
-        </Link>
-
-        <Link
-          href="/person/new"
-          className="block hover:bg-gray-700 p-2 rounded"
-        >
-          Registrar Titular
-        </Link>
-
-        <Link
-          href="/person/update"
-          className="block hover:bg-gray-700 p-2 rounded"
-        >
-          Modificar Titular
-        </Link>
-
-        <Link href="/user/new" className="block hover:bg-gray-700 p-2 rounded">
-          Registrar Usuario
-        </Link>
-
-        <Link
-          href="/user/update"
-          className="block hover:bg-gray-700 p-2 rounded"
-        >
-          Modificar Usuario
-        </Link>
-      </nav>
+        <li>
+          <form action="/logout" method="POST">
+            <button className="text-red-400 hover:underline mt-4">
+              Cerrar sesión
+            </button>
+          </form>
+        </li>
+      </ul>
     </aside>
   );
 }

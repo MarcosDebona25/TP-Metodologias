@@ -1,6 +1,6 @@
 "use client";
-
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userFormSchema, UserFormSchema } from "@/schemas/userSchema";
@@ -63,7 +63,14 @@ export default function UpdateUserForm() {
       }
     }
   };
+  const router = useRouter();
 
+  useEffect(() => {
+    const rol = localStorage.getItem("rol");
+    if (rol !== "ADMIN" && rol !== "USER") {
+      router.push("/");
+    }
+  }, [router]);
   return (
     <div className="max-w-xl mx-auto p-4 border rounded shadow">
       <h2 className="text-2xl font-bold mb-4 text-gray-800">
