@@ -1,5 +1,5 @@
-### Modificar usuario existente (cambia nombre y rol)
-PUT http://localhost:8080/api/usuarios/11999888
+### Crear usuario nuevo
+POST http://localhost:8080/api/usuarios
 Content-Type: application/json
 
 {
@@ -7,12 +7,25 @@ Content-Type: application/json
   "nombre": "Administrador",
   "apellido": "Regular",
   "email": "admin@example.com",
+  "rol": "ADMIN",
+  "contrasena": "admin123"
+}
+
+### Modificar usuario existente (cambia nombre y rol)
+PUT http://localhost:8080/api/usuarios/11999888
+Content-Type: application/json
+
+{
+  "numeroDocumento": "11999888",
+  "nombre": "Crack",
+  "apellido": "Regular",
+  "email": "admin@example.com",
   "rol": "USER",
   "contrasena": ""
 }
 
-### Verificar modificación de usuario (deberías tener un endpoint GET para esto)
-# GET http://localhost:8080/api/usuarios/11999888
+### Verificar modificación de usuario
+GET http://localhost:8080/api/usuarios/id/11999888
 
 ### Modificar usuario inexistente (debería fallar)
 PUT http://localhost:8080/api/usuarios/99999999
