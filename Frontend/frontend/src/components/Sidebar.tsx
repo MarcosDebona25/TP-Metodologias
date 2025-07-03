@@ -20,6 +20,13 @@ export default function Sidebar() {
         </Link>
 
         <Link
+            href="/license/Search"
+            className="block hover:bg-gray-700 p-2 rounded"
+        >
+            Buscar Licencias Vigentes
+        </Link>
+
+        <Link
           href="/license/expiring"
           className="block hover:bg-gray-700 p-2 rounded"
         >
