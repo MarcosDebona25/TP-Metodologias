@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { Person, PersonWithLicense } from "../types/Person";
 import { PersonFormSchema } from "@/schemas/personSchema";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 export async function getPersonByIdNumber(idNumber: string): Promise<Person> {
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `http://localhost:8080/api/titulares/id/${idNumber}`,
     //`http://localhost:3000/api/people/${idNumber}`
     {
@@ -25,7 +26,7 @@ export async function getPersonByIdNumber(idNumber: string): Promise<Person> {
 export async function getPersonWithLicenseByIdNumber(
   idNumber: string
 ): Promise<PersonWithLicense> {
-  const personResponse = await fetch(
+  const personResponse = await fetchWithAuth(
     `http://localhost:8080/api/titulares/id/${idNumber}`,
     //`http://localhost:3000/api/licenses/${idNumber}`
     {
@@ -38,7 +39,7 @@ export async function getPersonWithLicenseByIdNumber(
   }
   const person = await personResponse.json();
 
-  let licenseResponse = await fetch(
+  let licenseResponse = await fetchWithAuth(
     `http://localhost:8080/api/licencias/${idNumber}`,
     //`http://localhost:3000/api/licenses/${idNumber}`
     {
@@ -76,7 +77,7 @@ export async function getPersonWithLicenseByIdNumber(
 }
 
 export async function updatePerson(data: PersonFormSchema): Promise<void> {
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `http://localhost:8080/api/titulares/${data.numeroDocumento}`,
     {
       method: "PUT",
@@ -92,7 +93,7 @@ export async function updatePerson(data: PersonFormSchema): Promise<void> {
 }
 
 export async function submitPerson(data: PersonFormSchema): Promise<void> {
-  const response = await fetch(`http://localhost:8080/api/titulares`, {
+  const response = await fetchWithAuth(`http://localhost:8080/api/titulares`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Comprobante } from "@/types/Receipt";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 export default function PaymentReceiptPage() {
   const params = useParams();
@@ -16,7 +17,7 @@ export default function PaymentReceiptPage() {
 
     async function fetchData() {
       try {
-        const res = await fetch(
+        const res = await fetchWithAuth(
           `http://localhost:8080/api/licencias/comprobante/${id}`
         );
         const data = await res.json();

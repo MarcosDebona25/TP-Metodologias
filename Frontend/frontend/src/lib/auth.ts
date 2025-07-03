@@ -1,27 +1,10 @@
-// src/utils/auth.ts
-import { jwtDecode } from "jwt-decode";
-
-export interface TokenData {
-  sub: string;
-  rol: string;
-  exp: number;
-  iat: number;
-  [key: string]: any;
-}
-
-// Función para obtener el token desde cookies y decodificarlo
-export function getTokenData(): TokenData | null {
+export function getTokenData() {
   if (typeof window === "undefined") return null;
 
-  const token = localStorage.getItem("token"); // o sessionStorage, según tu app
+  const token = localStorage.getItem("token");
+  const rol = localStorage.getItem("rol");
 
-  if (!token) return null;
+  if (!token || !rol) return null;
 
-  try {
-    const decoded = jwtDecode<TokenData>(token);
-    return decoded;
-  } catch (err) {
-    console.error("Token inválido:", err);
-    return null;
-  }
+  return { token, rol };
 }

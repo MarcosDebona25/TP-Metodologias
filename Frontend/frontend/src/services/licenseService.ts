@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { LicenseFormSchema } from "@/schemas/licenseSchema";
 import { LicenciaActiva } from "@/types/License";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 export async function fetchExpiringLicenses(
   from: string,
   to: string
 ): Promise<LicenciaActiva[]> {
-  let response = await fetch(
+  let response = await fetchWithAuth(
     `http://localhost:8080/api/licencias/vencidas?desde=${from}&hasta=${to}`,
     {
       method: "GET",
@@ -34,7 +35,7 @@ export async function submitLicense(data: LicenseFormSchema): Promise<void> {
     clases: clases,
     observaciones: data.observaciones,
   };
-  const response = await fetch("http://localhost:8080/api/licencias", {
+  const response = await fetchWithAuth("http://localhost:8080/api/licencias", {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -50,7 +51,7 @@ export async function submitLicense(data: LicenseFormSchema): Promise<void> {
 // src/services/licenseService.ts
 
 export async function getLicenseById(idNumber: string) {
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `http://localhost:8080/api/titulares/id/${idNumber}`,
     {
       method: "GET",

@@ -32,7 +32,7 @@ export default function LoginPage() {
       const { token, rol } = await response.json();
       localStorage.setItem("token", token);
       localStorage.setItem("rol", rol);
-      router.push("/licenses/new");
+      router.push("/license/new");
     } catch (err) {
       if (err instanceof Error) {
         setServerError(err.message);

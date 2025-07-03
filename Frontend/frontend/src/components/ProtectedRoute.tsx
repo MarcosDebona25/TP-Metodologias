@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { getTokenData } from "@/lib/auth";
 
 type Props = {
   children: React.ReactNode;
@@ -11,23 +12,25 @@ type Props = {
 export default function ProtectedRoute({ children, requiredRole }: Props) {
   const router = useRouter();
   const [authorized, setAuthorized] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
+
+  useEffect(() => {}, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
-
-    if (!token) {
+    const data = getTokenData();
+    if (data?.rol) {
+      if (requiredRole && data.rol !== requiredRole) {
+        router.replace("/unauthorized");
+        return;
+      }
+      setRole(data.rol);
+    } else {
       router.replace("/login");
       return;
     }
 
-    if (requiredRole && role !== requiredRole) {
-      router.replace("/unauthorized");
-      return;
-    }
-
     setAuthorized(true);
-  }, [router, requiredRole]);
+  }, [router, requiredRole, role]);
 
   if (!authorized) {
     return (

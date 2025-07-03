@@ -6,6 +6,7 @@ import { LicenciaActiva } from "@/types/License";
 import { Person } from "@/types/Person";
 import { useParams } from "next/navigation";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 export default function PrintLicensePage() {
   const params = useParams();
@@ -18,8 +19,12 @@ export default function PrintLicensePage() {
     if (!id) return;
 
     async function fetchData() {
-      const res = await fetch(`http://localhost:8080/api/licencias/${id}`);
-      const res2 = await fetch(`http://localhost:8080/api/titulares/id/${id}`);
+      const res = await fetchWithAuth(
+        `http://localhost:8080/api/licencias/${id}`
+      );
+      const res2 = await fetchWithAuth(
+        `http://localhost:8080/api/titulares/id/${id}`
+      );
       const licenciaData = await res.json();
       const personData = await res2.json();
       setLicense(licenciaData);

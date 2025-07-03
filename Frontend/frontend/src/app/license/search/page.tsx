@@ -1,5 +1,6 @@
 "use client";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useState } from "react";
 
 const gruposSanguineos = ["", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -25,7 +26,9 @@ export default function BuscarLicencias() {
     }
 
     try {
-      const res = await fetch(`/api/licenses/filters?${params.toString()}`);
+      const res = await fetchWithAuth(
+        `/api/licenses/filters?${params.toString()}`
+      );
       if (!res.ok) throw new Error("Error en la respuesta del servidor");
 
       const data = await res.json();

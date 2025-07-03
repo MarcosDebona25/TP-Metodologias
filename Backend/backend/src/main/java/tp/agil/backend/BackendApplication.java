@@ -1,6 +1,5 @@
 package tp.agil.backend;
 
-import jdk.swing.interop.SwingInterOpUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
