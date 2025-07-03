@@ -3,6 +3,7 @@ package tp.agil.backend.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tp.agil.backend.dtos.TitularClasesDTO;
 import tp.agil.backend.dtos.UsuarioDTO;
 import tp.agil.backend.dtos.UsuarioFormDTO;
 import tp.agil.backend.services.UsuarioService;
@@ -14,6 +15,11 @@ public class UsuarioController {
 
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
+    }
+
+    @GetMapping("/id/{numeroDocumento}")
+    public UsuarioDTO getUsarioByNumeroDocumento(@PathVariable String numeroDocumento) {
+        return usuarioService.getUsuarioByNumeroDocumento(numeroDocumento);
     }
 
     @PostMapping()
