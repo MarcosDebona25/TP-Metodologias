@@ -1,5 +1,10 @@
 import NewPersonForm from "@/components/NewPersonForm";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function NewPersonPage() {
-  return <NewPersonForm />;
+  return (
+    <ProtectedRoute>
+      <NewPersonForm />
+    </ProtectedRoute>
+  );
 }

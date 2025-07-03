@@ -1,10 +1,11 @@
 // app/license/expiring/page.tsx
 import ExpiringLicensesTable from "@/components/ExpiringLicensesTable";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function ExpiringLicensesPage() {
   return (
-    <div className="p-6">
+    <ProtectedRoute>
       <ExpiringLicensesTable />
-    </div>
+    </ProtectedRoute>
   );
 }

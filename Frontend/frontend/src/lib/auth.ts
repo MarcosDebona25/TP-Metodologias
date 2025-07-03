@@ -1,12 +1,12 @@
 // src/utils/auth.ts
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 export interface TokenData {
-  sub: string; // ID del usuario
-  rol: string; // Rol (ADMIN, USER, etc)
-  exp: number; // Tiempo de expiración UNIX
-  iat: number; // Tiempo de emisión
-  [key: string]: any; // Otros posibles campos
+  sub: string;
+  rol: string;
+  exp: number;
+  iat: number;
+  [key: string]: any;
 }
 
 // Función para obtener el token desde cookies y decodificarlo
