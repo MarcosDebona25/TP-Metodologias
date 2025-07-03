@@ -26,7 +26,6 @@ export default function UpdatePersonForm() {
     register,
     handleSubmit,
     reset,
-    setValue,
     formState: { errors, isValid },
   } = useForm<PersonFormSchema>({
     resolver: zodResolver(personFormSchema),
@@ -55,8 +54,10 @@ export default function UpdatePersonForm() {
       alert("Persona actualizada correctamente");
       setPersonFound(null);
       reset();
-    } catch (err: any) {
-      alert(err.message || "Error al actualizar persona");
+    } catch (err) {
+      if (err instanceof Error) {
+        alert(err.message || "Error al actualizar persona");
+      }
     }
   };
 
