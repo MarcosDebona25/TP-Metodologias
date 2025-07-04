@@ -174,7 +174,7 @@ export default function NewPersonForm() {
             type="submit"
             className="px-4 py-2 bg-blue-600 text-white rounded"
           >
-            Registrar Titular
+            Registrar
           </button>
         </div>
       </div>

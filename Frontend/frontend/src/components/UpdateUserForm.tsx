@@ -74,7 +74,7 @@ export default function UpdateUserForm() {
   return (
     <div className="max-w-xl mx-auto p-4 border rounded shadow">
       <h2 className="text-2xl font-bold mb-4 text-gray-800">
-        Actualizar Usuario
+        Modificar Usuario
       </h2>
 
       <div className="space-y-2 mb-4">
@@ -101,14 +101,12 @@ export default function UpdateUserForm() {
 
       {userFound && (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
+          <div hidden>
             <label className="block text-gray-700 font-medium">
               Número de Documento
             </label>
             <input
               {...register("numeroDocumento")}
-              disabled
-              className="w-full rounded border-gray-300 bg-gray-200"
             />
           </div>
 
@@ -146,11 +144,10 @@ export default function UpdateUserForm() {
             )}
           </div>
 
-          <div>
+          <div hidden>
             <label className="block text-gray-700 font-medium">Rol</label>
             <input
               {...register("rol")}
-              className="w-full rounded border border-gray-300 text-gray-800 bg-white"
             />
             {errors.rol && (
               <p className="text-red-500 text-sm">{errors.rol.message}</p>

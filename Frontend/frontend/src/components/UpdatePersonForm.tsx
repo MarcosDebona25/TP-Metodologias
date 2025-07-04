@@ -65,7 +65,7 @@ export default function UpdatePersonForm() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="max-w-xl mx-auto p-4 border rounded shadow">
         <h2 className="text-2xl text-gray-800 font-bold mb-4">
-          Actualizar Persona
+          Modificar Titular
         </h2>
 
         <PersonSearchField

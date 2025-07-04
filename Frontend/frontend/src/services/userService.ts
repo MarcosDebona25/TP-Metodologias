@@ -4,7 +4,7 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 export async function getUserByNumeroDocumento(dni: string): Promise<User> {
   const response = await fetchWithAuth(
-    `http://localhost:8080/api/usuarios/${dni}`,
+    `http://localhost:8080/api/usuarios/id/${dni}`,
     {
       method: "GET",
       headers: {

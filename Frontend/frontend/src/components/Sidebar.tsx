@@ -34,7 +34,15 @@ export default function Sidebar({ role }: Props) {
                   href="/license/search"
                   className="block font-bold hover:underline"
                 >
-                  Listar Licencias
+                  Licencias Vigentes
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/license/expiring"
+                  className="block font-bold hover:underline"
+                >
+                  Licencias a Expirar
                 </Link>
               </li>
               <li>
@@ -42,15 +50,15 @@ export default function Sidebar({ role }: Props) {
                   href="/person/new"
                   className="block font-bold hover:underline"
                 >
-                  Registrar Persona
+                  Registrar Titular
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/person/edit"
+                  href="/person/update"
                   className="block font-bold hover:underline"
                 >
-                  Modificar Persona
+                  Modificar Titular
                 </Link>
               </li>
 
