@@ -81,37 +81,6 @@ public class LicenciaServiceImpl implements LicenciaService {
         return dto;
     }
 
-//    public LicenciaEmitidaDTO emitirLicencia(LicenciaFormDTO licenciaFormDTO) {
-//        validarFormularioLicencia(licenciaFormDTO);
-//
-////        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-////        //String documentoUsuario = authentication.getName();
-////        String documentoUsuario = "11999888"; //esto se debería saber con el inicio de sesión, se implementará luego
-//
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String documentoUsuario;
-//
-//        if (authentication != null && authentication.isAuthenticated() &&
-//                !authentication.getName().equals("anonymousUser")) {
-//            documentoUsuario = authentication.getName();
-//        } else {
-//            documentoUsuario = "11999888";
-//        }
-//
-//        Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getDocumentoTitular());
-//        if (titular == null) throw new TitularNoEncontradoException("No se encontró un titular con el número de documento: " + licenciaFormDTO.getDocumentoTitular());
-//
-//        Usuario usuario = usuarioRepository.findByNumeroDocumento(documentoUsuario);
-//        LocalDate fechaEmision = LocalDate.now();
-//        LocalDate fechaVencimiento = calcularFechaVencimiento(titular);
-//        LicenciaActiva nuevaLicencia = expirarYCrearNuevaLicenciaActiva(titular, usuario, licenciaFormDTO, fechaEmision, fechaVencimiento);
-//
-//        LicenciaEmitidaDTO dto = licenciaEmitidaMapper.entityToDto(nuevaLicencia);
-//        dto.setDocumentoTitular(titular.getNumeroDocumento());
-//        dto.setDocumentoUsuario(usuario.getNumeroDocumento());
-//        return dto;
-//    }
-
     @Override
     @Transactional
     public LicenciaEmitidaDTO renovarLicencia(LicenciaFormDTO licenciaFormDTO, String motivo) {
@@ -130,7 +99,6 @@ public class LicenciaServiceImpl implements LicenciaService {
         }
         // Si el motivo es 'modificacion', no se valida el vencimiento
 
-        // Obtener el usuario autenticado correctamente
         String documentoUsuario = obtenerDocumentoUsuarioAutenticado();
 
         Usuario usuario = usuarioRepository.findByNumeroDocumento(documentoUsuario);
@@ -145,47 +113,6 @@ public class LicenciaServiceImpl implements LicenciaService {
         dto.setDocumentoUsuario(usuario.getNumeroDocumento());
         return dto;
     }
-
-//    public LicenciaEmitidaDTO renovarLicencia(LicenciaFormDTO licenciaFormDTO, String motivo) {
-//        if (!"vencimiento".equalsIgnoreCase(motivo) && !"modificacion".equalsIgnoreCase(motivo)) {
-//            throw new IllegalArgumentException("El motivo debe ser 'vencimiento' o 'modificacion'");
-//        }
-//
-//        Titular titular = titularRepository.findByNumeroDocumento(licenciaFormDTO.getDocumentoTitular());
-//        if (titular == null) throw new TitularNoEncontradoException("No se encontró un titular con el número de documento: " + licenciaFormDTO.getDocumentoTitular());
-//
-//        LicenciaActiva licenciaAnterior = titular.getLicenciaActiva();
-//        if (licenciaAnterior == null) throw new LicenciaNoEncontradaException("No hay licencia activa para renovar");
-//
-//        if ("vencimiento".equalsIgnoreCase(motivo) && licenciaAnterior.getFechaVencimiento().isAfter(LocalDate.now())) {
-//            throw new IllegalArgumentException("La licencia aún no está vencida, no se puede renovar");
-//        }
-//        // Si el motivo es 'modificacion', no se valida el vencimiento
-//
-//
-//        String documentoUsuario;
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//        if (authentication != null && authentication.isAuthenticated() &&
-//                !authentication.getName().equals("anonymousUser")) {
-//            documentoUsuario = authentication.getName();
-//        } else {
-//            // Fallback para desarrollo
-//            documentoUsuario = "11999888";
-//        }
-//
-//        Usuario usuario = usuarioRepository.findByNumeroDocumento("11999888");
-//        if (usuario == null) throw new UsuarioNoEncontradoException("No se encontró un usuario con el número de documento: 11999888");
-//
-//        LocalDate fechaEmision = LocalDate.now();
-//        LocalDate fechaVencimiento = calcularFechaVencimiento(titular);
-//        LicenciaActiva nuevaLicencia = expirarYCrearNuevaLicenciaActiva(titular, usuario, licenciaFormDTO, fechaEmision, fechaVencimiento);
-//
-//        LicenciaEmitidaDTO dto = licenciaEmitidaMapper.entityToDto(nuevaLicencia);
-//        dto.setDocumentoTitular(titular.getNumeroDocumento());
-//        dto.setDocumentoUsuario(usuario.getNumeroDocumento());
-//        return dto;
-//    }
 
     @Override
     public LicenciaActivaDTO buscarLicenciaActivaPorDni(String numeroDocumento) {
